@@ -25,7 +25,8 @@ export default {
         "d3-dispatch",
         "d3-selection",
         "d3-timer",
-        "d3-transition"
+        "d3-transition",
+        "d3-view"
     ],
     globals: {
         "d3-collection": "d3",

@@ -1,2 +1,2 @@
 export {default as viewTable} from './src/index';
-export {version as tableVersion} from './package.json';
+export {version as viewTableVersion} from './package.json';
