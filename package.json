@@ -24,11 +24,7 @@
     "module": "index",
     "jsnext:main": "index",
     "dependencies": {
-        "d3-collection": "1.0",
-        "d3-dispatch": "1.0",
-        "d3-selection": "1.1",
-        "d3-timer": "1.0",
-        "d3-timer": "0.4"
+        "d3-view": "0.4"
     },
     "devDependencies": {
         "babel-eslint": "7.2",
@@ -39,7 +35,6 @@
         "babelify": "7.3",
         "browserify": "14.4",
         "browserify-istanbul": "2.0",
-        "d3-let": "0.2",
         "eslint": "3.19",
         "handlebars": "4",
         "istanbul": "0.4",
@@ -72,13 +67,13 @@
         "test": "eslint index.js test src examples && npm run-script unit",
         "rollup": "rollup -c --banner \"$(preamble)\"",
         "cover": "karma start test/karma/karma.cover.js",
-        "minify": "uglifyjs --preamble \"$(preamble)\" build/d3-view.js -c -m -o build/d3-view.min.js",
+        "minify": "uglifyjs --preamble \"$(preamble)\" build/d3-view-table.js -c -m -o build/d3-view-table.min.js",
         "build": "npm run-script rollup && npm run-script minify",
         "unit": "karma start test/karma/karma.unit.js",
         "debug": "karma start test/karma/karma.debug.js",
-        "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-view/releases/:id/assets?name=d3-view.zip",
+        "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-view-table/releases/:id/assets?name=d3-view-table.zip",
         "prepublish": "npm run-script build",
-        "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git tag -am \"Release $VERSION.\" v${VERSION} && git push --tags && mkdir -p ../giottojs.org/latest && mkdir -p ../giottojs.org/d3-view/${VERSION} && cp build/* ../giottojs.org/d3-view/${VERSION}/ && cp build/* ../giottojs.org/latest/ && cd ../giottojs.org && git add d3-view/${VERSION} latest && git commit -a -m \"d3-view ${VERSION}\" && git push",
+        "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git tag -am \"Release $VERSION.\" v${VERSION} && git push --tags && mkdir -p ../giottojs.org/latest && mkdir -p ../giottojs.org/d3-view-table/${VERSION} && cp build/* ../giottojs.org/d3-view-table/${VERSION}/ && cp build/* ../giottojs.org/latest/ && cd ../giottojs.org && git add d3-view-table/${VERSION} latest && git commit -a -m \"d3-view-table ${VERSION}\" && git push",
         "release": "publish"
     }
 }
