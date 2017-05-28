@@ -1,0 +1,84 @@
+{
+    "version": "0.1.0",
+    "name": "d3-view-table",
+    "description": "d3-view component for reactive tables",
+    "author": {
+        "name": "quantmind.com",
+        "email": "message@quantmind.com"
+    },
+    "keywords": [
+        "d3",
+        "d3-module",
+        "table",
+        "reactive"
+    ],
+    "license": "BSD-3-Clause",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/quantmind/d3-view-table.git"
+    },
+    "engines": {
+        "node": ">= 6.0"
+    },
+    "main": "build/d3-view-table.js",
+    "module": "index",
+    "jsnext:main": "index",
+    "dependencies": {
+        "d3-collection": "1.0",
+        "d3-dispatch": "1.0",
+        "d3-selection": "1.1",
+        "d3-timer": "1.0",
+        "d3-timer": "0.4"
+    },
+    "devDependencies": {
+        "babel-eslint": "7.2",
+        "babel-plugin-transform-async-to-generator": "6.24",
+        "babel-preset-es2015": "6.24",
+        "babel-preset-es2015-rollup": "3.0",
+        "babel-polyfill": "6.23",
+        "babelify": "7.3",
+        "browserify": "14.4",
+        "browserify-istanbul": "2.0",
+        "d3-let": "0.2",
+        "eslint": "3.19",
+        "handlebars": "4",
+        "istanbul": "0.4",
+        "karma": "1.7",
+        "karma-browserify": "5.1",
+        "karma-coverage": "1.1",
+        "karma-chrome-launcher": "2.1",
+        "karma-firefox-launcher": "1.0",
+        "karma-phantomjs-launcher": "1.0",
+        "karma-junit-reporter": "1.2",
+        "karma-es5-shim": "0.0.4",
+        "karma-jasmine": "1.1",
+        "karma-safari-launcher": "1.0",
+        "jasmine-core": "2.6",
+        "package-preamble": "0.1",
+        "phantomjs-prebuilt": "2.1",
+        "publish": "0.6",
+        "requirejs": "2.3",
+        "rollup": "0.41",
+        "rollup-plugin-babel": "2.7",
+        "rollup-plugin-json": "2.1",
+        "rollup-plugin-node-resolve": "3.0",
+        "rollup-plugin-sourcemaps": "0.4",
+        "uglify-js": "3.0",
+        "watchify": "3.9",
+        "whatwg-fetch": "2.0"
+    },
+    "scripts": {
+        "lint": "eslint index.js test src examples",
+        "test": "eslint index.js test src examples && npm run-script unit",
+        "rollup": "rollup -c --banner \"$(preamble)\"",
+        "cover": "karma start test/karma/karma.cover.js",
+        "minify": "uglifyjs --preamble \"$(preamble)\" build/d3-view.js -c -m -o build/d3-view.min.js",
+        "build": "npm run-script rollup && npm run-script minify",
+        "unit": "karma start test/karma/karma.unit.js",
+        "debug": "karma start test/karma/karma.debug.js",
+        "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-view/releases/:id/assets?name=d3-view.zip",
+        "prepublish": "npm run-script build",
+        "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git tag -am \"Release $VERSION.\" v${VERSION} && git push --tags && mkdir -p ../giottojs.org/latest && mkdir -p ../giottojs.org/d3-view/${VERSION} && cp build/* ../giottojs.org/d3-view/${VERSION}/ && cp build/* ../giottojs.org/latest/ && cd ../giottojs.org && git add d3-view/${VERSION} latest && git commit -a -m \"d3-view ${VERSION}\" && git push",
+        "release": "publish"
+    }
+}

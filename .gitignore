@@ -1,0 +1,10 @@
+# javascript
+node_modules
+build
+
+*.log
+.idea
+.DS_Store
+yarn.lock
+coverage
+d3.js
