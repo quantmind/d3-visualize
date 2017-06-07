@@ -1,5 +1,5 @@
 // import {timeout} from 'd3-timer';
-import {assign} from 'd3-let';
+import assign from 'object-assign';
 
 import createColumns from './columns';
 import DataLoader from './data';

@@ -1,4 +1,4 @@
-import {assign} from 'd3-let';
+import assign from 'object-assign';
 
 // bootstrap styling to the table
 const defaults = {

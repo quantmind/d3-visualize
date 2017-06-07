@@ -1,5 +1,6 @@
 import json from 'rollup-plugin-json';
 import babel from 'rollup-plugin-babel';
+import commonjs from 'rollup-plugin-commonjs';
 import node from 'rollup-plugin-node-resolve';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 
@@ -15,7 +16,8 @@ export default {
             presets: ['es2015-rollup'],
             plugins: ["transform-async-to-generator"]
         }),
-        // in clude d3-let in the bundle
+        commonjs(),
+        // include d3-let in the bundle
         node(),
         sourcemaps()
     ],
