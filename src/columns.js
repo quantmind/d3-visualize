@@ -4,13 +4,14 @@ import {formatters, parsers} from './formatters';
 
 
 // Create table columns from schema
-export default function (model, schema) {
-	if (!schema) return;
+export default function (schema) {
+    var columns = [];
+	if (!schema) return columns;
+
     if (isArray(schema))
         schema = {properties: schema};
 
     if (isObject(schema.properties)) {
-        var columns = [];
         for (let key in schema.properties) {
             col = schema.properties[key];
             if (isObject(col)) {
@@ -18,17 +19,10 @@ export default function (model, schema) {
                 columns.push(col);
             }
         }
-        schema.columns = columns;
-    } else {
-        schema.columns = schema.properties;
-    }
+    } else
+        columns.push(...schema.properties);
 
-    if (!isArray(schema.columns))
-        return viewWarn('schema columns should be an array');
-
-    var columns = model.columns;
-    let col;
-    model.columns = schema.columns.map((col) => {
+    return columns.map((col) => {
         if (!isObject(col)) col = {name: col};
         if (!col.label) col.label = col.name;
         if (!col.hidden) col.hidden = false;

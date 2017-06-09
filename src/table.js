@@ -1,8 +1,11 @@
 // import {timeout} from 'd3-timer';
 import assign from 'object-assign';
+import {isString, isArray, isPromise} from 'd3-let';
 
+import warn from './warn';
 import createColumns from './columns';
 import DataLoader from './data';
+import tablePlugins from './plugins/index';
 // import crossfilter from 'crossfilter';
 
 
@@ -28,7 +31,8 @@ export default {
     props: [
 		'schema',	// Schema is a collection of fields to display in the table
 		'dataurl',	// Optional url to fetch data from
-        'style'
+        'style',    // table style
+        'plugins',  // list of string/objects which add table plugins
 	],
 
 	model () {
@@ -41,15 +45,37 @@ export default {
 	},
 
 	render (data) {
-		var model = this.model;
+		var self = this,
+            model = this.model,
+            plugins = data.plugins || [];
         // model.allData = crossfilter([]);
         this.records = {};
         this.data = [];
+        this.template = tableTpl;
 
         model.style = this.style ? this.style(data.style || {}) : {};
-		createColumns(model, data.schema);
+		model.columns = createColumns(data.schema);
 		if (data.dataurl) model.dataLoader = new DataLoader(data.dataurl);
-		return this.viewElement(tableTpl);
+
+        if (!isArray(plugins)) {
+            warn('plugins should be an array');
+        } else {
+            var promises = [];
+            let promise;
+            plugins.forEach((plugin) => {
+                if (isString(plugin)) plugin = {name: plugin};
+                if (!tablePlugins[plugin.name])
+                    warn(`Unknown table plugin ${plugin.name}`);
+                else {
+                    promise = tablePlugins[plugin.name](self, plugin);
+                    if (isPromise(promise)) promises.push(promise);
+                }
+            });
+            if (promises.length)
+                 return Promise.all(promises).then(() => self.viewElement(self.template));
+        }
+
+		return this.viewElement(this.template);
 	},
 
 	mounted () {

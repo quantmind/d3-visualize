@@ -28,6 +28,7 @@
         "d3-dsv": "1.0",
         "d3-format": "1.2",
         "d3-let": "0.3",
+        "d3-require": "0.4",
         "d3-time-format": "2.0",
         "d3-view": "0.4"
     },
