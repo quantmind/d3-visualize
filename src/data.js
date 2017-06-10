@@ -1,5 +1,8 @@
-import {viewProviders, viewWarn as warn} from 'd3-view';
+import {viewProviders} from 'd3-view';
 import {csvParseRows} from 'd3-dsv';
+
+import warn from './warn';
+
 
 export default function DataLoader (url) {
 	this.url = url;

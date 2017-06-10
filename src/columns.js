@@ -1,11 +1,14 @@
 import {isObject, isArray} from 'd3-let';
-import {viewWarn} from 'd3-view';
+
 import {formatters, parsers} from './formatters';
 
 
+//
 // Create table columns from schema
 export default function (schema) {
     var columns = [];
+    let col;
+    
 	if (!schema) return columns;
 
     if (isArray(schema))
