@@ -1,7 +1,7 @@
 {
     "version": "0.1.0",
-    "name": "d3-view-table",
-    "description": "d3-view component for reactive tables",
+    "name": "d3-visualize",
+    "description": "d3-view components for data visualization",
     "author": {
         "name": "quantmind.com",
         "email": "message@quantmind.com"
@@ -10,17 +10,18 @@
         "d3",
         "d3-module",
         "table",
+        "chart",
         "reactive"
     ],
     "license": "BSD-3-Clause",
     "repository": {
         "type": "git",
-        "url": "https://github.com/quantmind/d3-view-table.git"
+        "url": "https://github.com/quantmind/d3-visualize.git"
     },
     "engines": {
         "node": ">= 6.0"
     },
-    "main": "build/d3-view-table.js",
+    "main": "build/d3-visualize.js",
     "module": "index",
     "jsnext:main": "index",
     "dependencies": {
@@ -76,13 +77,13 @@
         "rollup": "rollup -c --banner \"$(preamble)\"",
         "dev": "rollup -c --banner \"$(preamble)\" -w",
         "cover": "karma start test/karma/karma.cover.js",
-        "minify": "uglifyjs --preamble \"$(preamble)\" build/d3-view-table.js -c -m -o build/d3-view-table.min.js",
+        "minify": "uglifyjs --preamble \"$(preamble)\" build/d3-visualize.js -c -m -o build/d3-visualize.min.js",
         "build": "npm run-script rollup && npm run-script minify",
         "unit": "karma start test/karma/karma.unit.js",
         "debug": "karma start test/karma/karma.debug.js",
-        "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-view-table/releases/:id/assets?name=d3-view-table.zip",
+        "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-visualize/releases/:id/assets?name=d3-visualize.zip",
         "prepublish": "npm run-script build",
-        "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git tag -am \"Release $VERSION.\" v${VERSION} && git push --tags && mkdir -p ../giottojs.org/latest && mkdir -p ../giottojs.org/d3-view-table/${VERSION} && cp build/* ../giottojs.org/d3-view-table/${VERSION}/ && cp build/* ../giottojs.org/latest/ && cd ../giottojs.org && git add d3-view-table/${VERSION} latest && git commit -a -m \"d3-view-table ${VERSION}\" && git push",
+        "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git tag -am \"Release $VERSION.\" v${VERSION} && git push --tags && mkdir -p ../giottojs.org/latest && mkdir -p ../giottojs.org/d3-visualize/${VERSION} && cp build/* ../giottojs.org/d3-visualize/${VERSION}/ && cp build/* ../giottojs.org/latest/ && cd ../giottojs.org && git add d3-visualize/${VERSION} latest && git commit -a -m \"d3-visualize ${VERSION}\" && git push",
         "release": "publish"
     }
 }

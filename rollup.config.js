@@ -22,7 +22,7 @@ export default {
         sourcemaps()
     ],
     sourceMap: true,
-    dest: 'build/d3-view-table.js',
+    dest: 'build/d3-visualize.js',
     external: [
         "crossfilter",
         "d3-collection",

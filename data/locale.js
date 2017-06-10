@@ -1,7 +1,8 @@
 // utility to set locale
-import {json} from './data';
 import {formatDefaultLocale} from 'd3-format';
 import {timeFormatDefaultLocale, timeFormat} from 'd3-time-format';
+
+import json from './json';
 
 //
 // manage locale
@@ -15,14 +16,14 @@ export default {
 
         return Promise.all([
             json(`https://unpkg.com/d3-format/locale/${symbol}.json`).then(
-                (locale) => {
+                locale => {
                     locales.symbol = symbol;
                     locales.number = locale;
                     formatDefaultLocale(locale);
                 }
             ),
             json(`https://unpkg.com/d3-time-format/locale/${symbol}.json`).then(
-                (locale) => {
+                locale => {
                     locales.time = locale;
                     locales.formatDate = timeFormat(locale.date);
                     locales.formatDateTime = timeFormat(locale.dateTime);
