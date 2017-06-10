@@ -4,7 +4,7 @@ import {isString, isArray, isPromise} from 'd3-let';
 
 import warn from './warn';
 import createColumns from './columns';
-import DataLoader from './data';
+import DataLoader from '../data/loader';
 import tablePlugins from './plugins/index';
 // import crossfilter from 'crossfilter';
 

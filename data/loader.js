@@ -8,22 +8,6 @@ export default function DataLoader (url) {
 	this.url = url;
 }
 
-
-export function json (url, callback) {
-    var fetch = viewProviders.fetch;
-
-    var p = fetch(url).then((response) => {
-        var ct = (response.headers.get('content-type') || '').split(';')[0];
-        if (ct === 'application/json')
-            return response.json();
-        else
-            callback(new Error(`Expected JSON content type, go ${ct}`));
-    });
-
-    if (callback) return p.then((data) => callback(null, data)).catch((err) => callback(err));
-    else return p;
-}
-
 DataLoader.prototype = {
 
 	load (columns) {

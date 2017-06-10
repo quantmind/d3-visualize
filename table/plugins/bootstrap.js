@@ -9,18 +9,8 @@ const defaults = {
     loadingTextClass: 'text-center'
 };
 
-// This plugin inject the style function to the d3-table component
-export default {
 
-    install (view) {
-        var d3table = view.components.get('d3-table');
-        if (d3table)
-            d3table.prototype.style = bootstrapTable;
-    }
-};
-
-
-function bootstrapTable (data) {
+export default function (table, options) {
     data = assign({}, defaults, data);
     data.tableClass = 'table table-responsive';
     if (data.striped) data.tableClass += ' table-striped';
