@@ -53,7 +53,6 @@ export default {
         this.data = [];
         this.template = tableTpl;
 
-        model.style = this.style ? this.style(data.style || {}) : {};
 		model.columns = createColumns(data.schema);
 		if (data.dataurl) model.dataLoader = new DataLoader(data.dataurl);
 
