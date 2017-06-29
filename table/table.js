@@ -31,7 +31,6 @@ export default {
     props: [
 		'schema',	// Schema is a collection of fields to display in the table
 		'dataurl',	// Optional url to fetch data from
-        'style',    // table style
         'plugins',  // list of string/objects which add table plugins
 	],
 
@@ -40,7 +39,13 @@ export default {
             header: true,            // show header
             columns: [],             // table columns
             loadingData: false,
-            style: {}
+            style: {
+                tableClass: null,
+                headerClass: null,
+                headerRowClass: null,
+                loadingClass: 'loading',
+                loadingTextClass: null
+            }
         };
 	},
 
@@ -61,7 +66,7 @@ export default {
         } else {
             var promises = [];
             let promise;
-            plugins.forEach((plugin) => {
+            plugins.forEach(plugin => {
                 if (isString(plugin)) plugin = {name: plugin};
                 if (!tablePlugins[plugin.name])
                     warn(`Unknown table plugin ${plugin.name}`);

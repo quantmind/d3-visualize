@@ -12,8 +12,8 @@ const defaults = {
 
 
 export default function (table, options) {
-    var style = assign({}, defaults, options);
-    table.model.style = style;
+    var style = table.model.style;
+    style.$update(assign({}, defaults, options));
 
     style.tableClass = 'table table-responsive';
     if (style.striped) style.tableClass += ' table-striped';
