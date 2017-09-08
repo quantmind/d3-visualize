@@ -1,14 +1,17 @@
 import json from 'rollup-plugin-json';
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
-import node from 'rollup-plugin-node-resolve';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 
 
 export default {
-    entry: 'index.js',
-    format: 'umd',
-    moduleName: 'd3',
+    input: 'index.js',
+    output: {
+        file: 'build/d3-visualize.js',
+        format: 'umd',
+        sourcemap: true
+    },
+    name: 'd3',
     plugins: [
         json(),
         babel({
@@ -17,18 +20,15 @@ export default {
             plugins: ["transform-async-to-generator"]
         }),
         commonjs(),
-        // include d3-let in the bundle
-        node(),
         sourcemaps()
     ],
-    sourceMap: true,
-    dest: 'build/d3-visualize.js',
     external: [
         "crossfilter",
         "d3-collection",
         "d3-dispatch",
         "d3-dsv",
         "d3-format",
+        "d3-let",
         "d3-selection",
         "d3-timer",
         "d3-time-format",
