@@ -3,7 +3,8 @@ import assign from 'object-assign';
 //  Chart prototype
 //  ===================
 //
-//  A chart is the
+//  A chart is the atomic component of d3-isualize
+//  it defines a mapping from a data serie to a visual 
 export const chartPrototype = {
     initialise () {},
     draw () {}

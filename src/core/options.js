@@ -1,0 +1,5 @@
+//
+// global options
+export default {
+
+};
