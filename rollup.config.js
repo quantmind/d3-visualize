@@ -19,7 +19,12 @@ export default {
             presets: ['es2015-rollup'],
             plugins: ["transform-async-to-generator"]
         }),
-        commonjs(),
+        commonjs({
+            include: [
+                // required when using yarn link
+                '../d3-view/node_modules/**'
+            ]
+        }),
         sourcemaps()
     ],
     external: [

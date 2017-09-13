@@ -1,26 +1,68 @@
-import {isString} from 'd3-let';
+import assign from 'object-assign';
+import {isString, isObject} from 'd3-let';
 
 //
-//  Dashboard Component
-export default {
+//  vizComponent base prototype
+//  =============================
+//
+//  Some common properties and methods for all visualize components
+//
+export const vizComponent = {
     props: ['schema'],
 
-    render (data) {
+    render (props, attrs, el) {
         var self = this,
-            inner = this.self.html();
+            // inner visuals
+            inner = this.select(el).html();
 
-        if (isString(data.schema)) {
-            return this.json(data.schema).then(build);
-        }
-        else return build(data.schema);
+        return this.getSchema(props.schema, (schema) => {
+            if (!isObject(schema)) schema = {};
+            return self.build(schema, inner);
+        });
+    },
 
-        function build (schema) {
-            var data = schema.data;
-            self.model.visuals = schema.visuals;
-            // self.model.$set('dashboard', schema);
-            return self.createElement('div')
-                .classed('dashboard', true)
-                .html(inner);
+    getSchema (input, build) {
+        if (isString(input)) {
+            return this.json(input).then(build);
         }
-    }
+        else return build(input);
+    },
+
+    createGroup () {
+        var model = this.model;
+        // Set itself as the visualGroup
+        model.visualGroup = model;
+        // object containing visuals by name!??
+        model.visuals = {};
+        return model;
+    },
+    //
+    // build the visual component has the schema available
+    build () {}
 };
+//
+//  Dashboard Component
+//  ========================
+//
+//  A collection of visual components arranged according
+//  to a custom layout.
+//
+//  * Dashboard visuals are independent of each other but
+//    interact via the data object
+//  * The Dashboard layout is given by the inner HTML elements
+//  * The configuration is obtained via the schema property which
+//    can be either:
+//      1) an object
+//      2) a url
+export default assign({}, {
+
+    build (schema, inner) {
+        this.createGroup();
+        // model.visuals = schema.visuals;
+        // self.model.$set('dashboard', schema);
+        return this.createElement('div')
+            .classed('dashboard', true)
+            .html(inner).mount();
+    }
+
+}, vizComponent);

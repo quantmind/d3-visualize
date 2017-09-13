@@ -1,8 +1,9 @@
-import plugins from './plugins/index';
 import dashboard from './components/dashboard';
 import visual from './components/visual';
 import paper from './components/paper';
 import table from './table';
+
+import './plugins/responsive';
 
 
 // Forms plugin
