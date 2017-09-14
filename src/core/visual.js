@@ -7,5 +7,6 @@ export default createVisual('visual', {
         if (!options.group)
             options.group = new visualTypes.group(options, element);
         this.group = options.group;
+        var type = options.type;
     }
 });
