@@ -4,5 +4,5 @@ const prefix = '[d3-table]';
 
 
 export default function (msg) {
-    providers.logger.warn(`${prefix} ${msg}`);
+    viewProviders.logger.warn(`${prefix} ${msg}`);
 }

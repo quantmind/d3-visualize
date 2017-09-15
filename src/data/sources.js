@@ -1,16 +1,14 @@
 import assign from 'object-assign';
 import {map} from 'd3-collection';
 import {dispatch} from 'd3-dispatch';
-import {isPromise, assign, pop} from 'd3-let';
+import {isPromise, pop} from 'd3-let';
 import crossfilter from 'crossfilter';
-
-import arraySource from './array';
 
 
 const dataEvents = dispatch('init', 'data');
 
 
-const providerProto = {
+const dataSourcePrototype = {
 
     init () {
 
@@ -60,36 +58,36 @@ export default assign(map(), {
 
     add (type, source) {
 
-        function Provider (store, config) {
-            initProvider(this, type, store, config);
+        function DataSource (config, store) {
+            initDataSource(this, type, config, store);
         }
 
-        Provider.prototype = assign({}, providerProto, source);
+        DataSource.prototype = assign({}, dataSourcePrototype, source);
 
-        this.set(type, Provider);
-        return Provider;
+        this.set(type, DataSource);
+        return DataSource;
     },
 
-    // Create a provider for a dataStore
-    create (store, config) {
-        var providers = this.values(),
+    // Create a DataSource for a dataStore
+    create (config, store) {
+        var sources = this.values(),
             cfg;
-        for (var i=0; i<providers.length; ++i) {
-            cfg = providers[i].prototype.init(config);
-            if (cfg) return new providers[i](store, cfg);
+        for (var i=0; i<sources.length; ++i) {
+            cfg = sources[i].prototype.init(config);
+            if (cfg) return new sources[i](cfg, store);
         }
     }
 });
 
 
-function initProvider(store, type, store, config) {
+function initDataSource(dataSource, type, config, store) {
 
-    var name = dataName(store, pop(config, 'name')),
+    var name = store.dataName(pop(config, 'name')),
         cf = crossfilter();
 
-    store.natural = cf.dimension(d => d._id);
+    // store.natural = cf.dimension(d => d._id);
 
-    Object.defineProperties(provider, {
+    Object.defineProperties(dataSource, {
         cf: {
             get () {
                 return cf;
@@ -117,17 +115,8 @@ function initProvider(store, type, store, config) {
         }
     });
 
-    store.series.set(name, provider);
-
-    dataEvents.call('init', provider, config);
-    provider.data();
-}
-
-
-function dataName (store, name) {
-    ++dataCount;
-    if (name) return '' + name;
-    var def = store.serie('default');
-    if (!def) return 'default';
-    return 'serie' + dataCount;
+    store.series.set(name, dataSource);
+    dataEvents.call('init', dataSource);
+    // load data
+    dataSource.data();
 }

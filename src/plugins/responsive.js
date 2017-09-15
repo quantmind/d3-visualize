@@ -2,7 +2,8 @@ import {inBrowser} from 'd3-let';
 import {viewDebounce} from 'd3-view';
 import {select} from 'd3-canvas-transition';
 
-import globalOptions from './options';
+import globalOptions from '../core/options';
+import liveVisuals from '../core/base';
 
 
 if (!globalOptions.resizeDelay)
@@ -11,9 +12,7 @@ if (!globalOptions.resizeDelay)
 
 if (inBrowser) {
     var resize = viewDebounce(() => {
-        paper.live.forEach(function (p) {
-            p.resize();
-        });
+        liveVisuals.forEach(p => p.resize());
     }, globalOptions.resizeDelay);
 
     select(window).on('resize.visuals', resize);

@@ -6,7 +6,7 @@ export default function (table, options) {
 }
 
 
-function clusterize(Clusterize, table, options) {
+function clusterize(Clusterize) {
     var cl = new Clusterize();
     return cl;
 }

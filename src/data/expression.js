@@ -1,6 +1,6 @@
 import {isString, isObject} from 'd3-let';
 import {viewExpression} from 'd3-view';
-import isUrl from '../../utils/isurl';
+import isUrl from '../utils/isurl';
 
 
 export default {
