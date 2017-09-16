@@ -45,6 +45,18 @@ DataStore.prototype = {
         return dataSources.create(config, this);
     },
 
+    // set, get or remove data by datasource name
+    serie (name, serie) {
+        if (arguments.length === 1) return this.series.get(name);
+        if (serie === null) {
+            var p = this.series.get(name);
+            this.series.remove(name);
+            return p;
+        }
+        this.series.set(name, serie);
+        return this;
+    },
+
     dataName (name) {
         this.dataCount++;
         if (name) return '' + name;

@@ -1,4 +1,7 @@
-// bootstrap styling to d3 visualize table
+//
+//  bootstrap styling for tabular component
+//  ==========================================
+//
 import assign from 'object-assign';
 
 

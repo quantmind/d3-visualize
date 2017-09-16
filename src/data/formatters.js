@@ -1,6 +1,6 @@
 import {isoParse} from 'd3-time-format';
 
-import locale from '../data/locale';
+import locale from './locale';
 
 
 export const parsers = {

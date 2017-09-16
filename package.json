@@ -1,7 +1,7 @@
 {
-    "version": "0.1.0",
+    "version": "0.0.1",
     "name": "d3-visualize",
-    "description": "d3-view components for data visualization",
+    "description": "d3 components for data visualization",
     "author": {
         "name": "quantmind.com",
         "email": "message@quantmind.com"

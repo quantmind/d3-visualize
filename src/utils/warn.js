@@ -1,6 +1,6 @@
 import {viewProviders} from 'd3-view';
 
-const prefix = '[d3-table]';
+const prefix = '[d3-visualize]';
 
 
 export default function (msg) {

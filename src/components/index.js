@@ -6,16 +6,18 @@
 //
 import dashboard from './dashboard';
 import visual from './visual';
-import table from './table';
+import tabular from './tabular';
+import tabularPlugins from '../plugins/index';
 
 
-// Forms plugin
+// Visual components plugin
 export default {
+    tabularPlugins,
 
     install (vm) {
         vm.addComponent('dashboard', dashboard);
         vm.addComponent('visual', visual);
-        vm.addComponent('table', table);
+        vm.addComponent('tabular', tabular);
     }
 
 };

@@ -2,10 +2,10 @@
 import assign from 'object-assign';
 import {isString, isArray, isPromise} from 'd3-let';
 
-import warn from './warn';
-import createColumns from './columns';
-import DataLoader from '../data/loader';
-import tablePlugins from './plugins/index';
+import warn from '../utils/warn';
+import createColumns from '../utils/columns';
+import DataStore from '../data/store';
+import tablePlugins from '../plugins/index';
 // import crossfilter from 'crossfilter';
 
 
@@ -29,9 +29,9 @@ const tableTpl = `<table d3-class="[style.tableClass, loadingData ? 'loading' : 
 
 export default {
     props: [
-		'schema',	// Schema is a collection of fields to display in the table
-		'dataurl',	// Optional url to fetch data from
-        'plugins',  // list of string/objects which add table plugins
+		'schema',	    // Schema is a collection of fields to display in the table
+		'datasource',	// Data source for table
+        'plugins',      // list of string/objects which add table plugins
 	],
 
 	model () {
@@ -59,7 +59,7 @@ export default {
         this.template = tableTpl;
 
 		model.columns = createColumns(data.schema);
-		if (data.dataurl) model.dataLoader = new DataLoader(data.dataurl);
+		// if (data.dataurl) model.dataLoader = new DataLoader(data.dataurl);
 
         if (!isArray(plugins)) {
             warn('plugins should be an array');

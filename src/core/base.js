@@ -117,6 +117,7 @@ export default function (type, proto) {
             }
         });
         this.initialise(element, options);
+        visualEvents.call('init', this, options);
     }
 
     Visual.prototype = assign({}, visualPrototype, proto);

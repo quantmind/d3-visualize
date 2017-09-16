@@ -1,6 +1,6 @@
 import {isObject, isArray} from 'd3-let';
 
-import {formatters, parsers} from './formatters';
+import {formatters, parsers} from '../data/formatters';
 
 
 //
@@ -8,7 +8,7 @@ import {formatters, parsers} from './formatters';
 export default function (schema) {
     var columns = [];
     let col;
-    
+
 	if (!schema) return columns;
 
     if (isArray(schema))
