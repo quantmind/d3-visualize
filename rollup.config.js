@@ -29,28 +29,38 @@ export default {
     ],
     external: [
         "crossfilter",
+        "d3-array",
+        "d3-canvas-transition",
         "d3-collection",
         "d3-dispatch",
         "d3-dsv",
         "d3-format",
         "d3-let",
+        "d3-random",
+        "d3-require",
         "d3-selection",
         "d3-timer",
         "d3-time-format",
         "d3-transition",
-        "d3-view"
+        "d3-view",
+        "object-assign"
     ],
     globals: {
         "crossfilter": "crossfilter",
+        "d3-array": "d3",
+        "d3-canvas-transition": "d3",
         "d3-collection": "d3",
         "d3-dispatch": "d3",
         "d3-dsv": "d3",
         "d3-format": "d3",
         "d3-let": "d3",
+        "d3-random": "d3",
+        "d3-require": "d3",
         "d3-selection": "d3",
         "d3-timer": "d3",
         "d3-time-format": "d3",
         "d3-transition": "d3",
-        "d3-view": "d3"
+        "d3-view": "d3",
+        "object-assign": "assign"
     }
 };
