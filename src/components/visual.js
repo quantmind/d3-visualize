@@ -4,7 +4,7 @@ import {vizComponent} from './dashboard';
 
 
 // Visual component
-export default assign({}, {
+export default assign({}, vizComponent, {
 
     build (schema) {
         var model = this.model,
@@ -17,4 +17,4 @@ export default assign({}, {
             visualGroup.visuals[schema.name] = model;
         }
     }
-}, vizComponent);
+});

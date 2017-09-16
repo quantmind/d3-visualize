@@ -8,14 +8,19 @@ import {isString, isObject} from 'd3-let';
 //  Some common properties and methods for all visualize components
 //
 export const vizComponent = {
-    props: ['schema'],
+    props: [
+		'schema',	    // Schema is a collection of fields to display in the table
+		'datasource',	// Data source for table
+        'plugins',      // list of string/objects which add table plugins
+	],
 
     render (props, attrs, el) {
         var self = this,
             // inner visuals
             inner = this.select(el).html();
 
-        return this.getSchema(props.schema, (schema) => {
+        return this.getSchema(props.schema, schema => {
+
             if (!isObject(schema)) schema = {};
             return self.build(schema, inner);
         });

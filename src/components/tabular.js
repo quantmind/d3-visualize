@@ -6,7 +6,7 @@ import warn from '../utils/warn';
 import createColumns from '../utils/columns';
 import DataStore from '../data/store';
 import tablePlugins from '../plugins/index';
-// import crossfilter from 'crossfilter';
+import {vizComponent} from './dashboard';
 
 
 const tableTpl = `<table d3-class="[style.tableClass, loadingData ? 'loading' : null]">
@@ -27,12 +27,7 @@ const tableTpl = `<table d3-class="[style.tableClass, loadingData ? 'loading' : 
 </table>`;
 
 
-export default {
-    props: [
-		'schema',	    // Schema is a collection of fields to display in the table
-		'datasource',	// Data source for table
-        'plugins',      // list of string/objects which add table plugins
-	],
+export default assign({}, vizComponent, {
 
 	model () {
         return {
@@ -49,7 +44,7 @@ export default {
         };
 	},
 
-	render (data) {
+	build (schema) {
 		var self = this,
             model = this.model,
             plugins = data.plugins || [];
