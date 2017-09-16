@@ -1,4 +1,4 @@
-import {view, viewElement} from 'd3-view';
+import {view} from 'd3-view';
 import {visualComponents} from '../index';
 
 
@@ -11,7 +11,7 @@ describe('table', () => {
     });
 
     it ('columns', () => {
-        var el = viewElement('<div><tabular schema="table1"></tabular></div>');
+        // var el = viewElement('<div><tabular schema="table1"></tabular></div>');
         var vm = view({
             model: {
                 table1: {
@@ -27,6 +27,7 @@ describe('table', () => {
             }
         }).use(visualComponents);
 
+        expect(vm).toBeTruthy();
         // vm.mount(el);
         // var table = vm.sel.select('table');
         // expect(table.node()).toBeTruthy();

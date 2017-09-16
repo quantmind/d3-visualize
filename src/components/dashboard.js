@@ -1,6 +1,8 @@
 import assign from 'object-assign';
 import {isString, isObject} from 'd3-let';
 
+import DataStore from '../data/store';
+
 //
 //  vizComponent base prototype
 //  =============================
@@ -17,10 +19,15 @@ export const vizComponent = {
     render (props, attrs, el) {
         var self = this,
             // inner visuals
-            inner = this.select(el).html();
+            inner = this.select(el).html(),
+            store = this.model.dataStore;
+
+        if (!store) {
+            store = new DataStore(this.model);
+            this.model.dataStore = store;
+        }
 
         return this.getSchema(props.schema, schema => {
-
             if (!isObject(schema)) schema = {};
             return self.build(schema, inner);
         });

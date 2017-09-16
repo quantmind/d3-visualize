@@ -4,7 +4,6 @@ import {isString, isArray, isPromise} from 'd3-let';
 
 import warn from '../utils/warn';
 import createColumns from '../utils/columns';
-import DataStore from '../data/store';
 import tablePlugins from '../plugins/index';
 import {vizComponent} from './dashboard';
 
@@ -47,13 +46,13 @@ export default assign({}, vizComponent, {
 	build (schema) {
 		var self = this,
             model = this.model,
-            plugins = data.plugins || [];
+            plugins = schema.plugins || [];
         // model.allData = crossfilter([]);
         this.records = {};
         this.data = [];
         this.template = tableTpl;
 
-		model.columns = createColumns(data.schema);
+		model.columns = createColumns(schema);
 		// if (data.dataurl) model.dataLoader = new DataLoader(data.dataurl);
 
         if (!isArray(plugins)) {
@@ -95,7 +94,7 @@ export default assign({}, vizComponent, {
             }
         }
 	}
-};
+});
 
 // new data to include in the table
 function addData (vm, newData) {
