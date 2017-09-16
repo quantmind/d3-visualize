@@ -1,6 +1,6 @@
 # d3-view
 
-[![CircleCI](https://circleci.com/gh/quantmind/d3-visualize.svg?style=svg&circle-token=f84972c3cf4e8f17d74066ead28544da990115c3)](https://circleci.com/gh/quantmind/d3-visualize)
+[![CircleCI](https://circleci.com/gh/quantmind/d3-visualize.svg?style=svg)](https://circleci.com/gh/quantmind/d3-visualize)
 [![codecov](https://codecov.io/gh/quantmind/d3-visualize/branch/master/graph/badge.svg)](https://codecov.io/gh/quantmind/d3-visualize)
 
 [![Dependency Status](https://david-dm.org/quantmind/d3-visualize.svg)](https://david-dm.org/quantmind/d3-visualize)
