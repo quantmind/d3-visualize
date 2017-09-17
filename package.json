@@ -34,7 +34,8 @@
         "d3-random": "1.1",
         "d3-require": "0.4",
         "d3-time-format": "2.0",
-        "d3-view": "0.5"
+        "d3-view": "0.5",
+        "david": "^11.0.0"
     },
     "devDependencies": {
         "babel-eslint": "8.0",
@@ -63,7 +64,7 @@
         "phantomjs-prebuilt": "2.1",
         "publish": "0.6",
         "requirejs": "2.3",
-        "rollup": "0.49",
+        "rollup": "0.50",
         "rollup-plugin-babel": "3.0",
         "rollup-plugin-commonjs": "8.2",
         "rollup-plugin-json": "2.3",

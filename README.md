@@ -8,3 +8,10 @@
 
 
 This is a [d3 plugin](https://bost.ocks.org/mike/d3-plugin/) for creating interactive visualizations using d3.
+
+## Contents
+
+* Overview
+    * [Getting Started](/docs/getting-started.md)
+* API
+    * [Data](/docs/data.md)
