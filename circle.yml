@@ -6,7 +6,7 @@ machine:
 
 dependencies:
   override:
-    - npm install
+    - yarn install
 
 
 test:
@@ -26,4 +26,4 @@ deployment:
       - git config --global user.name "Quantmind Bot"
       - cd && git clone git@github.com:quantmind/giottojs.org.git
       - cd && echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-      - npm run-script release
+      - yarn release
