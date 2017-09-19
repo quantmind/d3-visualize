@@ -78,7 +78,6 @@ export function RootElement (element, options) {
     });
     this.width = options.width;
     this.height = options.height;
-    this.sel.classed('d3-visual-root', true);
 }
 
 

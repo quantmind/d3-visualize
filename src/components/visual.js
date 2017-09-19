@@ -14,8 +14,7 @@ export default assign({}, vizComponent, {
     build (schema) {
         var model = this.model,
             dashboard = model.dashboard,
-            sel = this.createElement('div')
-                        .classed('visual', true);
+            sel = this.createElement('div');
         // no visual group, the visual is not used in a group
         // create its own group
         if (dashboard) {

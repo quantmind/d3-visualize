@@ -2,18 +2,18 @@ import createVisual, {RootElement, liveVisuals, visualTypes} from './base';
 import warn from '../utils/warn';
 
 //
-//  VisualGroup
+//  Visual
 //  =============
 //
-//  A VisualGroup is a specialized Visual associated with an HTML element
-//  and containing one or more visuals
+//  A Visual is a a container of visual layers and it is
+//  associated with an HTML element
 //
-//  Usually a VisualGroup contains one visual only, however it is possible to
-//  have more than one by combining several visuals together. Importantly,
-//  visuals in one group generate HTMLElement which are children of the group
+//  Usually a Visual contains one layer only, however it is possible to
+//  have more than one by combining several layers together. Importantly,
+//  layers in one visual generate HTMLElements which are children of the visual
 //  element and inherit both the width and height.
 //
-//  A group register itself with the liveVisuals array
+//  A visual register itself with the liveVisuals array
 //
 export default createVisual('visual', {
 
@@ -25,6 +25,7 @@ export default createVisual('visual', {
         var self = this;
         if (!element) throw new Error('HTMLElement required by visual group');
         this.root = new RootElement(element, options);
+        this.select(element).classed('d3-visual', true);
         // list of layers which define the visual
         this.visuals = [];
         liveVisuals.push(this);
@@ -38,7 +39,7 @@ export default createVisual('visual', {
         });
     },
 
-    // Drw the visuals
+    // Draw the visuals
     doDraw() {
         this.visuals.forEach(visual => {
             visual.draw();
