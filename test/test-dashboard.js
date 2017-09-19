@@ -38,7 +38,7 @@ describe('dashboard', () => {
         var board = d.model;
         expect(board.visuals).toBeTruthy();
         expect(board.visuals.length).toBe(1);
-        var viz = vm.sel.select('.visual');
+        var viz = vm.sel.select('.d3-visual');
         expect(viz.size()).toBe(1);
     });
 });
