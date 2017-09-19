@@ -1,4 +1,4 @@
-import {select} from 'd3-canvas-transition';
+import {select} from 'd3-selection';
 
 import round from './round';
 

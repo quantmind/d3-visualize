@@ -1,4 +1,6 @@
-export {version as viewTableVersion} from './package.json';
+import 'd3-canvas-transition';
+//
+export {version as visualizeVersion} from './package.json';
 //
 export {default as randomPath} from './src/utils/randompath';
 //

@@ -33,9 +33,9 @@ const visualPrototype = assign({}, {
 
     // draw this visual
     draw () {
-        visualEvents.call('before-draw', this);
+        visualEvents.call('before-draw', undefined, this);
         this.doDraw();
-        visualEvents.call('after-draw', this);
+        visualEvents.call('after-draw', undefined, this);
     },
 
     select (el) {
@@ -115,7 +115,7 @@ export default function (type, proto) {
 
     function Visual(element, options) {
         options = assign({}, globalOptions[type], options);
-        visualEvents.call('before-init', this, options);
+        visualEvents.call('before-init', undefined, this, options);
         element = this.initialise(element, options);
 
         Object.defineProperties(this, {
@@ -130,7 +130,7 @@ export default function (type, proto) {
                 }
             }
         });
-        visualEvents.call('after-init', this, options);
+        visualEvents.call('after-init', undefined, this, options);
     }
 
     Visual.prototype = assign({}, visualPrototype, proto);
