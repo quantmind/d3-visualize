@@ -15,4 +15,7 @@ globalOptions.barchart = {
 //  proportional data via vertical staking and normalization
 export default createChart('barchart', {
 
+    doDraw () {
+        
+    }
 });

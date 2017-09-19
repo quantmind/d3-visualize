@@ -1,6 +1,8 @@
 import assign from 'object-assign';
+import 'd3-canvas-transition';
+import {pop} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
-import {select} from 'd3-canvas-transition';
+import {select} from 'd3-selection';
 import {viewBase} from 'd3-view';
 
 import globalOptions from './options';
@@ -9,7 +11,12 @@ import {getSize, boundingBox} from '../utils/size';
 
 export const liveVisuals = [];
 export const visualTypes = {};
-export const visualEvents = dispatch('init', 'before-draw', 'after-draw');
+export const visualEvents = dispatch(
+    'before-init',
+    'after-init',
+    'before-draw',
+    'after-draw'
+);
 
 //
 //  Visual Interface
@@ -26,7 +33,9 @@ const visualPrototype = assign({}, {
 
     // draw this visual
     draw () {
-
+        visualEvents.call('before-draw', this);
+        this.doDraw();
+        visualEvents.call('after-draw', this);
     },
 
     select (el) {
@@ -36,7 +45,9 @@ const visualPrototype = assign({}, {
     // destroy the visual
     destroy () {
 
-    }
+    },
+
+    doDraw () {}
 }, viewBase);
 
 
@@ -90,9 +101,7 @@ RootElement.prototype = {
         if (currentSize[0] !== size[0] || currentSize[1] !== size[1]) {
             this.root.width = size[0];
             this.root.height = size[1];
-            visualEvents.call('before-draw', visual);
             visual.draw();
-            visualEvents.call('after-draw', visual);
         }
     }
 };
@@ -100,9 +109,14 @@ RootElement.prototype = {
 //
 //  Create a new Visual Constructor
 export default function (type, proto) {
+    const opts = pop(proto, 'options');
+    if (opts)
+        globalOptions[type] = opts;
 
     function Visual(element, options) {
         options = assign({}, globalOptions[type], options);
+        visualEvents.call('before-init', this, options);
+        element = this.initialise(element, options);
 
         Object.defineProperties(this, {
             visualType : {
@@ -116,8 +130,7 @@ export default function (type, proto) {
                 }
             }
         });
-        this.initialise(element, options);
-        visualEvents.call('init', this, options);
+        visualEvents.call('after-init', this, options);
     }
 
     Visual.prototype = assign({}, visualPrototype, proto);
