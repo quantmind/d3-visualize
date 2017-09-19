@@ -36,6 +36,13 @@ export default createVisual('visual', {
             }
         });
     },
+    
+    // Drw the visuals
+    doDraw() {
+        this.visuals.forEach(visual => {
+            visual.draw();
+        });
+    },
 
     // Add a new visual to this group
     addVisual (options) {
