@@ -1,9 +1,4 @@
 import createChart from '../core/chart';
-import globalOptions from '../core/options';
-
-globalOptions.barchart = {
-    orientation: 'vertical',
-};
 
 //
 //  Bar Chart
@@ -15,7 +10,13 @@ globalOptions.barchart = {
 //  proportional data via vertical staking and normalization
 export default createChart('barchart', {
 
+    options: {
+        orientation: 'vertical',
+        // stack multiple y series?
+        stack: false
+    },
+
     doDraw () {
-        
+
     }
 });

@@ -25,6 +25,7 @@ export default createVisual('visual', {
         var self = this;
         if (!element) throw new Error('HTMLElement required by visual group');
         this.root = new RootElement(element, options);
+        // list of layers which define the visual
         this.visuals = [];
         liveVisuals.push(this);
 
@@ -36,7 +37,7 @@ export default createVisual('visual', {
             }
         });
     },
-    
+
     // Drw the visuals
     doDraw() {
         this.visuals.forEach(visual => {
