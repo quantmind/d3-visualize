@@ -1,5 +1,4 @@
 import assign from 'object-assign';
-import 'd3-canvas-transition';
 import {pop} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
 import {select} from 'd3-selection';
