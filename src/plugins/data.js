@@ -1,11 +1,11 @@
 //
 //  dataStore integration with visuals
 import {isString, pop} from 'd3-let';
-import {visualEvents} from '../core/base';
+import {visuals} from '../core/base';
 import DataStore from '../data/store';
 
 
-visualEvents.on('after-init.data', (viz, options) => {
+visuals.events.on('after-init.data', (viz, options) => {
     if (viz.visualType === 'visual') setupVisual(viz, options);
     else setupLayer(viz, options);
 });

@@ -1,5 +1,5 @@
 import assign from 'object-assign';
-import createVisual, {visualEvents} from './base';
+import createVisual, {visuals} from './base';
 import Visual from './visual';
 
 //
@@ -22,16 +22,16 @@ export const vizPrototype = {
 };
 
 
-const chartPrototype = assign({}, {
+const chartPrototype = assign({}, vizPrototype, {
 
     //  override draw method
     //  invoke doDraw only if a series is available for the chart
     draw () {
-        visualEvents.call('before-draw', this);
+        visuals.events.call('before-draw', undefined, this);
         this.applyTransforms();
         if (this.series) {
             this.doDraw();
-            visualEvents.call('after-draw', this);
+            visuals.events.call('after-draw', undefined, this);
         }
     },
 
@@ -39,4 +39,4 @@ const chartPrototype = assign({}, {
     applyTransforms () {
 
     }
-}, vizPrototype);
+});

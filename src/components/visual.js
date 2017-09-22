@@ -20,8 +20,13 @@ export default assign({}, vizComponent, {
         if (dashboard) {
             dashboard.visuals.push(model);
         }
-        // build the visual group object object
+        // build the visual object
         model.visual = new Visual(sel.node(), schema);
         return sel;
+    },
+
+    // once the element is mounted in the dom, draw the visual
+    mounted () {
+        this.model.visual.draw();
     }
 });

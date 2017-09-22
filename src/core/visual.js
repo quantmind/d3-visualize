@@ -1,4 +1,4 @@
-import createVisual, {RootElement, liveVisuals, visualTypes} from './base';
+import createVisual, {RootElement, visuals} from './base';
 import warn from '../utils/warn';
 
 //
@@ -13,7 +13,7 @@ import warn from '../utils/warn';
 //  layers in one visual generate HTMLElements which are children of the visual
 //  element and inherit both the width and height.
 //
-//  A visual register itself with the liveVisuals array
+//  A visual register itself with the visuals.live array
 //
 export default createVisual('visual', {
 
@@ -28,7 +28,8 @@ export default createVisual('visual', {
         this.select(element).classed('d3-visual', true);
         // list of layers which define the visual
         this.visuals = [];
-        liveVisuals.push(this);
+        this.drawCount = 0;
+        visuals.live.push(this);
 
         Object.defineProperties(this, {
             group : {
@@ -39,17 +40,28 @@ export default createVisual('visual', {
         });
     },
 
-    // Draw the visuals
-    doDraw() {
+    // Draw the visual
+    draw() {
+        if (!this.drawCount) {
+            this.drawCount = 1;
+            this.root.fit();
+        } else {
+            this.drawCount++;
+            this.clear();
+        }
+        visuals.events.call('before-draw', undefined, this);
         this.visuals.forEach(visual => {
             visual.draw();
         });
+        visuals.events.call('after-draw', undefined, this);
     },
+
+    clear () {},
 
     // Add a new visual to this group
     addVisual (options) {
         options.group = this;
-        var VisualClass = visualTypes[options.type];
+        var VisualClass = visuals.types[options.type];
         if (!VisualClass)
             warn(`Cannot add visual ${options.type}`);
         else {
@@ -67,9 +79,9 @@ export default createVisual('visual', {
     },
 
     destroy () {
-        var idx = liveVisuals.indexOf(this);
+        var idx = visuals.live.indexOf(this);
         if (idx > -1) {
-            liveVisuals.splice(idx, 1);
+            visuals.live.splice(idx, 1);
             this.visuals.forEach(visual => visual.destroy());
         }
     }

@@ -40,8 +40,8 @@ const dataSourcePrototype = {
     add (data) {
         if (!data) return this;
         var size = this.size();
-        data = data.map((entry) => {
-            if (typeof entry === 'object') entry._id = ++size;
+        data = data.map(entry => {
+            if (entry && entry.constructor === Object) entry._id = ++size;
             else entry = {_id: ++size, data: entry};
             return entry;
         });

@@ -23,7 +23,7 @@ export default function (schema) {
             }
         }
     } else
-        columns.push(...schema.properties);
+        Array.prototype.push.apply(columns, schema.properties);
 
     return columns.map((col) => {
         if (!isObject(col)) col = {name: col};

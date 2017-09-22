@@ -8,14 +8,16 @@ import globalOptions from './options';
 import {getSize, boundingBox} from '../utils/size';
 
 
-export const liveVisuals = [];
-export const visualTypes = {};
-export const visualEvents = dispatch(
-    'before-init',
-    'after-init',
-    'before-draw',
-    'after-draw'
-);
+export const visuals = {
+    live: [],
+    types: {},
+    events: dispatch(
+        'before-init',
+        'after-init',
+        'before-draw',
+        'after-draw'
+    )
+};
 
 //
 //  Visual Interface
@@ -31,11 +33,7 @@ const visualPrototype = assign({}, {
     },
 
     // draw this visual
-    draw () {
-        visualEvents.call('before-draw', undefined, this);
-        this.doDraw();
-        visualEvents.call('after-draw', undefined, this);
-    },
+    draw () {},
 
     select (el) {
         return select(el);
@@ -44,9 +42,7 @@ const visualPrototype = assign({}, {
     // destroy the visual
     destroy () {
 
-    },
-
-    doDraw () {}
+    }
 }, viewBase);
 
 
@@ -57,6 +53,7 @@ const visualPrototype = assign({}, {
 //  Controls the size of a a visual or visuals within a group
 //  It does not control margins
 export function RootElement (element, options) {
+    this.options = assign({}, globalOptions.size, options.size);
 
     Object.defineProperties(this, {
         element: {
@@ -75,8 +72,6 @@ export function RootElement (element, options) {
             }
         }
     });
-    this.width = options.width;
-    this.height = options.height;
 }
 
 
@@ -87,9 +82,10 @@ RootElement.prototype = {
 
     // Fit the root element to the size of the parent element
     fit () {
-        var size = getSize(this.element, this);
+        var size = getSize(this.element.parentNode, this.options);
         this.width = size.width;
         this.height = size.height;
+        this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
     },
 
     resize (visual, size) {
@@ -97,8 +93,8 @@ RootElement.prototype = {
         var currentSize = this.size;
 
         if (currentSize[0] !== size[0] || currentSize[1] !== size[1]) {
-            this.root.width = size[0];
-            this.root.height = size[1];
+            this.width = size[0];
+            this.height = size[1];
             visual.draw();
         }
     }
@@ -113,7 +109,7 @@ export default function (type, proto) {
 
     function Visual(element, options) {
         options = assign({}, globalOptions[type], options);
-        visualEvents.call('before-init', undefined, this, options);
+        visuals.events.call('before-init', undefined, this, options);
         element = this.initialise(element, options);
 
         Object.defineProperties(this, {
@@ -128,10 +124,10 @@ export default function (type, proto) {
                 }
             }
         });
-        visualEvents.call('after-init', undefined, this, options);
+        visuals.events.call('after-init', undefined, this, options);
     }
 
     Visual.prototype = assign({}, visualPrototype, proto);
-    visualTypes[type] = Visual;
+    visuals.types[type] = Visual;
     return Visual;
 }

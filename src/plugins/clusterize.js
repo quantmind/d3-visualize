@@ -1,8 +1,7 @@
-import {require} from 'd3-require';
 //
 // Use clusterize.js to render the table
 export default function (table, options) {
-    return require('clusterize.js@0.17.6').then(Clusterize => clusterize(Clusterize, table, options));
+    return table.require('clusterize.js@0.17.6').then(Clusterize => clusterize(Clusterize, table, options));
 }
 
 
