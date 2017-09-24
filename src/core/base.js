@@ -115,6 +115,7 @@ export default function (type, proto) {
                 }
             },
         });
+        options = options || {};
         visuals.events.call('before-init', undefined, this, options);
         this.initialise(element, options);
         visuals.events.call('after-init', undefined, this, options);

@@ -14,11 +14,14 @@ export {default as dataLocale} from './src/data/locale';
 export {default as Visual} from './src/core/visual';
 export {default as crateChart} from './src/core/chart';
 //
-// Charts
+//  Components
+export {default as visualComponents} from './src/components/index';
+
+//
+//  Charts
+//  =========
+//
+//  Last import, important!
 export {default as BarChart} from './src/charts/bar';
 export {default as LineChart} from './src/charts/line';
 export {default as PieChart} from './src/charts/pie';
-
-//
-//  Components
-export {default as visualComponents} from './src/components/index';
