@@ -30,13 +30,25 @@ export const vizComponent = {
         });
     },
 
+    // get the schema from the input schema property
     getSchema (input, build) {
+        var dashboard = this.model.dashboard;
+
+        // allow to specify the schema as an entry of
+        // visuals object in the dashboard schema
+        if (dashboard && dashboard !== this.model && isString(input)) {
+            var schema = dashboard.schema.visuals[input];
+            if (schema) input = schema;
+        }
+
         if (isString(input)) {
             return this.json(input).then(build);
         }
         else return build(input);
     },
 
+    //  Get the datastore associated with this component
+    //  If no datastore available, create one
     dataStore () {
         var store = this.model.dataStore;
 
@@ -70,6 +82,8 @@ export default assign({}, vizComponent, {
         var model = this.model;
         // Set itself as the visualGroup
         model.dashboard = model;
+        model.schema = schema;
+        if (!schema.visuals) schema.visuals = {};
         // collection of visuals
         model.visuals = [];
         // model.visuals = schema.visuals;

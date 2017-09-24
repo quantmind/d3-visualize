@@ -1,4 +1,8 @@
+import {pop} from 'd3-let';
+import {viewModel} from 'd3-view';
+
 import createVisual, {RootElement, visuals} from './base';
+import globalOptions from './options';
 import warn from '../utils/warn';
 
 //
@@ -22,19 +26,32 @@ export default createVisual('visual', {
     },
 
     initialise (element, options) {
-        var self = this;
         if (!element) throw new Error('HTMLElement required by visual group');
-        this.root = new RootElement(element, options);
+        var root = new RootElement(element, options);
         this.select(element).classed('d3-visual', true);
         // list of layers which define the visual
         this.visuals = [];
+        this.options = options;
+        this.model = pop(options, 'model');
         this.drawCount = 0;
         visuals.live.push(this);
 
+        if (!this.model) this.model = viewModel();
+        //
+        // set global options  without rewriting
+        this.model.$update(globalOptions[this.type], false);
+        // update model from options
+        this.model.$update(pop(options, this.type));
+
         Object.defineProperties(this, {
-            group : {
+            element : {
                 get () {
-                    return self;
+                    return element;
+                }
+            },
+            root : {
+                get () {
+                    return root;
                 }
             }
         });
@@ -71,6 +88,15 @@ export default createVisual('visual', {
         }
     },
 
+    getVisualModel (type) {
+        var model = this.model[type];
+        if (!model) {
+            model = this.model.$new(globalOptions[type]);
+            model.$update(pop(this.options, type));
+            this.model[type] = model;
+        }
+        return model;
+    },
     //
     // Resize the visual group if it needs resizing
     //

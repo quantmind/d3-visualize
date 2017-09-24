@@ -17,6 +17,7 @@ export {default as crateChart} from './src/core/chart';
 // Charts
 export {default as BarChart} from './src/charts/bar';
 export {default as LineChart} from './src/charts/line';
+export {default as PieChart} from './src/charts/pie';
 
 //
 //  Components

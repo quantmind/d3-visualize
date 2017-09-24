@@ -7,6 +7,12 @@ const WIDTH = 400;
 const HEIGHT = '75%';
 
 
+export function sizeValue (value, size) {
+    if (typeof(value) === "string" && value.indexOf('%') === value.length-1)
+        return round(0.01*parseFloat(value)*size);
+    return +value;
+}
+
 // Internal function for evaluating paper dom size
 export function getSize (element, options) {
     var size = {

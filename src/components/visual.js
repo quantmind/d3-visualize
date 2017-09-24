@@ -21,6 +21,7 @@ export default assign({}, vizComponent, {
             dashboard.visuals.push(model);
         }
         // build the visual object
+        schema.model = model;
         model.visual = new Visual(sel.node(), schema);
         return sel;
     },

@@ -1,4 +1,5 @@
 import assign from 'object-assign';
+import {pop, isFunction} from 'd3-let';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
@@ -10,21 +11,40 @@ import {applyTransforms} from '../transforms/index';
 //  A chart is a drawing of series data in two dimensional
 export default function (type, proto) {
 
-    return createVisual(type, assign({}, chartPrototype, proto));
+    return createVisual(type, assign({}, vizPrototype, chartPrototype, proto));
 }
 
 
+//  Viz Prototype
+//  =================
 export const vizPrototype = {
 
     initialise (element, options) {
-        if (!options.visual)
-            options.visual = new Visual(element, options);
-        this.visual = options.visual;
+        var visual = pop(options, 'visual');
+        if (!visual) visual = new Visual(element, options);
+        // get the parent model for this viz type
+        var parent = visual.getVisualModel(this.type);
+        // create the child model
+        this.model = parent.$child(pop(options, this.type));
+        this.visual = visual;
+    },
+
+    paper () {
+    },
+
+    translate (x, y) {
+        if (isFunction(x)) {
+            return function (d) {
+                var xt = x(d) || 0,
+                    yt = y(d) || 0;
+                return `translate(${xt}, ${yt})`;
+            };
+        } else return `translate(${x}, ${y})`;
     }
 };
 
 
-const chartPrototype = assign({}, vizPrototype, {
+export const chartPrototype = {
 
     //  override draw method
     draw () {
@@ -37,4 +57,4 @@ const chartPrototype = assign({}, vizPrototype, {
             visuals.events.call('after-draw', undefined, this);
         });
     }
-});
+};

@@ -5,6 +5,7 @@
 import './data';
 import './responsive';
 import './title';
+import './margin';
 //
 //  This module depends on core but not on components
 import clusterize from './clusterize';

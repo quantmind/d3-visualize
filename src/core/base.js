@@ -108,22 +108,15 @@ export default function (type, proto) {
         globalOptions[type] = opts;
 
     function Visual(element, options) {
-        options = assign({}, globalOptions[type], options);
-        visuals.events.call('before-init', undefined, this, options);
-        element = this.initialise(element, options);
-
         Object.defineProperties(this, {
             visualType : {
                 get () {
                     return type;
                 }
             },
-            element: {
-                get: function () {
-                    return element;
-                }
-            }
         });
+        visuals.events.call('before-init', undefined, this, options);
+        this.initialise(element, options);
         visuals.events.call('after-init', undefined, this, options);
     }
 
