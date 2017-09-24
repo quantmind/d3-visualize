@@ -16,8 +16,7 @@ export default {
         json(),
         babel({
             babelrc: false,
-            presets: ['es2015-rollup'],
-            plugins: ["transform-async-to-generator"]
+            presets: ['es2015-rollup']
         }),
         commonjs({
             include: [

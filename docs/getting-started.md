@@ -6,7 +6,7 @@
 
 - [Installing](#installing)
 - [Dependencies](#dependencies)
-- [Creating a view](#creating-a-view)
+- [Creating a visual](#creating-a-visual)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

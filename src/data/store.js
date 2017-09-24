@@ -1,9 +1,13 @@
+import assign from 'object-assign';
+
 import {map} from 'd3-collection';
+import {isArray} from 'd3-let';
 
 import array from './array';
 import remote from './remote';
 import expression from './expression';
 import dataSources from './sources';
+import transformStore from '../transforms/index';
 
 
 dataSources.add('array', array);
@@ -20,16 +24,18 @@ dataSources.add('expression', expression);
 //  attributes (fields, or “columns”).
 //  Records are modeled using standard JavaScript objects.
 export default function DataStore(model) {
-    var series = map();
+    var sources = map();
 
     Object.defineProperties(this, {
-        series: {
+        sources: {
             get () {
-                return series;
+                return sources;
             }
         }
     });
 
+    // transforms function
+    this.transforms = assign({}, transformStore);
     this.dataCount = 0;
     this.model = model;
 }
@@ -37,31 +43,46 @@ export default function DataStore(model) {
 
 DataStore.prototype = {
     size () {
-        return this.series.size();
+        return this.sources.size();
     },
 
     // Add a new serie from a data source
-    add (config) {
-        return dataSources.create(config, this);
+    addSources (config) {
+        if (isArray(config)) {
+            var self = this;
+            config.forEach(cfg => dataSources.create(cfg, self));
+        } else {
+            dataSources.create(config, this);
+        }
     },
 
-    // set, get or remove data by datasource name
-    serie (name, serie) {
-        if (arguments.length === 1) return this.series.get(name);
-        if (serie === null) {
-            var p = this.series.get(name);
-            this.series.remove(name);
+    addTransforms (transforms) {
+        assign(this.transforms, transforms);
+    },
+
+    // set, get or remove a data source
+    source (name, source) {
+        if (arguments.length === 1) return this.sources.get(name);
+        if (source === null) {
+            var p = this.sources.get(name);
+            this.sources.remove(name);
             return p;
         }
-        this.series.set(name, serie);
+        this.sources.set(name, source);
         return this;
+    },
+
+    getData (source) {
+        var ds = this.sources.get(source);
+        if (!ds) throw new Error(`Data source ${source} not available`);
+        return ds.getData();
     },
 
     dataName (name) {
         this.dataCount++;
         if (name) return '' + name;
-        var def = this.serie('default');
+        var def = this.source('default');
         if (!def) return 'default';
-        return `serie${this.dataCount}`;
+        return `source${this.dataCount}`;
     }
 };

@@ -1,6 +1,8 @@
 import assign from 'object-assign';
+
 import createVisual, {visuals} from './base';
 import Visual from './visual';
+import {applyTransforms} from '../transforms/index';
 
 //
 //  crateChart
@@ -25,18 +27,14 @@ export const vizPrototype = {
 const chartPrototype = assign({}, vizPrototype, {
 
     //  override draw method
-    //  invoke doDraw only if a series is available for the chart
     draw () {
         visuals.events.call('before-draw', undefined, this);
-        this.applyTransforms();
-        if (this.series) {
-            this.doDraw();
+        var self = this;
+
+        this.getData().then((series) => {
+            series = applyTransforms(series, self.transforms);
+            this.doDraw(series);
             visuals.events.call('after-draw', undefined, this);
-        }
-    },
-
-    // Apply data transforms to chart
-    applyTransforms () {
-
+        });
     }
 });

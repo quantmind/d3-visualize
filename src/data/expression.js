@@ -1,28 +1,22 @@
-import {isString, isObject} from 'd3-let';
+import {isObject} from 'd3-let';
 import {viewExpression} from 'd3-view';
-
-import isUrl from '../utils/isurl';
+import {resolvedPromise} from 'd3-view';
 
 
 export default {
 
-    init (config) {
-        var opts;
-        if (isUrl(config)) return;
-        else if (isString(config)) return {expression: config};
-        else if (isObject(config) && config.type === 'expression')
-            return config;
-            opts = config;
-        if (opts) {
-            this.name = opts.name || this.dataName();
-            this.expression = viewExpression(opts.expression);
-            return this;
-        }
+    initialise (config) {
+        this.expression = viewExpression(config.expression);
     },
 
-    load () {
-        if (!this.expression) this.expression = viewExpression(this.config.expression);
-        var model = this.store.model;
-        return this.expression.eval(model);
+    getConfig (config) {
+        if (isObject(config) && config.expression)
+            return config;
+    },
+
+    getData () {
+        var self = this,
+            model = this.store.model;
+        return resolvedPromise(this.expression.eval(model)).then((data) => self.asFrame(data));
     }
 };

@@ -12,13 +12,13 @@ import isUrl from '../utils/isurl';
 //  handle Json and csv data
 export default {
 
-    init (config) {
+    getConfig (config) {
         if (isUrl(config)) return {url: config};
         else if (isObject(config) && config.url)
             return config;
     },
 
-    load () {
+    getData () {
         var fetch = viewProviders.fetch;
         if (!fetch) {
             warn('fetch provider not available, cannot submit');

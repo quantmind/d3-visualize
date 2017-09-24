@@ -1,10 +1,21 @@
 // Required for async/await syntax in tests
-import 'regenerator-runtime/runtime';
-import {fluidPaper} from '../index';
+import 'es6-promise';
+import 'crossfilter';
+import {viewDebounce} from 'd3-view';
 
 
-export function removePaper (paper) {
-    expect(fluidPaper.live.indexOf(paper)).toBeGreaterThan(-1);
-    paper.destroy();
-    expect(fluidPaper.live.indexOf(paper)).toBe(-1);
+export function trigger (target, event, process) {
+    var e = document.createEvent('HTMLEvents');
+    e.initEvent(event, true, true);
+    if (process) process(e);
+    target.dispatchEvent(e);
 }
+
+
+export function testAsync (runAsync) {
+    return (done) => {
+        runAsync().then(done, done.fail);
+    };
+}
+
+export const nextTick = viewDebounce();

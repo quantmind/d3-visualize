@@ -1,4 +1,4 @@
-import './utils';
+import {testAsync} from './utils';
 import {DataStore, randomPath} from '../index';
 
 
@@ -7,17 +7,16 @@ describe('dataStore', () => {
     it('test registration', () => {
         var store = new DataStore();
         expect(store.size()).toBe(0);
-        expect(store.serie('foo')).toBe(undefined);
-        expect(store.serie('foo', {})).toBe(store);
+        expect(store.source('foo')).toBe(undefined);
+        expect(store.source('foo', {})).toBe(store);
         expect(store.size()).toBe(1);
-        var foo = store.serie('foo');
+        var foo = store.source('foo');
         expect(foo).toBeTruthy(store);
-        expect(store.serie('foo', null)).toBe(foo);
-        expect(store.serie('foo')).toBe(undefined);
-        expect(store.size()).toBe(0);
+        expect(store.source('foo', null)).toBe(foo);
+        expect(store.source('foo')).toBe(undefined);
     });
 
-    it('test expression provider', () => {
+    it('test expression provider', testAsync(async () => {
         var store = new DataStore({
             randomPath: randomPath
         });
@@ -25,23 +24,31 @@ describe('dataStore', () => {
         expect(store.size()).toBe(0);
 
         // add provider to store
-        var serie = store.add('randomPath(300)');
-        expect(serie.name).toBe('default');
-        expect(serie.type).toBe('expression');
-        expect(store.serie('default')).toBe(serie);
+        store.addSources({
+            type: 'expression',
+            expression: 'randomPath(300)'
+        });
+        var source = store.source('default');
+        expect(source.name).toBe('default');
+        expect(source.type).toBe('expression');
         //
         // get the provider data
-        expect(serie.cf).toBeTruthy();
-        expect(serie.size()).toBe(300);
-    });
+        var cf = await source.getData();
+        expect(cf).toBeTruthy();
+        expect(cf.size()).toBe(300);
+    }));
 
-    it('test array provider', () => {
-        var store = new DataStore(),
-            data = randomPath(20),
-            serie = store.add(data);
-        expect(serie).toBeTruthy();
+    it('test array provider', testAsync(async () => {
+        var store = new DataStore();
+        store.addSources({
+            name: 'random',
+            data: randomPath(20)
+        });
         expect(store.size()).toBe(1);
-        expect(serie.size()).toBe(20);
-        expect(serie.name).toBeTruthy();
-    });
+        expect(store.source('random').type).toBe('array');
+        expect(store.source('random').name).toBe('random');
+        var cf = await store.getData('random');
+        expect(cf).toBeTruthy();
+        expect(cf.size()).toBe(20);
+    }));
 });

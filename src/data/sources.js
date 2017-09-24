@@ -1,53 +1,39 @@
 import assign from 'object-assign';
 import {map} from 'd3-collection';
 import {dispatch} from 'd3-dispatch';
-import {isPromise, pop} from 'd3-let';
+import {pop} from 'd3-let';
 import crossfilter from 'crossfilter';
 
 
 const dataEvents = dispatch('init', 'data');
 
 
+//
+//  DataSource prototype
+//  ======================
 const dataSourcePrototype = {
 
-    init () {
+    // get the config object-assign// This method is used by the prototype
+    // to check if the config object is a valid one
+    getConfig () {
 
     },
 
-    size () {
-        return this.cf.size();
+    // initialise the data source with a config object
+    initialise (config) {
+        assign(this, config);
     },
 
-    load () {
+    getData () {},
 
-    },
-
-    data (cfg, data) {
-        if (arguments.length === 2)
-            return this.add(data);
-        else {
-            var self = this;
-            data = this.load();
-            if (isPromise(data))
-                return data.then((d) => {
-                    self.data(cfg, d);
-                });
-            return this.data(cfg, data);
-        }
-    },
-
-    // add data to the serie
-    add (data) {
-        if (!data) return this;
-        var size = this.size();
+    //
+    // given a data object returns a Cross filter object
+    asFrame (data) {
         data = data.map(entry => {
-            if (entry && entry.constructor === Object) entry._id = ++size;
-            else entry = {_id: ++size, data: entry};
+            if (entry.constructor !== Object) entry = {data: entry};
             return entry;
         });
-        this.cf.add(data);
-        dataEvents.call('data', this, data);
-        return this;
+        return crossfilter(data);
     }
 };
 
@@ -58,6 +44,7 @@ export default assign(map(), {
 
     add (type, source) {
 
+        // DataSource constructor
         function DataSource (config, store) {
             initDataSource(this, type, config, store);
         }
@@ -68,12 +55,12 @@ export default assign(map(), {
         return DataSource;
     },
 
-    // Create a DataSource for a dataStore
+    // Create a new DataSource
     create (config, store) {
         var sources = this.values(),
             cfg;
         for (var i=0; i<sources.length; ++i) {
-            cfg = sources[i].prototype.init(config);
+            cfg = sources[i].prototype.getConfig(config);
             if (cfg) return new sources[i](cfg, store);
         }
     }
@@ -115,8 +102,7 @@ function initDataSource(dataSource, type, config, store) {
         }
     });
 
-    store.series.set(name, dataSource);
-    dataEvents.call('init', dataSource);
-    // load data
-    dataSource.data();
+    dataSource.initialise(config);
+    store.sources.set(name, dataSource);
+    dataEvents.call('init', undefined, dataSource);
 }

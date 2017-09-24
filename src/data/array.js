@@ -1,14 +1,23 @@
-import {isArray, isObject, pop} from 'd3-let';
+import {isArray, isObject} from 'd3-let';
+import {resolvedPromise} from 'd3-view';
 
-
+//
+//  Array DataSource
+//  ====================
+//
+//  Data is given in an array, pkain & simple
 export default {
 
-    init (config) {
+    initialise (config) {
+        this._data = config.data;
+    },
+
+    getConfig (config) {
         if (isArray(config)) return {data: config};
         else if (isObject(config) && isArray(config.data)) return config;
     },
 
-    load () {
-        return pop(this.config, 'data');
+    getData () {
+        return resolvedPromise(this.asFrame(this._data));
     }
 };
