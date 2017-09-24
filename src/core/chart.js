@@ -3,6 +3,7 @@ import {pop, isFunction} from 'd3-let';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
+import papers from './paper';
 import {applyTransforms} from '../transforms/index';
 
 //
@@ -23,13 +24,22 @@ export const vizPrototype = {
         var visual = pop(options, 'visual');
         if (!visual) visual = new Visual(element, options);
         // get the parent model for this viz type
-        var parent = visual.getVisualModel(this.type);
+        var parent = visual.getVisualModel(this.visualType);
         // create the child model
-        this.model = parent.$child(pop(options, this.type));
+        this.model = parent.$child(pop(options, this.visualType));
         this.visual = visual;
     },
 
+    //
+    // paper object for this visualisation
     paper () {
+        var type = this.model.render || this.visual.model.render,
+            paper = this._paper;
+        if (paper && paper.type === type) return paper;
+        var PaperType = papers[type];
+        paper = new PaperType(this);
+        this._paper = paper;
+        return paper;
     },
 
     translate (x, y) {

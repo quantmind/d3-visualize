@@ -8,9 +8,19 @@ import globalOptions from './options';
 import {getSize, boundingBox} from '../utils/size';
 
 
+//
+//  Gloval visuals object
+//  ==========================
+//
+//  Container of
+//  * live visuals
+//  * visual types
+//  * paper types
+//  * visual events
 export const visuals = {
     live: [],
     types: {},
+    papers: {},
     events: dispatch(
         'before-init',
         'after-init',

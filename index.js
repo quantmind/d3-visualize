@@ -25,3 +25,4 @@ export {default as visualComponents} from './src/components/index';
 export {default as BarChart} from './src/charts/bar';
 export {default as LineChart} from './src/charts/line';
 export {default as PieChart} from './src/charts/pie';
+export {default as Treemap} from './src/charts/treemap';

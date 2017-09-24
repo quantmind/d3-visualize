@@ -39,9 +39,9 @@ export default createVisual('visual', {
         if (!this.model) this.model = viewModel();
         //
         // set global options  without rewriting
-        this.model.$update(globalOptions[this.type], false);
+        this.model.$update(globalOptions[this.visualType], false);
         // update model from options
-        this.model.$update(pop(options, this.type));
+        this.model.$update(pop(options, this.visualType));
 
         Object.defineProperties(this, {
             element : {
@@ -77,7 +77,7 @@ export default createVisual('visual', {
 
     // Add a new visual to this group
     addVisual (options) {
-        options.group = this;
+        options.visual = this;
         var VisualClass = visuals.types[options.type];
         if (!VisualClass)
             warn(`Cannot add visual ${options.type}`);
