@@ -1,5 +1,6 @@
 import {pop} from 'd3-let';
 import {viewModel} from 'd3-view';
+import {select} from 'd3-selection';
 
 import createVisual, {RootElement, visuals} from './base';
 import globalOptions from './options';
@@ -47,6 +48,11 @@ export default createVisual('visual', {
             element : {
                 get () {
                     return element;
+                }
+            },
+            sel: {
+                get () {
+                    return select(element);
                 }
             },
             root : {
