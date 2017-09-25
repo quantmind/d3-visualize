@@ -1,7 +1,7 @@
 import assign from 'object-assign';
 import {isString, isObject} from 'd3-let';
 
-import DataStore from '../data/store';
+import VisualContainer from '../core/container';
 
 //
 //  vizComponent base prototype
@@ -20,24 +20,21 @@ export const vizComponent = {
         var self = this,
             inner = this.select(el).html();
         //
-        // make sure data store exists
-        this.dataStore();
-        //
         // build
         return this.getSchema(props.schema, schema => {
             if (!isObject(schema)) schema = {};
-            return self.build(schema, inner);
+            return self.build(schema, inner, attrs);
         });
     },
 
     // get the schema from the input schema property
     getSchema (input, build) {
-        var dashboard = this.model.dashboard;
+        var parent = this.model.visualParent;
 
         // allow to specify the schema as an entry of
         // visuals object in the dashboard schema
-        if (dashboard && dashboard !== this.model && isString(input)) {
-            var schema = dashboard.schema.visuals[input];
+        if (parent && parent !== this.model && isString(input)) {
+            var schema = parent.options.visuals[input];
             if (schema) input = schema;
         }
 
@@ -45,18 +42,6 @@ export const vizComponent = {
             return this.json(input).then(build);
         }
         else return build(input);
-    },
-
-    //  Get the datastore associated with this component
-    //  If no datastore available, create one
-    dataStore () {
-        var store = this.model.dataStore;
-
-        if (!store) {
-            store = new DataStore(this.model);
-            this.model.dataStore = store;
-        }
-        return store;
     },
     //
     // build the visual component has the schema available
@@ -78,18 +63,12 @@ export const vizComponent = {
 //      2) a url
 export default assign({}, vizComponent, {
 
-    build (schema, inner) {
+    build (schema, inner, attrs) {
         var model = this.model;
-        // Set itself as the visualGroup
-        model.dashboard = model;
-        model.schema = schema;
+        var sel = this.createElement('div');
+        if (attrs.class) sel.attr('class', attrs.class);
         if (!schema.visuals) schema.visuals = {};
-        // collection of visuals
-        model.visuals = [];
-        // model.visuals = schema.visuals;
-        // self.model.$set('dashboard', schema);
-        var sel = this.createElement('div')
-                        .classed('dashboard', true);
+        model.visualParent = new VisualContainer(sel.node(), schema, model);
         return this.mountInner(sel, inner);
     }
 });

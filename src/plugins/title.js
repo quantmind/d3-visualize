@@ -2,11 +2,16 @@
 import {isString} from 'd3-let';
 
 import {visuals} from '../core/base';
+import globalOptions from '../core/options';
 
 
-visuals.events.on('after-init.title', (visual, options) => {
-    var title = options.title;
-    if (!title) return;
-    if (isString(title)) title = {text: title};
-    visual.title = title;
+globalOptions.title = {
+    text: null,
+    fontSize: '10px'
+};
+
+
+visuals.events.on('after-init.title', viz => {
+    var title = viz.options.title;
+    if (isString(title)) viz.options.title = {text: title};
 });

@@ -2,7 +2,7 @@ import {view} from 'd3-view';
 import {visualComponents} from '../index';
 
 
-const dashboard =  `<dashboard>
+const dashboard =  `<dashboard class="dashboard container-fluid">
 <div class="row">
 <div class="col">
 <visual></visual>
@@ -20,11 +20,10 @@ describe('dashboard', () => {
 
     it('test dashboard empty datastore', () => {
         var vm = view().use(visualComponents),
-            el = vm.viewElement('<div><dashboard></dashboard></div>');
+            el = vm.viewElement('<div><dashboard class="dashboard"></dashboard></div>');
         vm.mount(el);
         var d = vm.sel.select('.dashboard').view();
         expect(d).toBeTruthy();
-        expect(d.model.visuals).toBeTruthy();
         expect(d.model.dataStore).toBeTruthy();
         expect(d.model.dataStore.size()).toBe(0);
     });
@@ -35,9 +34,6 @@ describe('dashboard', () => {
         vm.mount(el);
         var d = vm.sel.select('.dashboard').view();
         expect(d).toBeTruthy();
-        var board = d.model;
-        expect(board.visuals).toBeTruthy();
-        expect(board.visuals.length).toBe(1);
         var viz = vm.sel.select('.d3-visual');
         expect(viz.size()).toBe(1);
     });

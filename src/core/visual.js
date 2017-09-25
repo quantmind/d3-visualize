@@ -1,10 +1,12 @@
+import assign from 'object-assign';
 import {pop} from 'd3-let';
-import {viewModel} from 'd3-view';
 import {select} from 'd3-selection';
+import {viewDebug} from 'd3-view';
 
-import createVisual, {RootElement, visuals} from './base';
-import globalOptions from './options';
+import createVisual, {visuals} from './base';
+import {containerPrototype} from './container';
 import warn from '../utils/warn';
+import {getSize, boundingBox} from '../utils/size';
 
 //
 //  Visual
@@ -20,29 +22,24 @@ import warn from '../utils/warn';
 //
 //  A visual register itself with the visuals.live array
 //
-export default createVisual('visual', {
+export default createVisual('visual', assign({}, containerPrototype, {
 
     options: {
-        render: 'svg'
+        render: 'svg',
+        // width set by the parent element
+        width: null,
+        // height set as percentage of width
+        height: '70%'
     },
 
-    initialise (element, options) {
+    initialise (element, model) {
         if (!element) throw new Error('HTMLElement required by visual group');
-        var root = new RootElement(element, options);
         this.select(element).classed('d3-visual', true);
+        containerPrototype.initialise.call(this, element, model);
         // list of layers which define the visual
-        this.visuals = [];
-        this.options = options;
-        this.model = pop(options, 'model');
+        this.layers = [];
         this.drawCount = 0;
         visuals.live.push(this);
-
-        if (!this.model) this.model = viewModel();
-        //
-        // set global options  without rewriting
-        this.model.$update(globalOptions[this.visualType], false);
-        // update model from options
-        this.model.$update(pop(options, this.visualType));
 
         Object.defineProperties(this, {
             element : {
@@ -55,9 +52,9 @@ export default createVisual('visual', {
                     return select(element);
                 }
             },
-            root : {
+            size: {
                 get () {
-                    return root;
+                    return [this.width, this.height];
                 }
             }
         });
@@ -67,13 +64,13 @@ export default createVisual('visual', {
     draw() {
         if (!this.drawCount) {
             this.drawCount = 1;
-            this.root.fit();
+            this.fit();
         } else {
             this.drawCount++;
             this.clear();
         }
         visuals.events.call('before-draw', undefined, this);
-        this.visuals.forEach(visual => {
+        this.layers.forEach(visual => {
             visual.draw();
         });
         visuals.events.call('after-draw', undefined, this);
@@ -83,31 +80,33 @@ export default createVisual('visual', {
 
     // Add a new visual to this group
     addVisual (options) {
-        options.visual = this;
-        var VisualClass = visuals.types[options.type];
+        var type = pop(options, 'type');
+        var VisualClass = visuals.types[type];
         if (!VisualClass)
             warn(`Cannot add visual ${options.type}`);
         else {
-            var viz = new VisualClass(this.element, options);
-            this.visuals.push(viz);
-            return viz;
+            this.model.visualParent = this;
+            return new VisualClass(this.element, this.model);
         }
+    },
+    // Fit the root element to the size of the parent element
+    fit () {
+        var size = getSize(this.element.parentNode, this.getModel('visual'));
+        this.width = size.width;
+        this.height = size.height;
+        this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
     },
 
-    getVisualModel (type) {
-        var model = this.model[type];
-        if (!model) {
-            model = this.model.$new(globalOptions[type]);
-            model.$update(pop(this.options, type));
-            this.model[type] = model;
-        }
-        return model;
-    },
-    //
-    // Resize the visual group if it needs resizing
-    //
     resize (size) {
-        this.root.resize(this, size);
+        if (!size) size = boundingBox(this);
+        var currentSize = this.size;
+
+        if (currentSize[0] !== size[0] || currentSize[1] !== size[1]) {
+            viewDebug(`Resizing visual "${this.model.uid}"`);
+            this.width = size[0];
+            this.height = size[1];
+            this.draw();
+        }
     },
 
     destroy () {
@@ -117,4 +116,4 @@ export default createVisual('visual', {
             this.visuals.forEach(visual => visual.destroy());
         }
     }
-});
+}));

@@ -1,5 +1,5 @@
 import assign from 'object-assign';
-import {pop, isFunction} from 'd3-let';
+import {isFunction} from 'd3-let';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
@@ -20,23 +20,24 @@ export default function (type, proto) {
 //  =================
 export const vizPrototype = {
 
-    initialise (element, options) {
-        var visual = pop(options, 'visual');
-        if (!visual) visual = new Visual(element, options);
-        // get the parent model for this viz type
-        var parent = visual.getVisualModel(this.visualType);
-        // create the child model
-        this.model = parent.$child(pop(options, this.visualType));
-        this.visual = visual;
+    initialise (element, model) {
+        var visual = model ? model.visualParent : null;
+        if (!visual || visual.visuatlType !== 'visual') {
+            visual = new Visual(element, this.options, model);
+            this.options = {};
+        }
+        this.visualParent = visual;
+        this.model = visual.model.$child();
+        visual.layers.push(this);
     },
 
     //
     // paper object for this visualisation
     paper () {
-        var type = this.model.render || this.visual.model.render,
+        var visual = this.getModel('visual'),
             paper = this._paper;
-        if (paper && paper.type === type) return paper;
-        var PaperType = papers[type];
+        if (paper && paper.type === visual.render) return paper;
+        var PaperType = papers[visual.render];
         paper = new PaperType(this);
         this._paper = paper;
         return paper;
@@ -61,10 +62,12 @@ export const chartPrototype = {
         visuals.events.call('before-draw', undefined, this);
         var self = this;
 
-        this.getData().then((series) => {
-            series = applyTransforms(series, self.transforms);
-            this.doDraw(series);
-            visuals.events.call('after-draw', undefined, this);
+        this.getData().then(frame => {
+            if (frame) {
+                frame = applyTransforms(frame, self.transforms);
+                this.doDraw(frame);
+                visuals.events.call('after-draw', undefined, this);
+            }
         });
     }
 };

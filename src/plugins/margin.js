@@ -30,10 +30,10 @@ globalOptions.padding = {
 //  Bounding box for a viz
 //  ==========================
 vizPrototype.boundingBox = function () {
-    var width = this.visual.root.width,
-        height = this.visual.root.height,
-        margin = calculate(this.margin, width, height),
-        padding = calculate(this.padding, width, height),
+    var width = this.visualParent.width,
+        height = this.visualParent.height,
+        margin = calculate(this.getModel('margin'), width, height),
+        padding = calculate(this.getModel('padding'), width, height),
         total = KEYS.reduce((o, key) => {
             o[key] = margin[key] + padding[key];
             return o;
@@ -50,38 +50,24 @@ vizPrototype.boundingBox = function () {
 };
 
 
-visuals.events.on('after-init.margin', (viz, options) => {
-    viz.margin = margins('margin', viz, options);
-    viz.padding = margins('padding', viz, options);
+visuals.events.on('after-init.margin', viz => {
+    viz.margin = margins('margin', viz);
+    viz.padding = margins('padding', viz);
 });
 
 
-function margins (name, viz, options) {
-    var value = options[name],
-        model;
-
-    if (viz.visual) {
-        model = viz.visual[name].$child();
-    }
-    else
-        model = viz.model.$child(globalOptions[name]);
+function margins (name, viz) {
+    var value = viz.options[name];
 
     if (value !== undefined && !isObject(value)) {
         var v = value || 0;
-        value = {
+        viz.options[name] = {
             left: v,
             right: v,
             top: v,
             bottom: v
         };
     }
-
-    if (value) {
-        KEYS.forEach(key => {
-            if (key in value) model.$set(key, value[key]);
-        });
-    }
-    return model;
 }
 
 

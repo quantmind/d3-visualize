@@ -5,8 +5,9 @@ import {select} from 'd3-selection';
 import {viewBase} from 'd3-view';
 
 import globalOptions from './options';
-import {getSize, boundingBox} from '../utils/size';
 
+
+const CONTAINERS = ['visual', 'container'];
 
 //
 //  Gloval visuals object
@@ -52,63 +53,24 @@ const visualPrototype = assign({}, {
     // destroy the visual
     destroy () {
 
+    },
+
+    // get a reactive model for type
+    getModel (type) {
+        var model = this.model[type];
+        if (!model && type in globalOptions) {
+            var options = pop(this.options, type);
+            if (this.visualParent)
+                model = this.visualParent.getModel(type).$child(options);
+            else {
+                model = this.model.$new(globalOptions[type]);
+                model.$update(options);
+            }
+            this.model[type] = model;
+        }
+        return model;
     }
 }, viewBase);
-
-
-//
-//  Root element
-//  ================
-//
-//  Controls the size of a a visual or visuals within a group
-//  It does not control margins
-export function RootElement (element, options) {
-    this.options = assign({}, globalOptions.size, options.size);
-
-    Object.defineProperties(this, {
-        element: {
-            get () {
-                return element;
-            }
-        },
-        sel: {
-            get () {
-                return select(element);
-            }
-        },
-        size: {
-            get () {
-                return [this.width, this.height];
-            }
-        }
-    });
-}
-
-
-RootElement.prototype = {
-    select (el) {
-        return select(el);
-    },
-
-    // Fit the root element to the size of the parent element
-    fit () {
-        var size = getSize(this.element.parentNode, this.options);
-        this.width = size.width;
-        this.height = size.height;
-        this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
-    },
-
-    resize (visual, size) {
-        if (!size) size = boundingBox(this);
-        var currentSize = this.size;
-
-        if (currentSize[0] !== size[0] || currentSize[1] !== size[1]) {
-            this.width = size[0];
-            this.height = size[1];
-            visual.draw();
-        }
-    }
-};
 
 //
 //  Create a new Visual Constructor
@@ -117,18 +79,23 @@ export default function (type, proto) {
     if (opts)
         globalOptions[type] = opts;
 
-    function Visual(element, options) {
+    function Visual(element, options, model) {
         Object.defineProperties(this, {
             visualType : {
                 get () {
                     return type;
                 }
             },
+            isViz : {
+                get () {
+                    return CONTAINERS.indexOf(type) === -1;
+                }
+            }
         });
-        options = options || {};
-        visuals.events.call('before-init', undefined, this, options);
-        this.initialise(element, options);
-        visuals.events.call('after-init', undefined, this, options);
+        this.options = options || {};
+        visuals.events.call('before-init', undefined, this);
+        this.initialise(element, model);
+        visuals.events.call('after-init', undefined, this);
     }
 
     Visual.prototype = assign({}, visualPrototype, proto);

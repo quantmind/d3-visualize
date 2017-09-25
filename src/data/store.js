@@ -1,10 +1,12 @@
 import assign from 'object-assign';
 
 import {map} from 'd3-collection';
-import {isArray} from 'd3-let';
+import {isArray, isString} from 'd3-let';
+import {resolvedPromise} from 'd3-view';
 
 import array from './array';
 import remote from './remote';
+import composite from './composite';
 import expression from './expression';
 import dataSources from './sources';
 import transformStore from '../transforms/index';
@@ -12,6 +14,7 @@ import transformStore from '../transforms/index';
 
 dataSources.add('array', array);
 dataSources.add('remote', remote);
+dataSources.add('composite', composite);
 dataSources.add('expression', expression);
 
 //
@@ -48,11 +51,17 @@ DataStore.prototype = {
 
     // Add a new serie from a data source
     addSources (config) {
+        //
+        // data is a string, it must be already registered with store
+        if (isString(config)) config = {source: config};
+
         if (isArray(config)) {
             var self = this;
-            config.forEach(cfg => dataSources.create(cfg, self));
-        } else {
-            dataSources.create(config, this);
+            return config.map(cfg => {
+                return dataSources.create(cfg, self);
+            });
+        } else if (config) {
+            return dataSources.create(config, this);
         }
     },
 
@@ -72,10 +81,21 @@ DataStore.prototype = {
         return this;
     },
 
+    clearCache () {
+        this.sources.each(ds => {
+            delete ds.cachedFrame;
+        });
+    },
+
+    // get data from a source
     getData (source) {
         var ds = this.sources.get(source);
         if (!ds) throw new Error(`Data source ${source} not available`);
-        return ds.getData();
+        if (ds.cachedFrame) return resolvedPromise(ds.cachedFrame);
+        return ds.getData().then(frame => {
+            ds.cachedFrame = frame;
+            return frame;
+        });
     },
 
     dataName (name) {

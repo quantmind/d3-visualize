@@ -9,12 +9,13 @@ describe('piechart', () => {
         var vm = view().use(visualComponents),
             el = vm.createElement('div').node();
         var pie = new PieChart(el);
-        expect(pie.visual).toBeTruthy();
+        expect(pie.visualParent).toBeTruthy();
         expect(pie.visualType).toBe('piechart');
         expect(pie.model).toBeTruthy();
-        expect(pie.visual).toBeTruthy();
-        expect(pie.model.innerRadius).toBe(0);
-        expect(pie.visual.model.render).toBe('svg');
+        var model = pie.getModel('piechart');
+        expect(model.innerRadius).toBe(0);
+        model = pie.getModel('visual');
+        expect(model.render).toBe('svg');
     });
 
     it ('Pie Chart Overrride', () => {
@@ -25,8 +26,9 @@ describe('piechart', () => {
                 innerRadius: 0.9
             }
         });
-        expect(pie.model.innerRadius).toBe(0.9);
-        expect(pie.model.cornerRadius).toBe(0);
+        var model = pie.getModel('piechart');
+        expect(model.innerRadius).toBe(0.9);
+        expect(model.cornerRadius).toBe(0);
     });
 
 });
