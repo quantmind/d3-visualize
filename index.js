@@ -13,6 +13,7 @@ export {default as dataLocale} from './src/data/locale';
 //  Core API
 export {default as Visual} from './src/core/visual';
 export {default as crateChart} from './src/core/chart';
+export {default as cratePaper, Svg} from './src/core/paper';
 //
 //  Components
 export {default as visualComponents} from './src/components/index';

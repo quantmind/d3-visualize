@@ -3,7 +3,6 @@ import {isFunction} from 'd3-let';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
-import papers from './paper';
 import {applyTransforms} from '../transforms/index';
 
 //
@@ -37,7 +36,8 @@ export const vizPrototype = {
         var visual = this.getModel('visual'),
             paper = this._paper;
         if (paper && paper.type === visual.render) return paper;
-        var PaperType = papers[visual.render];
+        var PaperType = visuals.papers[visual.render];
+        if (!PaperType) throw new Error(`Unknown paper ${visual.render}`);
         paper = new PaperType(this);
         this._paper = paper;
         return paper;

@@ -1,4 +1,4 @@
-import * as d3 from 'd3-shape';
+import {pie, arc} from 'd3-shape';
 
 import createChart from '../core/chart';
 
@@ -34,10 +34,10 @@ export default createChart('piechart', {
             box = this.boundingBox(),
             outerRadius = box.innerWidth/2,
             innerRadius = model.innerRadius*outerRadius,
-            pie = d3.pie()
+            angles = pie()
                 .padAngle(rad*model.padAngle)
                 .startAngle(rad*model.startAngle),
-            arcs = d3.arc()
+            arcs = arc()
                 .innerRadius(innerRadius)
                 .outerRadius(outerRadius)
                 .cornerRadius(model.cornerRadius),
@@ -47,7 +47,7 @@ export default createChart('piechart', {
             slices = paper
                 .sel
                 .attr("transforms", this.translate(box.shift.left+outerRadius, box.shift.top+outerRadius))
-                .selectAll('.slice').data(pie(frame));
+                .selectAll('.slice').data(angles(frame));
 
         slices
             .enter()
@@ -57,7 +57,7 @@ export default createChart('piechart', {
                 .attr('stroke-opacity', 0)
                 .attr('fill-opacity', 0)
                 .attr('fill', fill)
-                .attr('stroke-width', this.dim(model.lineWidth))
+                .attr('stroke-width', paper.dim(model.lineWidth))
             .merge(slices)
                 .transition(update)
                 .attr('stroke', model.color)
