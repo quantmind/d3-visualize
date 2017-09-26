@@ -24,8 +24,9 @@ describe('dashboard', () => {
         vm.mount(el);
         var d = vm.sel.select('.dashboard').view();
         expect(d).toBeTruthy();
-        expect(d.model.dataStore).toBeTruthy();
-        expect(d.model.dataStore.size()).toBe(0);
+        var visual = d.model.visual;
+        expect(visual.dataStore).toBeTruthy();
+        expect(visual.dataStore.size()).toBe(0);
     });
 
     it('test dashboard', () => {

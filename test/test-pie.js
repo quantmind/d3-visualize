@@ -4,6 +4,7 @@ import {visualComponents, PieChart, Visual} from '../index';
 
 
 describe('piechart', () => {
+    var vm = view();
 
     it ('Pie Chart Default', () => {
         var vm = view().use(visualComponents),
@@ -19,8 +20,7 @@ describe('piechart', () => {
     });
 
     it ('Pie Chart Overrride', () => {
-        var vm = view().use(visualComponents),
-            el = vm.createElement('div').node();
+        var el = vm.createElement('div').node();
         var pie = new PieChart(el, {
             piechart: {
                 innerRadius: 0.9
@@ -32,8 +32,7 @@ describe('piechart', () => {
     });
 
     it ('Pie Chart in Visual', () => {
-        var vm = view().use(visualComponents),
-            el = vm.createElement('div').node();
+        var el = vm.createElement('div').node();
         var viz = new Visual(el, {
             piechart: {
                 innerRadius: 0.8,

@@ -29,7 +29,7 @@ export const vizComponent = {
 
     // get the schema from the input schema property
     getSchema (input, build) {
-        var parent = this.model.visualParent;
+        var parent = this.model.visual;
 
         // allow to specify the schema as an entry of
         // visuals object in the dashboard schema
@@ -68,7 +68,7 @@ export default assign({}, vizComponent, {
         var sel = this.createElement('div');
         if (attrs.class) sel.attr('class', attrs.class);
         if (!schema.visuals) schema.visuals = {};
-        model.visualParent = new VisualContainer(sel.node(), schema, model);
+        model.visual = new VisualContainer(sel.node(), schema, model.visual);
         return this.mountInner(sel, inner);
     }
 });

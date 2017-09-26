@@ -2,8 +2,7 @@ import assign from 'object-assign';
 import {pop} from 'd3-let';
 
 import {vizComponent} from './dashboard';
-import {visuals} from '../core/base';
-import warn from '../utils/warn';
+import Visual from '../core/visual';
 
 
 //
@@ -14,23 +13,17 @@ import warn from '../utils/warn';
 export default assign({}, vizComponent, {
 
     build (schema) {
-        var model = this.model,
-            sel = this.createElement('div'),
+        var sel = this.createElement('div'),
             type = pop(schema, 'type') || 'visual',
-            Visual = visuals.types[type];
-        // build the visual object
-        if (Visual) {
-            var visual = new Visual(sel.node(), schema, model);
-            model.visualParent = visual.isViz ? visual.visualParent : visual;
-        }
-        else
-            warn(`Unknown visual ${type}`);
+            model = this.model;
+
+        model.visual = new Visual(sel.node(), schema, model.visual);
+        if (type !== 'visual') model.visual.addVisual({type: type});
         return sel;
     },
 
     // once the element is mounted in the dom, draw the visual
     mounted () {
-        if (this.model.visualParent)
-            this.model.visualParent.draw();
+        this.model.visual.draw();
     }
 });

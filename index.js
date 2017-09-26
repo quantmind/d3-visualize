@@ -11,6 +11,7 @@ export {default as dataLocale} from './src/data/locale';
 
 //
 //  Core API
+export {visuals} from './src/core/base';
 export {default as Visual} from './src/core/visual';
 export {default as crateChart} from './src/core/chart';
 export {default as cratePaper, Svg} from './src/core/paper';

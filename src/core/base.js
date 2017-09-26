@@ -2,7 +2,7 @@ import assign from 'object-assign';
 import {pop} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
 import {select} from 'd3-selection';
-import {viewBase} from 'd3-view';
+import {viewBase, viewModel} from 'd3-view';
 
 import globalOptions from './options';
 
@@ -80,22 +80,24 @@ export default function (type, proto) {
     if (opts)
         globalOptions[type] = opts;
 
-    function Visual(element, options, model) {
+    function Visual(element, options, parent, model) {
         Object.defineProperties(this, {
-            visualType : {
+            visualType: {
                 get () {
                     return type;
                 }
             },
-            isViz : {
+            isViz: {
                 get () {
                     return CONTAINERS.indexOf(type) === -1;
                 }
             }
         });
+        this.visualParent = parent;
+        this.model = parent ? parent.model.$new() : (model || viewModel());
         this.options = options || {};
         visuals.events.call('before-init', undefined, this);
-        this.initialise(element, model);
+        this.initialise(element);
         visuals.events.call('after-init', undefined, this);
     }
 

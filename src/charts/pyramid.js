@@ -1,4 +1,4 @@
-import symbol from 'd3-shape';
+import {symbol} from 'd3-shape';
 
 import createChart from '../core/chart';
 import pyramid from '../transforms/pyramid';

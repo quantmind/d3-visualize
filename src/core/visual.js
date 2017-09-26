@@ -1,13 +1,24 @@
-import assign from 'object-assign';
-import {pop} from 'd3-let';
+import {pop, inBrowser} from 'd3-let';
 import {select} from 'd3-selection';
 import {viewDebug} from 'd3-view';
 
 import createVisual, {visuals} from './base';
-import {containerPrototype} from './container';
 import warn from '../utils/warn';
 import {getSize, boundingBox} from '../utils/size';
 
+if (inBrowser) {
+    // DOM observer
+    var observer = new MutationObserver(manager);
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+}
+
+
+function manager () {
+
+}
 //
 //  Visual
 //  =============
@@ -22,7 +33,7 @@ import {getSize, boundingBox} from '../utils/size';
 //
 //  A visual register itself with the visuals.live array
 //
-export default createVisual('visual', assign({}, containerPrototype, {
+export default createVisual('visual', {
 
     options: {
         render: 'svg',
@@ -32,14 +43,10 @@ export default createVisual('visual', assign({}, containerPrototype, {
         height: '70%'
     },
 
-    initialise (element, model) {
+    initialise (element) {
         if (!element) throw new Error('HTMLElement required by visual group');
-        this.select(element).classed('d3-visual', true);
-        containerPrototype.initialise.call(this, element, model);
-        // list of layers which define the visual
-        this.layers = [];
-        this.drawCount = 0;
-        visuals.live.push(this);
+        if (this.visualParent && this.visualParent.visualType !== 'container')
+            throw new Error('Visual parent can be a container only');
 
         Object.defineProperties(this, {
             element : {
@@ -58,6 +65,12 @@ export default createVisual('visual', assign({}, containerPrototype, {
                 }
             }
         });
+
+        this.sel.classed('d3-visual', true);
+        // list of layers which define the visual
+        this.layers = [];
+        this.drawCount = 0;
+        visuals.live.push(this);
     },
 
     // Draw the visual
@@ -84,10 +97,8 @@ export default createVisual('visual', assign({}, containerPrototype, {
         var VisualClass = visuals.types[type];
         if (!VisualClass)
             warn(`Cannot add visual ${options.type}`);
-        else {
-            this.model.visualParent = this;
-            return new VisualClass(this.element, options, this.model);
-        }
+        else
+            return new VisualClass(this.element, options, this);
     },
     // Fit the root element to the size of the parent element
     fit () {
@@ -116,4 +127,4 @@ export default createVisual('visual', assign({}, containerPrototype, {
             this.visuals.forEach(visual => visual.destroy());
         }
     }
-}));
+});

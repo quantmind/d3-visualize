@@ -20,14 +20,15 @@ export default function (type) {
 //  =================
 export const vizPrototype = {
 
-    initialise (element, model) {
-        var visual = model ? model.visualParent : null;
-        if (!visual || visual.visualType !== 'visual') {
-            visual = new Visual(element, this.options, model);
+    initialise (element) {
+        // No visual parent, create the visual
+        var visual = this.visualParent;
+        if (!visual) {
+            this.visualParent = visual = new Visual(element, this.options, null, this.model);
+            this.model = visual.model.$new();
             this.options = {};
-        }
-        this.visualParent = visual;
-        this.model = visual.model.$new();
+        } else if (visual.visualType !== 'visual')
+            throw new Error(`visual parent of ${this.visualType} can only be "visual"`);
         visual.layers.push(this);
     },
 
