@@ -57,6 +57,7 @@ const visualPrototype = assign({}, {
 
     // get a reactive model for type
     getModel (type) {
+        if (!type) type = this.visualType;
         var model = this.model[type];
         if (!model && type in globalOptions) {
             var options = pop(this.options, type);

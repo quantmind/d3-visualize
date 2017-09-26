@@ -9,9 +9,10 @@ import {applyTransforms} from '../transforms/index';
 //  crateChart
 //
 //  A chart is a drawing of series data in two dimensional
-export default function (type, proto) {
-
-    return createVisual(type, assign({}, vizPrototype, chartPrototype, proto));
+export default function (type) {
+    var protos = [{}, vizPrototype, chartPrototype];
+    for (var i=1; i<arguments.length; ++i) protos.push(arguments[i]);
+    return createVisual(type, assign.apply(undefined, protos));
 }
 
 
@@ -21,12 +22,12 @@ export const vizPrototype = {
 
     initialise (element, model) {
         var visual = model ? model.visualParent : null;
-        if (!visual || visual.visuatlType !== 'visual') {
+        if (!visual || visual.visualType !== 'visual') {
             visual = new Visual(element, this.options, model);
             this.options = {};
         }
         this.visualParent = visual;
-        this.model = visual.model.$child();
+        this.model = visual.model.$new();
         visual.layers.push(this);
     },
 

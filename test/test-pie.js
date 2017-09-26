@@ -1,6 +1,6 @@
 import {view} from 'd3-view';
 
-import {visualComponents, PieChart} from '../index';
+import {visualComponents, PieChart, Visual} from '../index';
 
 
 describe('piechart', () => {
@@ -29,6 +29,30 @@ describe('piechart', () => {
         var model = pie.getModel('piechart');
         expect(model.innerRadius).toBe(0.9);
         expect(model.cornerRadius).toBe(0);
+    });
+
+    it ('Pie Chart in Visual', () => {
+        var vm = view().use(visualComponents),
+            el = vm.createElement('div').node();
+        var viz = new Visual(el, {
+            piechart: {
+                innerRadius: 0.8,
+                cornerRadius: 5
+            }
+        });
+        var model = viz.getModel('piechart');
+        expect(model.innerRadius).toBe(0.8);
+        expect(model.cornerRadius).toBe(5);
+        var pie = viz.addVisual({
+            type: 'piechart',
+            piechart: {
+                cornerRadius: 3
+            }
+        });
+        expect(pie.visualParent).toBe(viz);
+        var m2 = pie.getModel();
+        expect(m2.cornerRadius).toBe(3);
+        expect(m2.innerRadius).toBe(0.8);
     });
 
 });

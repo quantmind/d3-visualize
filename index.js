@@ -18,6 +18,9 @@ export {default as cratePaper, Svg} from './src/core/paper';
 //  Components
 export {default as visualComponents} from './src/components/index';
 
+// utilities
+export {colorScales} from './src/plugins/color';
+export {default as pyramid} from './src/transforms/pyramid';
 //
 //  Charts
 //  =========
@@ -26,4 +29,5 @@ export {default as visualComponents} from './src/components/index';
 export {default as BarChart} from './src/charts/bar';
 export {default as LineChart} from './src/charts/line';
 export {default as PieChart} from './src/charts/pie';
+export {default as PyramidChart} from './src/charts/pyramid';
 export {default as Treemap} from './src/charts/treemap';

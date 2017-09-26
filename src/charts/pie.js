@@ -5,11 +5,26 @@ import createChart from '../core/chart';
 const pi = Math.PI;
 const rad = pi/180;
 
+
+export const proportional = {
+    fill (data) {
+        var cscale = this.colorScale().domain([0, data.length-1]);
+
+        function fill (d) {
+            return cscale(d.index);
+        }
+
+        fill.scale = cscale;
+
+        return fill;
+    }
+};
+
 //
 //  Pie Chart
 //  =============
 //
-export default createChart('piechart', {
+export default createChart('piechart', proportional, {
 
     options: {
         // The data values from this field will be encoded as angular spans.

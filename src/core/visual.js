@@ -86,7 +86,7 @@ export default createVisual('visual', assign({}, containerPrototype, {
             warn(`Cannot add visual ${options.type}`);
         else {
             this.model.visualParent = this;
-            return new VisualClass(this.element, this.model);
+            return new VisualClass(this.element, options, this.model);
         }
     },
     // Fit the root element to the size of the parent element
