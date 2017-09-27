@@ -37,7 +37,7 @@ export const vizPrototype = {
     paper () {
         var visual = this.getModel('visual'),
             paper = this._paper;
-        if (paper && paper.type === visual.render) return paper;
+        if (paper && paper.paperType === visual.render) return paper;
         var PaperType = visuals.papers[visual.render];
         if (!PaperType) throw new Error(`Unknown paper ${visual.render}`);
         paper = new PaperType(this);

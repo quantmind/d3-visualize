@@ -1,6 +1,7 @@
 import constant from "../utils/constant";
 import descending from "../utils/descending";
 import identity from "../utils/identity";
+
 //
 //  Pyramid Shape generator
 //  ============================

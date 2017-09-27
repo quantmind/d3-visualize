@@ -12,7 +12,10 @@ export const colorScales = map();
 
 
 globalOptions.color = {
-    scale: 'cool'
+    scale: 'cool',
+    stroke: '#333',
+    strokeOpacity: 1,
+    fillOpacity: 1
 };
 
 colorScales.set('viridis', () =>  scaleSequential(interpolateViridis));

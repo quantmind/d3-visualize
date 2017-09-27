@@ -9,14 +9,19 @@ export default function createPaper (type, proto) {
     function Paper (viz) {
         var element = this.initialise(viz);
         Object.defineProperties(this, {
-            element : {
+            element: {
                 get () {
                     return element;
                 }
             },
-            sel : {
+            sel: {
                 get () {
                     return select(element);
+                }
+            },
+            paperType: {
+                get () {
+                    return type;
                 }
             }
         });
@@ -33,6 +38,19 @@ const paperPrototype = {
 
     initialise () {},
     transition () {},
+    size (box) {
+        this.sel
+            .attr('width', box.width)
+            .attr('height', box.height);
+        return this;
+    },
+
+    group (box, cname) {
+        if (!cname) cname = 'main';
+        var g = this.sel.selectAll(`.${cname}`).data([0]);
+        return g.enter().append('g').classed(cname, true);
+    },
+
     dim (value) {
         return value;
     }

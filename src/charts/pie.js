@@ -50,6 +50,7 @@ export default createChart('piechart', proportional, {
 
     doDraw (frame) {
         var model = this.getModel(),
+            color = this.getModel('color'),
             field = model.field,
             box = this.boundingBox(),
             outerRadius = Math.min(box.innerWidth, box.innerHeight)/2,
@@ -67,11 +68,7 @@ export default createChart('piechart', proportional, {
             //update = paper.transition('update'),
             data = angles(this.proportionalData(frame, field)),
             fill = this.fill(data),
-            slices = paper
-                .sel
-                .attr('width', box.width)
-                .attr('height', box.height)
-                .append('g')
+            slices = paper.size(box).group()
                 .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
                 .selectAll('.slice').data(data);
 
@@ -79,18 +76,18 @@ export default createChart('piechart', proportional, {
             .enter()
                 .append('path')
                 .attr('class', 'slice')
-                .attr('stroke', model.color)
+                .attr('stroke', color.stroke)
                 .attr('stroke-opacity', 0)
                 .attr('fill-opacity', 0)
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
             .merge(slices)
                 //.transition(update)
-                .attr('stroke', model.color)
-                .attr('stroke-opacity', model.colorOpacity)
+                .attr('stroke', color.stroke)
+                .attr('stroke-opacity', color.strokeOpacity)
                 .attr('d', arcs)
                 .attr('fill', fill)
-                .attr('fill-opacity', model.fillOpacity);
+                .attr('fill-opacity', color.fillOpacity);
 
         slices.exit().remove();
     }
