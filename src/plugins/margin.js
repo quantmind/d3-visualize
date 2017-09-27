@@ -45,7 +45,7 @@ vizPrototype.boundingBox = function () {
         padding: margin,
         total: total,
         innerWidth: width - total.left - total.right,
-        innerHeight: width - total.top - total.bottom
+        innerHeight: height - total.top - total.bottom
     };
 };
 

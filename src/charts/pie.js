@@ -1,6 +1,7 @@
 import {pie, arc} from 'd3-shape';
 
 import createChart from '../core/chart';
+import {sizeValue} from '../utils/size';
 
 const pi = Math.PI;
 const rad = pi/180;
@@ -17,6 +18,10 @@ export const proportional = {
         fill.scale = cscale;
 
         return fill;
+    },
+
+    proportionalData (frame, field) {
+        return frame.dimension(d => d[field]).top(Infinity);
     }
 };
 
@@ -29,7 +34,7 @@ export default createChart('piechart', proportional, {
     options: {
         // The data values from this field will be encoded as angular spans.
         // If omitted, all pie slices will have equal spans
-        field: null,
+        field: 'data',
         startAngle: 0,
         endAngle: 360,
         sort: false,
@@ -44,25 +49,31 @@ export default createChart('piechart', proportional, {
     },
 
     doDraw (frame) {
-        var model = this.model,
-            cscale = model.colorScale,
+        var model = this.getModel(),
+            field = model.field,
             box = this.boundingBox(),
-            outerRadius = box.innerWidth/2,
-            innerRadius = model.innerRadius*outerRadius,
+            outerRadius = Math.min(box.innerWidth, box.innerHeight)/2,
+            innerRadius = sizeValue(model.innerRadius, outerRadius),
             angles = pie()
                 .padAngle(rad*model.padAngle)
-                .startAngle(rad*model.startAngle),
+                .startAngle(rad*model.startAngle)
+                .endAngle(rad*model.endAngle)
+                .value(d => d[field]),
             arcs = arc()
                 .innerRadius(innerRadius)
                 .outerRadius(outerRadius)
                 .cornerRadius(model.cornerRadius),
             paper = this.paper(),
-            update = paper.transition('update'),
-            fill = this.scaled(this.accessor(model.field), cscale),
+            //update = paper.transition('update'),
+            data = angles(this.proportionalData(frame, field)),
+            fill = this.fill(data),
             slices = paper
                 .sel
-                .attr("transforms", this.translate(box.shift.left+outerRadius, box.shift.top+outerRadius))
-                .selectAll('.slice').data(angles(frame));
+                .attr('width', box.width)
+                .attr('height', box.height)
+                .append('g')
+                .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
+                .selectAll('.slice').data(data);
 
         slices
             .enter()
@@ -72,9 +83,9 @@ export default createChart('piechart', proportional, {
                 .attr('stroke-opacity', 0)
                 .attr('fill-opacity', 0)
                 .attr('fill', fill)
-                .attr('stroke-width', paper.dim(model.lineWidth))
+                .attr('stroke-width', model.lineWidth)
             .merge(slices)
-                .transition(update)
+                //.transition(update)
                 .attr('stroke', model.color)
                 .attr('stroke-opacity', model.colorOpacity)
                 .attr('d', arcs)

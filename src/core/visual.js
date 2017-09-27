@@ -6,19 +6,6 @@ import createVisual, {visuals} from './base';
 import warn from '../utils/warn';
 import {getSize, boundingBox} from '../utils/size';
 
-if (inBrowser) {
-    // DOM observer
-    var observer = new MutationObserver(manager);
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
-}
-
-
-function manager () {
-
-}
 //
 //  Visual
 //  =============
@@ -71,6 +58,11 @@ export default createVisual('visual', {
         this.layers = [];
         this.drawCount = 0;
         visuals.live.push(this);
+        element.__visual__ = this;
+    },
+
+    toString () {
+        return `visual ${this.model.uid}`;
     },
 
     // Draw the visual
@@ -113,7 +105,7 @@ export default createVisual('visual', {
         var currentSize = this.size;
 
         if (currentSize[0] !== size[0] || currentSize[1] !== size[1]) {
-            viewDebug(`Resizing visual "${this.model.uid}"`);
+            viewDebug(`Resizing "${this.toString()}"`);
             this.width = size[0];
             this.height = size[1];
             this.draw();
@@ -122,9 +114,44 @@ export default createVisual('visual', {
 
     destroy () {
         var idx = visuals.live.indexOf(this);
-        if (idx > -1) {
-            visuals.live.splice(idx, 1);
-            this.visuals.forEach(visual => visual.destroy());
-        }
+        if (idx > -1) visuals.live.splice(idx, 1);
     }
 });
+
+
+if (inBrowser) {
+    // DOM observer
+    // Check for changes in the DOM that leads to visual actions
+    const observer = new MutationObserver(visualManager);
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+}
+
+//
+//  Clears visualisation going out of scope
+function visualManager (records) {
+    records.forEach(record => {
+        var nodes = record.removedNodes;
+        if (!nodes || !nodes.length) return;  // phantomJs hack
+        nodes.forEach(node => {
+            if (node.nodeName !== '#text') {
+                if (!node.__visual__)
+                    select(node).selectAll('.d3-visual').each(destroy);
+                else
+                    destroy.call(node);
+            }
+        });
+    });
+}
+
+
+function destroy () {
+    var viz = this.__visual__;
+    if (viz) {
+        viz.destroy();
+        viewDebug(`Removed "${viz.toString()}" from DOM, ${visuals.live.length} live visuals left`);
+    }
+    else warn('d3-visual without __visual__ object');
+}
