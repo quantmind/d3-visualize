@@ -47,8 +47,8 @@ describe('dataStore', () => {
         expect(store.size()).toBe(1);
         expect(store.source('random').type).toBe('array');
         expect(store.source('random').name).toBe('random');
-        var cf = await store.getData('random');
-        expect(cf).toBeTruthy();
-        expect(cf.size()).toBe(20);
+        var df = await store.getData('random');
+        expect(df).toBeTruthy();
+        expect(df.size()).toBe(20);
     }));
 });

@@ -8,6 +8,7 @@ const rad = pi/180;
 
 
 export const proportional = {
+
     fill (data) {
         var cscale = this.colorScale().domain([0, data.length-1]);
 
@@ -21,7 +22,7 @@ export const proportional = {
     },
 
     proportionalData (frame, field) {
-        return frame.dimension(d => d[field]).top(Infinity);
+        return frame.dimension(field).top(Infinity);
     }
 };
 

@@ -1,4 +1,5 @@
 import assign from 'object-assign';
+import {pop} from 'd3-let';
 
 import {vizComponent} from './dashboard';
 import Visual from '../core/visual';
@@ -15,7 +16,12 @@ export default assign({}, vizComponent, {
         var sel = this.createElement('div'),
             type = schema.type || 'visual',
             model = this.model,
-            options = type === 'visual' ? schema : {};
+            options = {};
+
+        if (type === 'visual')
+            options = schema;
+        else
+            options.visual = pop(schema, 'visual') || {};
 
         model.visual = new Visual(sel.node(), options, model.visual);
         if (type !== 'visual') model.visual.addVisual(schema);

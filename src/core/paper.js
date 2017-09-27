@@ -47,8 +47,12 @@ const paperPrototype = {
 
     group (box, cname) {
         if (!cname) cname = 'main';
-        var g = this.sel.selectAll(`.${cname}`).data([0]);
-        return g.enter().append('g').classed(cname, true);
+        var sel = this.sel;
+        sel
+            .selectAll(`.${cname}`)
+            .data([0]).enter()
+            .append('g').classed(cname, true);
+        return sel.select(`.${cname}`);
     },
 
     dim (value) {

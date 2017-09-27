@@ -3,7 +3,6 @@ import {isFunction} from 'd3-let';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
-import {applyTransforms} from '../transforms/index';
 
 //
 //  crateChart
@@ -62,11 +61,9 @@ export const chartPrototype = {
     //  override draw method
     draw () {
         visuals.events.call('before-draw', undefined, this);
-        var self = this;
 
         this.getData().then(frame => {
             if (frame) {
-                frame = applyTransforms(frame, self.transforms);
                 this.doDraw(frame);
                 visuals.events.call('after-draw', undefined, this);
             }

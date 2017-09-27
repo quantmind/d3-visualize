@@ -1,6 +1,5 @@
 import {isObject} from 'd3-let';
-import {viewExpression} from 'd3-view';
-import {resolvedPromise} from 'd3-view';
+import {viewExpression, resolvedPromise} from 'd3-view';
 
 
 export default {

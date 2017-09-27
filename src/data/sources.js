@@ -1,9 +1,11 @@
 import assign from 'object-assign';
 import {map} from 'd3-collection';
 import {dispatch} from 'd3-dispatch';
-import {pop} from 'd3-let';
-import crossfilter from 'crossfilter';
+import {pop, isArray} from 'd3-let';
 
+import DataFrame from './dataframe';
+import transformStore, {applyTransforms} from '../transforms/index';
+import warn from '../utils/warn';
 
 const dataEvents = dispatch('init', 'data');
 
@@ -15,25 +17,36 @@ const dataSourcePrototype = {
 
     // get the config object-assign// This method is used by the prototype
     // to check if the config object is a valid one
-    getConfig () {
-
-    },
+    getConfig () {},
 
     // initialise the data source with a config object
-    initialise (config) {
-        assign(this, config);
-    },
+    initialise () {},
 
     getData () {},
 
     //
+    addTransforms (transforms) {
+        var self = this;
+        let t;
+        if (!transforms) return;
+        if (!isArray(transforms)) transforms = [transforms];
+        transforms.forEach(transform => {
+            t = transformStore.get(transform.type);
+            if (!t) warn(`Transform "${transform.type}" not known`);
+            else self.transforms.push(t(transform));
+        });
+    },
+    //
     // given a data object returns a Cross filter object
     asFrame (data) {
-        data = data.map(entry => {
-            if (entry.constructor !== Object) entry = {data: entry};
-            return entry;
-        });
-        return crossfilter(data);
+        if (isArray(data)) {
+            data = data.map(entry => {
+                if (entry.constructor !== Object) entry = {data: entry};
+                return entry;
+            });
+            data = new DataFrame(data, null, this.store);
+        }
+        return applyTransforms(data, this.transforms);
     }
 };
 
@@ -70,16 +83,11 @@ export default assign(map(), {
 function initDataSource(dataSource, type, config, store) {
 
     var name = store.dataName(pop(config, 'name')),
-        cf = crossfilter();
+        transforms = [];
 
     // store.natural = cf.dimension(d => d._id);
 
     Object.defineProperties(dataSource, {
-        cf: {
-            get () {
-                return cf;
-            }
-        },
         name: {
             get () {
                 return name;
@@ -95,6 +103,12 @@ function initDataSource(dataSource, type, config, store) {
                 return type;
             }
         },
+        // transforms to apply to data
+        transforms: {
+            get () {
+                return transforms;
+            }
+        },
         config: {
             get () {
                 return config;
@@ -103,6 +117,7 @@ function initDataSource(dataSource, type, config, store) {
     });
 
     dataSource.initialise(config);
+    dataSource.addTransforms(pop(config, 'transforms'));
     store.sources.set(name, dataSource);
     dataEvents.call('init', undefined, dataSource);
 }

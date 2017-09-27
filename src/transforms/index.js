@@ -1,20 +1,25 @@
 // Collection of transforms
-import groupby from './groupby';
+import {map} from 'd3-collection';
+import filter from './filter';
+import timeseries from './timeseries';
+import mapfields from './mapfields';
 
 //
 //  transforms Store
-export default {
-    groupby
-};
+export default map({
+    filter,
+    mapfields,
+    timeseries
+});
 
 
 // Apply data transforms to a series
-export function applyTransforms (series, transforms) {
+export function applyTransforms (frame, transforms) {
     let ts;
-    if (!transforms) return series;
+    if (!transforms) return frame;
     transforms.forEach(transform => {
-        ts = transform(series);
-        series = ts ? ts : series;
+        ts = transform(frame);
+        frame = ts ? ts : frame;
     });
-    return series;
+    return frame;
 }

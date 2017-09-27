@@ -4,7 +4,7 @@ import {viewDebug} from 'd3-view';
 
 import createVisual, {visuals} from './base';
 import warn from '../utils/warn';
-import {getSize, boundingBox} from '../utils/size';
+import {getSize} from '../utils/size';
 
 //
 //  Visual
@@ -27,7 +27,9 @@ export default createVisual('visual', {
         // width set by the parent element
         width: null,
         // height set as percentage of width
-        height: '70%'
+        height: '70%',
+        // heightElement - selector for an element from wich to obtain height
+        heightElement: null
     },
 
     initialise (element) {
@@ -92,22 +94,24 @@ export default createVisual('visual', {
         else
             return new VisualClass(this.element, options, this);
     },
+    //
     // Fit the root element to the size of the parent element
     fit () {
-        var size = getSize(this.element.parentNode, this.getModel('visual'));
+        var size = getSize(this.element.parentNode, this.getModel());
         this.width = size.width;
         this.height = size.height;
         this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
     },
 
     resize (size) {
-        if (!size) size = boundingBox(this);
+        if (!size) size = getSize(this.element.parentNode, this.getModel());
         var currentSize = this.size;
 
-        if (currentSize[0] !== size[0] || currentSize[1] !== size[1]) {
+        if (currentSize[0] !== size.width || currentSize[1] !== size.height) {
             viewDebug(`Resizing "${this.toString()}"`);
-            this.width = size[0];
-            this.height = size[1];
+            this.width = size.width;
+            this.height = size.height;
+            this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
             this.draw();
         }
     },

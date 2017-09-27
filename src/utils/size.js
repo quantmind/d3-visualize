@@ -37,11 +37,7 @@ export function getSize (element, options) {
     }
 
     // Allow to specify height as a percentage of width
-    if (typeof(size.height) === "string" && size.height.indexOf('%') === size.height.length-1) {
-        size.heightPercentage = 0.01*parseFloat(size.height);
-        size.height = round(size.heightPercentage*size.width);
-    }
-
+    size.height = sizeValue(size.height, size.width);
     return size;
 }
 

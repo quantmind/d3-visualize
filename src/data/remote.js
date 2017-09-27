@@ -1,6 +1,6 @@
 import {csvParse} from 'd3-dsv';
 import {isObject} from 'd3-let';
-import {viewProviders} from 'd3-view';
+import {viewProviders, resolvedPromise} from 'd3-view';
 
 import warn from './warn';
 import isUrl from '../utils/isurl';
@@ -18,13 +18,18 @@ export default {
             return config;
     },
 
+    initialise (config) {
+        this.url = config.url;
+    },
+
     getData () {
-        var fetch = viewProviders.fetch;
+        var fetch = viewProviders.fetch,
+            self = this;
         if (!fetch) {
             warn('fetch provider not available, cannot submit');
-            return;
+            return resolvedPromise([]);
         }
-        return fetch(this.url).then(parse);
+        return fetch(this.url).then(parse).then((data) => self.asFrame(data));
     }
 };
 
