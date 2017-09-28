@@ -8,7 +8,7 @@ import globalOptions from '../core/options';
 globalOptions.title = {
     text: null,
     fontSize: '5%',
-    minFintSize: 15
+    minFontSize: 15
 };
 
 
@@ -26,6 +26,15 @@ visuals.events.on('before-draw.title', viz => {
 
 
 function menuTitle(viz, title) {
-    var size = Math.max(viz.dim(title.fontSize, viz.height), title.minFintSize);
-    viz.menu.select('.title').html(title.text).style('font-size', `${size}px`);
+    var height = number(viz.menu.style('height')),
+        size = viz.dim(title.fontSize, viz.height, title.minFontSize, height-4);
+    viz.menu.select('.title')
+        .html(title.text)
+        .style('font-size', `${size}px`)
+        .style('line-height', `${height}px`);
+}
+
+
+function number (px) {
+    return +px.substring(0, px.length-2);
 }

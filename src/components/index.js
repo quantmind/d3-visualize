@@ -4,10 +4,10 @@
 //
 //  d3-view plugin for visualization components
 //
+import tabularPlugins from '../plugins/index';
 import dashboard from './dashboard';
 import visual from './visual';
 import tabular from './tabular';
-import tabularPlugins from '../plugins/index';
 
 
 // Visual components plugin

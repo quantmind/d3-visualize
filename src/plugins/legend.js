@@ -71,7 +71,7 @@ function bottom (bb, box, options) {
 
 function right (bb, box, options) {
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
+        x: box.width - bb.width - options.offsetX,
         y: options.offsetY
     };
 }
@@ -111,7 +111,7 @@ function bottomLeft (bb, box, options) {
 
 function bottomRight (bb, box, options) {
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
+        x: box.width - bb.width - options.offsetX,
         y: box.height - bb.height - options.offsetY
     };
 }

@@ -38,7 +38,7 @@ export const visuals = {
 //
 //  Base prototype object for visuals
 //
-const visualPrototype = assign({}, {
+export const visualPrototype = assign({}, {
 
     // initialise the visual with options
     initialise () {
@@ -74,8 +74,13 @@ const visualPrototype = assign({}, {
         return model;
     },
 
-    dim (size, refSize) {
-        return sizeValue(size, refSize);
+    dim (size, refSize, minSize, maxSize) {
+        size = Math.max(sizeValue(size, refSize), minSize || 0);
+        if (maxSize) {
+            maxSize = Math.max(maxSize, minSize || 0);
+            size = Math.min(size, maxSize);
+        }
+        return size;
     }
 }, viewBase);
 

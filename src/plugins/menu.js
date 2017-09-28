@@ -3,12 +3,13 @@
 
 import globalOptions from '../core/options';
 import {visuals} from '../core/base';
-import {sizeValue} from '../utils/size';
 
 
 globalOptions.menu = {
     display: false,
-    height: 30
+    height: '8%',
+    maxHeight: 50,
+    minHeight: 20
 };
 
 
@@ -31,6 +32,6 @@ visuals.events.on('before-draw.menu', viz => {
 
 function refreshMenu(viz) {
     var menu = viz.getModel('menu'),
-        height = sizeValue(menu.height, viz.height);
+        height = viz.dim(menu.height, viz.height, viz.minHeight, viz.maxHeight);
     viz.menu.style('height', `${height}px`);
 }

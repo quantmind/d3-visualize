@@ -59,6 +59,9 @@ DataFrame.prototype = {
         return this._inner.cf;
     },
 
+    //  Create and return a crossfilter dimension
+    //  If value is not specified, keepExisting is by default true, and any
+    //  existing dimension name is recycled.
     dimension (name, value, keepExisting) {
         if (arguments.length === 1) keepExisting = true;
         var current = this.dimensions[name];
@@ -69,6 +72,12 @@ DataFrame.prototype = {
         if (!value) value = accessor(name);
         this.dimensions[name] = this.cf().dimension(value);
         return this.dimensions[name];
+    },
+
+    //  Sort a dataframe by name and return the top values or all of them if
+    //  top is not defined. The name can be a function.
+    sortby (name, top) {
+        return this.new(this.dimension(name).top(top || Infinity));
     },
 
     // return a new dataframe by pivoting values for field name

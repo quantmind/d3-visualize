@@ -1,5 +1,4 @@
 import * as d3_shape from 'd3-shape';
-import * as d3_scale from 'd3-scale';
 import {extent} from 'd3-array';
 
 import createChart from '../core/chart';
@@ -64,7 +63,9 @@ export default createChart('linechart', lineDrawing, {
         lineWidth: 1,
         curve: 'cardinalOpen',
         x: 'x',
-        y: 'y'
+        y: 'y',
+        scaleX: 'linear',
+        scaleY: 'linear'
     },
 
     doDraw (frame) {
@@ -116,7 +117,7 @@ export default createChart('linechart', lineDrawing, {
 
     x (box, ranges) {
         var model = this.getModel(),
-            scale = d3_scale.scaleLinear()
+            scale = self.getScale(model.scaleX)
                 .domain(extent(ranges))
                 .range([0, box.innerWidth]);
         return function (d) {
@@ -126,7 +127,7 @@ export default createChart('linechart', lineDrawing, {
 
     y (box, ranges) {
         var model = this.getModel(),
-            scale = d3_scale.scaleLinear()
+            scale = self.getScale(model.scaleY)
                 .domain(extent(ranges))
                 .range([box.innerHeight, 0]);
         return function (d) {

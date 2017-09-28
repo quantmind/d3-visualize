@@ -2,7 +2,6 @@ import {stack} from 'd3-shape';
 import {max} from 'd3-array';
 
 import createChart from '../core/chart';
-import {sizeValue} from '../utils/size';
 import {lineDrawing} from './line';
 //
 //  Bar Chart
@@ -17,13 +16,19 @@ export default createChart('barchart', lineDrawing, {
     options: {
         orientation: 'vertical',
         // stack multiple y series?
+        sortby: null, // specify "x" or "y"
         stack: true,
         normalize: false,
         scale: 'linear',
         padding: 0.1,
         x: 'x',
         y: 'y',
-        groupby: null
+        groupby: null,  // group data by a field for staked or grouped bar chart
+        //
+        // legend & tooltip
+        valueformat: '.1f',
+        legendType: 'color',
+        legendLabel: 'label'
     },
 
     doDraw (frame) {
@@ -47,20 +52,17 @@ export default createChart('barchart', lineDrawing, {
             xrect = x0,
             yrect = y0,
             yi = 1,
-            groups,
-            padding;
+            groups;
 
         if (model.orientation === 'vertical') {
-            padding = sizeValue(model.padding, box.innerWidth);
-            sx.rangeRound([0, box.innerWidth]).paddingInner(padding);
+            sx.rangeRound([0, box.innerWidth]).paddingInner(model.padding);
             sy.rangeRound([box.innerHeight, 0]);
             width = sx.bandwidth;
             height = bardim;
         } else {
-            yi = 0;
-            padding = sizeValue(model.padding, box.innerHeight);
-            sx.rangeRound([0, box.innerHeight]).paddingInner(padding);
+            sx.rangeRound([0, box.innerHeight]).paddingInner(model.padding);
             sy.rangeRound([0, box.innerWidth]);
+            yi = 0;
             width = bardim;
             height = sx.bandwidth;
             xrect = y0;
@@ -69,17 +71,22 @@ export default createChart('barchart', lineDrawing, {
 
         if (groupby) {
             groups = frame.dimension(groupby).group().top(Infinity).map(g => g['key']);
-            if (groups.length > 1) {
-                frame = frame.pivot(x, groupby, y);
-                data = frame.data;
-                sz.domain(groups).range(this.colors(data.length));
-                if (model.stack) {
-                    if (model.normalize)
-                        this.normalize(frame.data);
-                    stacked = true;
-                }
+            if (groups.length <= 1) groups = null;
+        }
+
+        if (groups) {
+            frame = frame.pivot(x, groupby, y);
+            if (model.sortby === 'y') frame = frame.sortby('total');
+            data = frame.data;
+            sz.domain(groups).range(this.colors(data.length));
+            if (model.stack) {
+                if (model.normalize)
+                    this.normalize(frame.data);
+                stacked = true;
             }
         }
+
+        // set domain for the labels
         sx.domain(data.map(d => d[x]));
 
         if (stacked) {
@@ -101,8 +108,12 @@ export default createChart('barchart', lineDrawing, {
                     .attr('height', height)
                     .attr('width', width);
         } else {
-            var x1 = self.getScale('band').padding(0.5*padding);
+            var x1 = self.getScale('band').padding(0.5*model.padding);
             return x1;
+        }
+
+        if (model.legendType && groups) {
+            this.legend({scale: sz}, box);
         }
 
         function bardim (d) {
