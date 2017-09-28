@@ -1,4 +1,5 @@
 import {map} from 'd3-collection';
+import {range} from 'd3-array';
 import {
     scaleSequential,
     interpolateViridis, interpolateInferno, interpolateMagma,
@@ -35,4 +36,10 @@ vizPrototype.colorScale = function () {
         scale = colorScales.get(color.scale);
     if (!scale) throw new Error(`Unknown scale ${color.scale}`);
     return scale();
+};
+
+
+vizPrototype.colors = function (n) {
+    var scale = this.colorScale().domain([0, n+1]);
+    return range(1, n+1).map(v => scale(v));
 };

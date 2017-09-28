@@ -5,6 +5,8 @@ import {extent} from 'd3-array';
 import createChart from '../core/chart';
 import warn from '../utils/warn';
 import accessor from '../utils/accessor';
+import camelFunction from '../utils/camelfunction';
+
 
 export const lineDrawing = {
 
@@ -21,19 +23,30 @@ export const lineDrawing = {
     },
 
     curve (name) {
-        var obj = d3_shape[this.curveName(name)];
+        var obj = camelFunction(d3_shape, 'curve', name);
         if (!obj) {
             warn(`Could not locate curve type "${name}"`);
-            name = this.curveName('cardinalOpen');
-            obj = d3_shape[name];
+            obj = camelFunction(d3_shape, 'curve', 'cardinalOpen');
         }
         return obj;
     },
 
-    curveName (name) {
-        if (name.substring(0, 5) !== 'curve')
-            name = 'curve' + name[0].toUpperCase() + name.substring(1);
-        return name;
+    range (data, x, y, agg) {
+        var range = {
+            x: extent(data, x),
+            y: extent(data, y)
+        };
+        if (agg) {
+            Array.prototype.push.apply(agg.x, range.x);
+            Array.prototype.push.apply(agg.y, range.y);
+        }
+    },
+
+    newRange () {
+        return {
+            x: [],
+            y: []
+        };
     }
 };
 
@@ -118,24 +131,6 @@ export default createChart('linechart', lineDrawing, {
                 .range([box.innerHeight, 0]);
         return function (d) {
             return scale(d[model.y]);
-        };
-    },
-
-    range (data, x, y, agg) {
-        var range = {
-            x: extent(data, x),
-            y: extent(data, y)
-        };
-        if (agg) {
-            Array.prototype.push.apply(agg.x, range.x);
-            Array.prototype.push.apply(agg.y, range.y);
-        }
-    },
-
-    newRange () {
-        return {
-            x: [],
-            y: []
         };
     }
 });

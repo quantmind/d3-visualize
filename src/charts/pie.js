@@ -1,7 +1,11 @@
 import {pie, arc} from 'd3-shape';
+import {scaleOrdinal} from 'd3-scale';
+import {viewExpression} from 'd3-view';
+import {format} from 'd3-format';
 
 import createChart from '../core/chart';
 import {sizeValue} from '../utils/size';
+
 
 const pi = Math.PI;
 const rad = pi/180;
@@ -10,19 +14,33 @@ const rad = pi/180;
 export const proportional = {
 
     fill (data) {
-        var cscale = this.colorScale().domain([0, data.length-1]);
+        var cscale = this.colorScale().domain([0, data.length-1]),
+            colors = data.map(d => cscale(d.index));
 
         function fill (d) {
-            return cscale(d.index);
+            return colors[d.index];
         }
 
         fill.scale = cscale;
+        fill.colors = colors;
 
         return fill;
     },
 
     proportionalData (frame, field) {
         return frame.dimension(field).top(Infinity);
+    },
+
+    total (field) {
+        var total = 0;
+
+        function value (d) {
+            total += d[field];
+            return d[field];
+        }
+
+        value.total = () => total;
+        return value;
     }
 };
 
@@ -36,17 +54,18 @@ export default createChart('piechart', proportional, {
         // The data values from this field will be encoded as angular spans.
         // If omitted, all pie slices will have equal spans
         field: 'data',
+        label: 'label',
         startAngle: 0,
         endAngle: 360,
         sort: false,
         innerRadius: 0,
         padAngle: 0,
         cornerRadius: 0,
-        //
-        color: null,
         lineWidth: 1,
-        colorOpacity: 1,
-        fillOpacity: 1
+        //
+        fractionFormat: '.1%',
+        legendType: 'color',
+        legendLabel: "label + ' - ' + format(fraction)"
     },
 
     doDraw (frame) {
@@ -56,11 +75,12 @@ export default createChart('piechart', proportional, {
             box = this.boundingBox(),
             outerRadius = Math.min(box.innerWidth, box.innerHeight)/2,
             innerRadius = sizeValue(model.innerRadius, outerRadius),
+            total = this.total(field),
             angles = pie()
                 .padAngle(rad*model.padAngle)
                 .startAngle(rad*model.startAngle)
                 .endAngle(rad*model.endAngle)
-                .value(d => d[field]),
+                .value(total),
             arcs = arc()
                 .innerRadius(innerRadius)
                 .outerRadius(outerRadius)
@@ -91,5 +111,23 @@ export default createChart('piechart', proportional, {
                 .attr('fill-opacity', color.fillOpacity);
 
         slices.exit().remove();
+
+        if (!model.legendType) return;
+        total = total.total();
+        var expr = viewExpression(model.legendLabel),
+            fmt = format(model.fractionFormat),
+            labels = data.map((d, idx) => {
+                return expr.eval({
+                    d: d,
+                    value: d.value,
+                    format: fmt,
+                    total: total,
+                    fraction: d.value/total,
+                    label: d.data[model.label] || idx
+                });
+            });
+        this.legend({
+            scale: scaleOrdinal().domain(labels).range(fill.colors)
+        }, box);
     }
 });

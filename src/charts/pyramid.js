@@ -1,4 +1,5 @@
 import {symbol} from 'd3-shape';
+import {scaleOrdinal} from 'd3-scale';
 
 import createChart from '../core/chart';
 import pyramid from '../transforms/pyramid';
@@ -12,7 +13,8 @@ export default createChart('pyramidchart', proportional, {
     options: {
         field: 'data',
         pad: 0,
-        lineWidth: 1
+        lineWidth: 1,
+        legendType: 'color'
     },
 
     doDraw (frame) {
@@ -52,6 +54,9 @@ export default createChart('pyramidchart', proportional, {
                 .attr('fill-opacity', color.fillOpacity);
 
         segments.exit().remove();
+        this.legend({
+            scale: scaleOrdinal().domain(['a', 'b', 'c', 'd', 'e', 'f']).range(fill.colors)
+        }, box);
     }
 
 });

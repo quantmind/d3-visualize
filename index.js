@@ -1,4 +1,3 @@
-import 'd3-canvas-transition';
 //
 export {version as visualizeVersion} from './package.json';
 //

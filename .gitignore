@@ -1,7 +1,6 @@
 # javascript
 node_modules
 build
-yarn.lock
 
 # files
 *.log

@@ -1,8 +1,10 @@
 import assign from 'object-assign';
 import {isFunction} from 'd3-let';
+import * as d3_scale from 'd3-scale';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
+import camelFunction from '../utils/camelfunction';
 
 //
 //  crateChart
@@ -52,6 +54,10 @@ export const vizPrototype = {
                 return `translate(${xt}, ${yt})`;
             };
         } else return `translate(${x}, ${y})`;
+    },
+
+    getScale (name) {
+        return camelFunction(d3_scale, 'scale', name);
     }
 };
 

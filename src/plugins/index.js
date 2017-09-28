@@ -2,11 +2,13 @@
 //  Plugins for visuals and tabular
 //
 // visual plugins
+import './menu';
 import './data';
 import './responsive';
 import './title';
 import './margin';
 import './color';
+import './legend';
 //
 //  This module depends on core but not on components
 import clusterize from './clusterize';

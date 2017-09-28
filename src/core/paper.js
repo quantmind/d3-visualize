@@ -45,7 +45,7 @@ const paperPrototype = {
         return this;
     },
 
-    group (box, cname) {
+    group (cname) {
         if (!cname) cname = 'main';
         var sel = this.sel;
         sel

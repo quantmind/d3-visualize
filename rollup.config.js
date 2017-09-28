@@ -29,7 +29,6 @@ export default {
     external: [
         "crossfilter",
         "d3-array",
-        "d3-canvas-transition",
         "d3-collection",
         "d3-dispatch",
         "d3-dsv",
@@ -40,6 +39,7 @@ export default {
         "d3-selection",
         "d3-scale",
         "d3-shape",
+        "d3-svg-legend",
         "d3-timer",
         "d3-time-format",
         "d3-transition",
@@ -60,6 +60,7 @@ export default {
         "d3-scale": "d3",
         "d3-shape": "d3",
         "d3-selection": "d3",
+        "d3-svg-legend": "d3",
         "d3-timer": "d3",
         "d3-time-format": "d3",
         "d3-transition": "d3",

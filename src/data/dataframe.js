@@ -48,7 +48,7 @@ DataFrame.prototype = {
     size () {
         return this.data.length;
     },
-    
+
     new (serie) {
         if (isArray(serie)) return new DataFrame(serie, null, this.store);
         else return new DataFrame(this._inner, serie);
@@ -69,6 +69,27 @@ DataFrame.prototype = {
         if (!value) value = accessor(name);
         this.dimensions[name] = this.cf().dimension(value);
         return this.dimensions[name];
+    },
+
+    // return a new dataframe by pivoting values for field name
+    pivot (dimension, key, value, total) {
+        var group = this.dimension(dimension).group();
+        if (!total) total = 'total';
+        return this.new(group.reduce(pivoter(1), pivoter(-1), Object).all().map(d => d.value));
+
+        function pivoter (m) {
+            let pk, pv;
+            return function (o, record) {
+                pk = ''+record[key];
+                pv = m*record[value];
+                o[dimension] = record[dimension];
+                if (pk in o) o[pk] += pv;
+                else o[pk] = pv;
+                if (total in o) o[total] += pv;
+                else o[total] = pv;
+                return o;
+            };
+        }
     },
 
     add () {

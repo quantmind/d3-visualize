@@ -3,8 +3,10 @@ import {pop} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
 import {select} from 'd3-selection';
 import {viewBase, viewModel} from 'd3-view';
+import 'd3-transition';
 
 import globalOptions from './options';
+import {sizeValue} from '../utils/size';
 
 
 const CONTAINERS = ['visual', 'container'];
@@ -70,6 +72,10 @@ const visualPrototype = assign({}, {
             this.model[type] = model;
         }
         return model;
+    },
+
+    dim (size, refSize) {
+        return sizeValue(size, refSize);
     }
 }, viewBase);
 
