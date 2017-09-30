@@ -48,7 +48,7 @@
         "browserify": "14.4",
         "browserify-istanbul": "2.0",
         "d3-require": "0.4",
-        "eslint": "4.7",
+        "eslint": "4.8",
         "handlebars": "4",
         "istanbul": "0.4",
         "jasmine-core": "2.8",
