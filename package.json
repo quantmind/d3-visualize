@@ -1,5 +1,5 @@
 {
-    "version": "0.0.12",
+    "version": "0.0.13",
     "name": "d3-visualize",
     "description": "d3-view components for data visualization",
     "author": {
@@ -36,7 +36,7 @@
         "d3-svg-legend": "2.24",
         "d3-time-format": "2.0",
         "d3-transition": "1.1",
-        "d3-view": "0.6.5"
+        "d3-view": "0.6.8"
     },
     "devDependencies": {
         "babel-eslint": "8.0",
@@ -68,7 +68,6 @@
         "requirejs": "2.3",
         "rollup": "0.50",
         "rollup-plugin-babel": "3.0",
-        "rollup-plugin-commonjs": "8.2",
         "rollup-plugin-json": "2.3",
         "rollup-plugin-node-resolve": "3.0",
         "rollup-plugin-sourcemaps": "0.4",
