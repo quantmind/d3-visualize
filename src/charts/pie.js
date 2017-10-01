@@ -103,7 +103,7 @@ export default createChart('piechart', proportional, {
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
             .merge(slices)
-                //.transition(update)
+                .transition()
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', color.strokeOpacity)
                 .attr('d', arcs)

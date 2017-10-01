@@ -61,6 +61,7 @@ export default createVisual('visual', {
         this.drawCount = 0;
         visuals.live.push(this);
         element.__visual__ = this;
+        if (this.visualParent) this.visualParent.live.push(this);
     },
 
     toString () {
@@ -117,8 +118,8 @@ export default createVisual('visual', {
     },
 
     destroy () {
-        var idx = visuals.live.indexOf(this);
-        if (idx > -1) visuals.live.splice(idx, 1);
+        this.pop(this.visualParent);
+        this.pop(visuals);
     }
 });
 

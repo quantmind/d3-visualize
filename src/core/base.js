@@ -62,7 +62,8 @@ export const visualPrototype = assign({}, {
         if (!type) type = this.visualType;
         var model = this.model[type];
         if (!model && type in globalOptions) {
-            var options = pop(this.options, type);
+            var options = pop(this.options, type),
+                self = this;
             if (this.visualParent)
                 model = this.visualParent.getModel(type).$child(options);
             else {
@@ -70,6 +71,7 @@ export const visualPrototype = assign({}, {
                 model.$update(options);
             }
             this.model[type] = model;
+            model.$on(() => self.draw());
         }
         return model;
     },
@@ -81,6 +83,13 @@ export const visualPrototype = assign({}, {
             size = Math.min(size, maxSize);
         }
         return size;
+    },
+
+    pop (container) {
+        if (container) {
+            var idx = container.live.indexOf(this);
+            if (idx > -1) container.live.splice(idx, 1);
+        }
     }
 }, viewBase);
 

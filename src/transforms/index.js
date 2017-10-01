@@ -1,5 +1,6 @@
 // Collection of transforms
 import {map} from 'd3-collection';
+
 import filter from './filter';
 import timeseries from './timeseries';
 import mapfields from './mapfields';

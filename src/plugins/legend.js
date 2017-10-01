@@ -1,4 +1,4 @@
-import * as d3_legend from 'd3-svg-legend';
+import {legendColor, legendSize, legendSymbol} from 'd3-svg-legend';
 import {map} from 'd3-collection';
 
 import globalOptions from '../core/options';
@@ -14,6 +14,13 @@ globalOptions.legend = {
 };
 
 
+const legends = {
+    color: legendColor,
+    size: legendSize,
+    symbol: legendSymbol
+};
+
+
 //
 //  Legend method
 //  ==========================
@@ -22,7 +29,7 @@ vizPrototype.legend = function (cfg, box) {
         lgModel = this.getModel('legend'),
         name = vizModel.legendType;
     if (!name) return;
-    var legend = d3_legend[legendName(name)];
+    var legend = legends[name];
     if (!legend) return warn(`Could not load legend ${name}`);
     legend = legend().orient(lgModel.orient);
     for (let key in cfg) legend[key](cfg[key]);
@@ -32,13 +39,6 @@ vizPrototype.legend = function (cfg, box) {
         bb = locations.get(lgModel.location)(g.node().getBBox(), box, lgModel);
     g.attr('transform', this.translate(bb.x, bb.y));
 };
-
-
-function legendName (name) {
-    if (name.substring(0, 6) !== 'legend')
-        name = 'legend' + name[0].toUpperCase() + name.substring(1);
-    return name;
-}
 
 
 const locations = map({

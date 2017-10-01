@@ -64,11 +64,13 @@ export const vizComponent = {
 export default assign({}, vizComponent, {
 
     build (schema, inner, attrs) {
-        var model = this.model;
-        var sel = this.createElement('div');
+        var model = this.model,
+            sel = this.createElement('div'),
+            root = model.root;
         if (attrs.class) sel.attr('class', attrs.class);
         if (!schema.visuals) schema.visuals = {};
         model.visual = new VisualContainer(sel.node(), schema, model.visual);
+        if (!root.visualDashboard) root.visualDashboard = model.visual;
         return this.mountInner(sel, inner);
     }
 });
