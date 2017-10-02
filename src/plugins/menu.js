@@ -17,7 +17,7 @@ visuals.events.on('after-init.menu', viz => {
     if (viz.visualType === 'visual') {
         var menu = viz.getModel('menu');
         if (menu.display) {
-            viz.menu = viz.sel.append('nav').classed('d3-nav', true);
+            viz.menu = viz.sel.insert('nav', ':first-child').classed('d3-nav navbar p-1', true);
             viz.menu.append('h4').classed('title', true);
         }
     }

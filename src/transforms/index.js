@@ -25,7 +25,7 @@ export function applyTransforms (frame, transforms) {
         if (transform) {
             ts = transform(frame);
             if (isArray(ts)) frame = frame.new(ts);
-            else if (!ts) frame = frame;
+            else if (ts) frame = ts;
         }
     });
     return frame;

@@ -64,7 +64,7 @@ const paperPrototype = {
 export const Svg = createPaper('svg', {
 
     initialise (viz) {
-        var svg = viz.visualParent.sel.append('svg')
+        var svg = viz.visualParent.paper.append('svg')
             .attr('id', viz.model.uid)
             .classed(viz.visualType, true);
         return svg.node();

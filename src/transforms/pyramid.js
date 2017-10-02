@@ -37,8 +37,8 @@ export default function () {
             else {
                 y = hi + ph;
                 x = y*r;
-                points.push([-x, y]);
                 points.push([x, y]);
+                points.push([-x, y]);
             }
             j = index[i];
             k = n - i - 1;
@@ -48,8 +48,8 @@ export default function () {
             ph = i ? pad(pj, k) : 0;
             y = hi - ph;
             x = y*r;
-            points.push([x, y]);
             points.push([-x, y]);
+            points.push([x, y]);
             polygons[j] = {
                 index: k,
                 value: polygons[j],

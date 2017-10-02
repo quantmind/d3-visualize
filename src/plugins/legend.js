@@ -12,8 +12,8 @@ globalOptions.legend = {
     fontSize: '3%',
     minFontSize: 10,
     maxFontSize: 20,
-    offsetX: 5,
-    offsetY: 5
+    offsetX: 10,
+    offsetY: 10
 };
 
 

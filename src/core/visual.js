@@ -36,11 +36,18 @@ export default createVisual('visual', {
         if (!element) throw new Error('HTMLElement required by visual group');
         if (this.visualParent && this.visualParent.visualType !== 'container')
             throw new Error('Visual parent can be a container only');
+        if (!this.select(element).select('.paper').node())
+            this.select(element).append('div').classed('paper', true);
 
         Object.defineProperties(this, {
             element : {
                 get () {
                     return element;
+                }
+            },
+            paper : {
+                get () {
+                    return this.sel.select('.paper');
                 }
             },
             sel: {
@@ -98,22 +105,19 @@ export default createVisual('visual', {
     //
     // Fit the root element to the size of the parent element
     fit () {
-        var size = getSize(this.element.parentNode, this.getModel());
-        this.width = size.width;
-        this.height = size.height;
-        this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
+        this.resize(null, true);
     },
 
-    resize (size) {
-        if (!size) size = getSize(this.element.parentNode, this.getModel());
+    resize (size, fit) {
+        if (!size) size = getSize(this.element.parentNode || this.element, this.getModel());
         var currentSize = this.size;
 
-        if (currentSize[0] !== size.width || currentSize[1] !== size.height) {
-            viewDebug(`Resizing "${this.toString()}"`);
+        if (fit || (currentSize[0] !== size.width || currentSize[1] !== size.height)) {
+            if (!fit) viewDebug(`Resizing "${this.toString()}"`);
             this.width = size.width;
             this.height = size.height;
-            this.sel.style('width', this.width + 'px').style('height', this.height + 'px');
-            this.draw();
+            this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
+            if (!fit) this.draw();
         }
     },
 

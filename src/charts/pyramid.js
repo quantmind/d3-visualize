@@ -15,9 +15,8 @@ export default createChart('pyramidchart', proportional, {
         label: 'label',
         pad: 0,
         lineWidth: 1,
-        fractionFormat: '.1%',
         legendType: 'color',
-        legendLabel: "label + ' - ' + format(fraction)"
+        legendLabel: "label + ' - ' + format('.1%', fraction)"
     },
 
     doDraw (frame) {
@@ -31,7 +30,7 @@ export default createChart('pyramidchart', proportional, {
                 .height(box.innerHeight)
                 .pad(pad)
                 .value(d => d[field]),
-            data = polygons(this.proportionalData(frame, field)),
+            data = frame.new(polygons(this.proportionalData(frame, field))).dimension('fraction').bottom(Infinity),
             marks = symbol().type(d => polygon(d.points)).size(1),
             fill = this.fill(data),
             paper = this.paper(),
@@ -60,7 +59,7 @@ export default createChart('pyramidchart', proportional, {
 
         if (!model.legendType) return;
         var expr = viewExpression(model.legendLabel),
-            fmt = format(model.fractionFormat),
+            fmt = (specifier, value) => format(specifier)(value),
             labels = data.map((d, idx) => {
                 return expr.eval({
                     d: d,
