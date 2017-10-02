@@ -32,6 +32,6 @@ visuals.events.on('before-draw.menu', viz => {
 
 function refreshMenu(viz) {
     var menu = viz.getModel('menu'),
-        height = viz.dim(menu.height, viz.height, viz.minHeight, viz.maxHeight);
+        height = viz.dim(menu.height, viz.height, menu.minHeight, menu.maxHeight);
     viz.menu.style('height', `${height}px`);
 }
