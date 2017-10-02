@@ -1,7 +1,9 @@
 // Collection of transforms
 import {map} from 'd3-collection';
+import {isArray} from 'd3-let';
 
 import filter from './filter';
+import aggregate from './aggregate';
 import timeseries from './timeseries';
 import mapfields from './mapfields';
 
@@ -9,6 +11,7 @@ import mapfields from './mapfields';
 //  transforms Store
 export default map({
     filter,
+    aggregate,
     mapfields,
     timeseries
 });
@@ -19,8 +22,11 @@ export function applyTransforms (frame, transforms) {
     let ts;
     if (!transforms) return frame;
     transforms.forEach(transform => {
-        ts = transform(frame);
-        frame = ts ? ts : frame;
+        if (transform) {
+            ts = transform(frame);
+            if (isArray(ts)) frame = frame.new(ts);
+            else if (!ts) frame = frame;
+        }
     });
     return frame;
 }

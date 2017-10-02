@@ -1,20 +1,23 @@
 import {symbol} from 'd3-shape';
-import {scaleOrdinal} from 'd3-scale';
+import {viewExpression} from 'd3-view';
+import {format} from 'd3-format';
 
 import createChart from '../core/chart';
 import pyramid from '../transforms/pyramid';
 import polygon from '../utils/polygon';
 import {proportional} from './pie';
-import {sizeValue} from '../utils/size';
 
 
 export default createChart('pyramidchart', proportional, {
 
     options: {
         field: 'data',
+        label: 'label',
         pad: 0,
         lineWidth: 1,
-        legendType: 'color'
+        fractionFormat: '.1%',
+        legendType: 'color',
+        legendLabel: "label + ' - ' + format(fraction)"
     },
 
     doDraw (frame) {
@@ -22,7 +25,7 @@ export default createChart('pyramidchart', proportional, {
             field = model.field,
             color = this.getModel('color'),
             box = this.boundingBox(),
-            pad = sizeValue(model.pad, Math.min(box.innerWidth, box.innerHeight)),
+            pad = this.dim(model.pad, Math.min(box.innerWidth, box.innerHeight)),
             polygons = pyramid()
                 .base(box.innerWidth)
                 .height(box.innerHeight)
@@ -46,7 +49,7 @@ export default createChart('pyramidchart', proportional, {
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
             .merge(segments)
-                //.transition(update)
+                .transition()
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', color.strokeOpacity)
                 .attr('d', marks)
@@ -54,8 +57,21 @@ export default createChart('pyramidchart', proportional, {
                 .attr('fill-opacity', color.fillOpacity);
 
         segments.exit().remove();
+
+        if (!model.legendType) return;
+        var expr = viewExpression(model.legendLabel),
+            fmt = format(model.fractionFormat),
+            labels = data.map((d, idx) => {
+                return expr.eval({
+                    d: d,
+                    value: d.value,
+                    format: fmt,
+                    fraction: d.fraction,
+                    label: d.data[model.label] || idx
+                });
+            });
         this.legend({
-            scale: scaleOrdinal().domain(['a', 'b', 'c', 'd', 'e', 'f']).range(fill.colors)
+            scale: this.getScale('ordinal').domain(labels).range(fill.colors)
         }, box);
     }
 

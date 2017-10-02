@@ -54,7 +54,8 @@ export default function () {
                 index: k,
                 value: polygons[j],
                 fraction: fraction,
-                points: points
+                points: points,
+                data: data[j]
             };
         }
         return polygons;

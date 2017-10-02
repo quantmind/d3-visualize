@@ -117,7 +117,7 @@ export default createChart('linechart', lineDrawing, {
 
     x (box, ranges) {
         var model = this.getModel(),
-            scale = self.getScale(model.scaleX)
+            scale = this.getScale(model.scaleX)
                 .domain(extent(ranges))
                 .range([0, box.innerWidth]);
         return function (d) {
@@ -127,7 +127,7 @@ export default createChart('linechart', lineDrawing, {
 
     y (box, ranges) {
         var model = this.getModel(),
-            scale = self.getScale(model.scaleY)
+            scale = this.getScale(model.scaleY)
                 .domain(extent(ranges))
                 .range([box.innerHeight, 0]);
         return function (d) {
