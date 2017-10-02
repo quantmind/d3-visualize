@@ -94,15 +94,17 @@ export default createChart('barchart', lineDrawing, {
             data = stack().keys(groups)(data);
             var rects = bars.data(data)
                             .enter()
-                            .append('g')
+                                .append('g')
                                 .classed('group', true)
                                 .attr('fill', d => sz(d.key))
                             .merge(bars)
+                                .attr('fill', d => sz(d.key))
                                 .selectAll('rect')
                                 .data(d => d);
             rects.enter()
                 .append('rect')
                 .merge(rects)
+                    .transition()
                     .attr('x', xrect)
                     .attr('y', yrect)
                     .attr('height', height)

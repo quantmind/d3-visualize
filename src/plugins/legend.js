@@ -9,8 +9,11 @@ import warn from '../utils/warn';
 globalOptions.legend = {
     location: "top-right",
     orient: "vertical",
-    offsetX: 10,
-    offsetY: 10
+    fontSize: '3%',
+    minFontSize: 10,
+    maxFontSize: 20,
+    offsetX: 5,
+    offsetY: 5
 };
 
 
@@ -27,7 +30,8 @@ const legends = {
 vizPrototype.legend = function (cfg, box) {
     var vizModel = this.getModel(),
         lgModel = this.getModel('legend'),
-        name = vizModel.legendType;
+        name = vizModel.legendType,
+        size = this.dim(lgModel.fontSize, box.height, lgModel.minFontSize, lgModel.maxFontSize);
     if (!name) return;
     var legend = legends[name];
     if (!legend) return warn(`Could not load legend ${name}`);
@@ -35,6 +39,7 @@ vizPrototype.legend = function (cfg, box) {
     for (let key in cfg) legend[key](cfg[key]);
     var g = this.paper()
             .group('legend')
+            .style('font-size', `${size}px`)
             .call(legend),
         bb = locations.get(lgModel.location)(g.node().getBBox(), box, lgModel);
     g.attr('transform', this.translate(bb.x, bb.y));
