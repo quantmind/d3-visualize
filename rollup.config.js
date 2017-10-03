@@ -14,6 +14,7 @@ export default {
         globals: {
             "crossfilter": "crossfilter",
             "d3-array": "d3",
+            "d3-axis": "d3",
             "d3-canvas-transition": "d3",
             "d3-collection": "d3",
             "d3-dispatch": "d3",
@@ -44,6 +45,7 @@ export default {
     external: [
         "crossfilter",
         "d3-array",
+        "d3-axis",
         "d3-collection",
         "d3-dispatch",
         "d3-dsv",

@@ -33,11 +33,11 @@ export default createChart('barchart', lineDrawing, {
 
     doDraw (frame) {
         var model = this.getModel(),
-            // color = this.getModel('color'),
+            color = this.getModel('color'),
             data = frame.data,
             box = this.boundingBox(),
-            paper = this.paper(),
-            bars = paper.size(box).group()
+            paper = this.paper().size(box),
+            bars = paper.group()
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .selectAll('.group'),
             x = model.x,
@@ -99,6 +99,9 @@ export default createChart('barchart', lineDrawing, {
                                 .attr('fill', d => sz(d.key))
                             .merge(bars)
                                 .attr('fill', d => sz(d.key))
+                                .attr('stroke', color.stroke)
+                                .attr('stroke-opacity', color.strokeOpacity)
+                                .attr('fill-opacity', color.fillOpacity)
                                 .selectAll('rect')
                                 .data(d => d);
             rects.enter()
@@ -109,6 +112,12 @@ export default createChart('barchart', lineDrawing, {
                     .attr('y', yrect)
                     .attr('height', height)
                     .attr('width', width);
+
+
+            var axis = this.axis('left', sx).tickSizeOuter(0);
+            paper.group('axis')
+                .attr("transform", this.translate(box.total.left, box.total.top))
+                .call(axis);
         } else {
             var x1 = self.getScale('band').padding(0.5*model.padding);
             return x1;

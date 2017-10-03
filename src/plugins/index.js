@@ -7,6 +7,7 @@ import './data';
 import './responsive';
 import './title';
 import './margin';
+import './axis';
 import './color';
 import './legend';
 //

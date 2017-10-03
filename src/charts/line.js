@@ -22,10 +22,10 @@ export const lineDrawing = {
     },
 
     curve (name) {
-        var obj = camelFunction(d3_shape, 'curve', name);
+        var obj = camelFunction(d3_shape, 'curve', name, true);
         if (!obj) {
             warn(`Could not locate curve type "${name}"`);
-            obj = camelFunction(d3_shape, 'curve', 'cardinalOpen');
+            obj = camelFunction(d3_shape, 'curve', 'cardinalOpen', true);
         }
         return obj;
     },
