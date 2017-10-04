@@ -1,5 +1,6 @@
 import {map} from 'd3-collection';
 import {range} from 'd3-array';
+import {isObject} from 'd3-let';
 import {
     scaleSequential,
     interpolateViridis, interpolateInferno, interpolateMagma,
@@ -14,6 +15,7 @@ export const colorScales = map();
 
 globalOptions.color = {
     scale: 'cool',
+    scaleMinPoints: 6,
     stroke: '#333',
     strokeOpacity: 1,
     fillOpacity: 1
@@ -31,15 +33,16 @@ colorScales.set('cubehelix', () =>  scaleSequential(interpolateCubehelixDefault)
 //
 //  Color scale method
 //  ==========================
-vizPrototype.colorScale = function () {
-    var color = this.getModel('color'),
-        scale = colorScales.get(color.scale);
-    if (!scale) throw new Error(`Unknown scale ${color.scale}`);
-    return scale();
-};
-
-
 vizPrototype.colors = function (n) {
-    var scale = this.colorScale().domain([0, n+1]);
-    return range(1, n+1).map(v => scale(v));
+    var color = this.getModel('color'),
+        scaleDef = colorScales.get(color.scale);
+
+    if (!scaleDef) throw new Error(`Unknown scale ${color.scale}`);
+    if (!isObject(scaleDef)) scaleDef = {scale: scaleDef};
+    if (scaleDef.minPoints === undefined) scaleDef.minPoints = color.scaleMinPoints;
+
+    var points = Math.max(n, scaleDef.minPoints),
+        domain = scaleDef.reversed ? [points-1, 0] : [0, points-1],
+        scale = scaleDef.scale().domain(domain);
+    return range(0, Math.min(n, points)).map(v => scale(v));
 };

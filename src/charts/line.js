@@ -9,14 +9,14 @@ import camelFunction from '../utils/camelfunction';
 
 export const lineDrawing = {
 
-    fill (meta) {
-        var cscale = this.colorScale().domain([0, meta.length-1]);
+    fill (data) {
+        var colors = this.colors(data.length);
 
         function fill (d, index) {
-            return cscale(index);
+            return colors[index];
         }
 
-        fill.scale = cscale;
+        fill.colors = colors;
 
         return fill;
     },

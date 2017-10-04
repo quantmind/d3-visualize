@@ -86,7 +86,11 @@ export default createVisual('visual', {
         }
         visuals.events.call('before-draw', undefined, this);
         this.layers.forEach(visual => {
-            visual.draw();
+            try {
+                visual.draw();
+            } catch (e) {
+                warn(`Could not draw ${visual.toString()}: ${e}`);
+            }
         });
         visuals.events.call('after-draw', undefined, this);
     },

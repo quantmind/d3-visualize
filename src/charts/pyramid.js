@@ -1,6 +1,5 @@
 import {symbol} from 'd3-shape';
 import {viewExpression} from 'd3-view';
-import {format} from 'd3-format';
 
 import createChart from '../core/chart';
 import pyramid from '../transforms/pyramid';
@@ -59,15 +58,14 @@ export default createChart('pyramidchart', proportional, {
 
         if (!model.legendType) return;
         var expr = viewExpression(model.legendLabel),
-            fmt = (specifier, value) => format(specifier)(value),
+            self = this,
             labels = data.map((d, idx) => {
-                return expr.eval({
+                return expr.eval(self.getContext({
                     d: d,
                     value: d.value,
-                    format: fmt,
                     fraction: d.fraction,
                     label: d.data[model.label] || idx
-                });
+                }));
             });
         this.legend({
             scale: this.getScale('ordinal').domain(labels).range(fill.colors)

@@ -10,6 +10,10 @@ globalOptions.legend = {
     location: "top-right",
     orient: "vertical",
     fontSize: '3%',
+    title: '',
+    titleWidth: "20%",
+    titleMinWidth: 30,
+    titleMaxWidth: 60,
     minFontSize: 10,
     maxFontSize: 20,
     offsetX: 10,
@@ -36,6 +40,10 @@ vizPrototype.legend = function (cfg, box) {
     var legend = legends[name];
     if (!legend) return warn(`Could not load legend ${name}`);
     legend = legend().orient(lgModel.orient);
+    if (lgModel.title) {
+        var width = this.dim(lgModel.titleWidth, box.width, lgModel.titleMinWidth, lgModel.titleMaxWidth);
+        legend.title(lgModel.title).titleWidth(width);
+    }
     for (let key in cfg) legend[key](cfg[key]);
     var g = this.paper()
             .group('legend')

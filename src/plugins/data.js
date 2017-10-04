@@ -7,7 +7,13 @@ import {visuals} from '../core/base';
 import DataStore from '../data/store';
 import {vizPrototype} from '../core/chart';
 import warn from '../utils/warn';
+import cachedFormat from '../utils/format';
 
+//
+// Visual Data Context
+visuals.options.dataContext = {
+    $format: cachedFormat
+};
 
 //  getData method
 //  =====================
@@ -16,10 +22,16 @@ import warn from '../utils/warn';
 vizPrototype.getData = function () {
     var name = this.model.data;
     if (!name) {
-        warn('Visual without data name, cannot get data');
+        warn(`Visual ${this.visualType} without data name, cannot get data`);
         return resolvedPromise();
     }
     return this.dataStore.getData(name);
+};
+
+//
+// Context for expression evaluation
+vizPrototype.getContext = function (context) {
+    return this.dataStore.model.$child(context);
 };
 
 
@@ -49,7 +61,8 @@ function setupVisual (visual) {
         data = pop(visual.options, 'data');
     //
     if (!store) {
-        store = new DataStore(visual.model);
+        // create the data store for the visual or container
+        store = new DataStore(visual.getModel('dataContext'));
         visual.model.dataStore = store;
     }
     store.addSources(data);

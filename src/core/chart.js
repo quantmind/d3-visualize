@@ -58,7 +58,9 @@ export const vizPrototype = {
 
     getScale (name) {
         return camelFunction(d3_scale, 'scale', name);
-    }
+    },
+
+    displayError () {}
 };
 
 
@@ -73,6 +75,8 @@ export const chartPrototype = {
                 this.doDraw(frame);
                 visuals.events.call('after-draw', undefined, this);
             }
+        }, err => {
+            this.displayError(err);
         });
     }
 };

@@ -23,10 +23,10 @@ Records are modeled using standard JavaScript objects.
 If the input data is simply an array of primitive values, ``visualize`` maps each value to the data property of a new object. For example ```[5, 3, 8, 1]``` is loaded as:
 ```javascript
 [
-    {"_id": 1, "data": 5},
-    {"_id": 2, "data": 3},
-    {"_id": 3, "data": 8},
-    {"_id": 4, "data": 1}
+    {"data": 5},
+    {"data": 3},
+    {"data": 8},
+    {"data": 1}
 ]
 ```
 
@@ -58,6 +58,19 @@ Number of [DataSources][] in the data store
 
 ### Expression DataSource
 
+## Visual Binding
+
+The DataStore is used by the visual API to retrieve data. The Binding
+with the visual API is implemented via the [data](/src/plugins/data.js)
+plugin.
+
+### visual.dataStore
+
+Property returning the datastore instance associated with the visual.
+
+### visual.getContext(context)
+
+Returns a new model context as a child of the ``dataStore`` context.
 
 [DataSources]: #datasources
 [CompositeDataSource]: #composite-datasource

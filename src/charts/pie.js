@@ -14,14 +14,12 @@ const rad = pi/180;
 export const proportional = {
 
     fill (data) {
-        var cscale = this.colorScale().domain([0, data.length-1]),
-            colors = data.map(d => cscale(d.index));
+        var colors = this.colors(data.length);
 
-        function fill (d) {
-            return colors[d.index];
+        function fill (d, idx) {
+            return colors[idx];
         }
 
-        fill.scale = cscale;
         fill.colors = colors;
 
         return fill;

@@ -16,15 +16,21 @@ export default assign({}, vizComponent, {
         var sel = this.createElement('div'),
             type = schema.type || 'visual',
             model = this.model,
-            options = {};
+            options = {},
+            layers;
 
-        if (type === 'visual')
+        if (type === 'visual') {
+            layers = pop(schema, 'layers');
             options = schema;
+        }
         else
             options.visual = pop(schema, 'visual') || {};
 
         model.visual = new Visual(sel.node(), options, model.visual);
         if (type !== 'visual') model.visual.addVisual(schema);
+        else if (layers) {
+            layers.forEach(layer => model.visual.addVisual(layer));
+        }
         return sel;
     },
 

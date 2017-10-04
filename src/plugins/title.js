@@ -30,7 +30,7 @@ visuals.events.on('before-draw.title', viz => {
 function menuTitle(visual, title, viz) {
     var height = number(visual.menu.style('height')),
         maxSize = title.maxFontSize ? Math.min(height-4, title.maxFontSize) : height-4,
-        size = viz.dim(title.fontSize, visual.height, title.minFontSize, maxSize);
+        size = viz.dim(title.fontSize, visual.width, title.minFontSize, maxSize);
     visual.menu.select('.title')
         .html(title.text)
         .style('font-size', `${size}px`)

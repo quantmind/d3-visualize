@@ -31,3 +31,4 @@ export {default as LineChart} from './src/charts/line';
 export {default as PieChart} from './src/charts/pie';
 export {default as PyramidChart} from './src/charts/pyramid';
 export {default as Treemap} from './src/charts/treemap';
+export {default as TextChart} from './src/charts/text';

@@ -52,7 +52,8 @@ export default createChart('barchart', lineDrawing, {
             xrect = x0,
             yrect = y0,
             yi = 1,
-            groups;
+            groups,
+            axis;
 
         if (model.orientation === 'vertical') {
             sx.rangeRound([0, box.innerWidth]).paddingInner(model.padding);
@@ -78,7 +79,7 @@ export default createChart('barchart', lineDrawing, {
             frame = frame.pivot(x, groupby, y);
             if (model.sortby === 'y') frame = frame.sortby('total');
             data = frame.data;
-            sz.domain(groups).range(this.colors(data.length));
+            sz.domain(groups).range(this.colors(groups.length));
             if (model.stack) {
                 if (model.normalize)
                     this.normalize(frame.data);
@@ -113,14 +114,21 @@ export default createChart('barchart', lineDrawing, {
                     .attr('height', height)
                     .attr('width', width);
 
-
-            var axis = this.axis('left', sx).tickSizeOuter(0);
-            paper.group('axis')
-                .attr("transform", this.translate(box.total.left, box.total.top))
-                .call(axis);
         } else {
             var x1 = self.getScale('band').padding(0.5*model.padding);
             return x1;
+        }
+
+        if (model.orientation === 'vertical') {
+            axis = this.axis('bottom', sx).tickSizeOuter(0);
+            paper.group('axis')
+                .attr("transform", this.translate(box.total.left, box.total.top+box.innerHeight))
+                .call(axis);
+        } else {
+            axis = this.axis('left', sx).tickSizeOuter(0);
+            paper.group('axis')
+                .attr("transform", this.translate(box.total.left, box.total.top))
+                .call(axis);
         }
 
         if (model.legendType && groups) {

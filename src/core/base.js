@@ -24,6 +24,7 @@ export const visuals = {
     live: [],
     types: {},
     papers: {},
+    options: globalOptions,
     events: dispatch(
         'before-init',
         'after-init',
@@ -55,6 +56,10 @@ export const visualPrototype = assign({}, {
     // destroy the visual
     destroy () {
 
+    },
+
+    toString () {
+        return this.visualType;
     },
 
     // get a reactive model for type
