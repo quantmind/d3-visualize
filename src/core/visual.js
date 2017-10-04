@@ -77,22 +77,27 @@ export default createVisual('visual', {
 
     // Draw the visual
     draw() {
-        if (!this.drawCount) {
+        if (this.drawing) {
+            warn(`${this.toString()} already drawing`);
+            return this.drawing;
+        }
+        else if (!this.drawCount) {
             this.drawCount = 1;
             this.fit();
         } else {
             this.drawCount++;
             this.clear();
         }
+        var self = this;
         visuals.events.call('before-draw', undefined, this);
-        this.layers.forEach(visual => {
-            try {
-                visual.draw();
-            } catch (e) {
-                warn(`Could not draw ${visual.toString()}: ${e}`);
-            }
-        });
-        visuals.events.call('after-draw', undefined, this);
+        return Promise.all(this.layers.map(visual => visual.redraw()))
+            .then(() => {
+                delete self.drawing;
+                visuals.events.call('after-draw', undefined, self);
+            }, err => {
+                delete self.drawing;
+                warn(`Could not draw ${visual.toString()}: ${err}`);
+            });
     },
 
     clear () {},

@@ -1,4 +1,5 @@
 import createVisual, {visuals} from './base';
+import warn from '../utils/warn';
 
 
 export default createVisual('container', {
@@ -9,11 +10,16 @@ export default createVisual('container', {
     },
 
     draw() {
-        visuals.events.call('before-draw', undefined, this);
-        this.live.forEach(visual => {
-            visual.draw();
+        if (this.drawing) {
+            warn(`${this.toString()} already drawing`);
+            return this.drawing;
+        }
+        var self = this;
+        visuals.events.call('before-draw', undefined, self);
+        return Promise.all(this.live.map(visual => visual.redraw())).then(() => {
+            delete self.drawing;
+            visuals.events.call('after-draw', undefined, self);
         });
-        visuals.events.call('after-draw', undefined, this);
     },
 
     destroy () {

@@ -49,6 +49,22 @@ export const visualPrototype = assign({}, {
     // draw this visual
     draw () {},
 
+    // redraw the visual
+    // this is the method that should be invoked by applications
+    redraw () {
+        if (this.drawing) {
+            var self = this,
+                event = `after-draw.${this.toString()}`
+            visuals.events.on(event, () => {
+                // remove callback
+                visuals.events.on(event, null);
+                self.redraw();
+            });
+        } else
+            this.drawing = this.draw();
+        return this.drawing;
+    },
+
     select (el) {
         return select(el);
     },
@@ -59,7 +75,7 @@ export const visualPrototype = assign({}, {
     },
 
     toString () {
-        return this.visualType;
+        return `${this.visualType}-${this.model.uid}`;
     },
 
     // get a reactive model for type
@@ -121,6 +137,7 @@ export default function (type, proto) {
         this.visualParent = parent;
         this.model = parent ? parent.model.$new() : (model || viewModel());
         this.options = options || {};
+        this.drawing = false;
         visuals.events.call('before-init', undefined, this);
         this.initialise(element);
         visuals.events.call('after-init', undefined, this);

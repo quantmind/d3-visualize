@@ -5,6 +5,7 @@ import * as d3_scale from 'd3-scale';
 import createVisual, {visuals} from './base';
 import Visual from './visual';
 import camelFunction from '../utils/camelfunction';
+import warn from '../utils/warn';
 
 //
 //  crateChart
@@ -68,14 +69,20 @@ export const chartPrototype = {
 
     //  override draw method
     draw () {
+        if (this.drawing) {
+            warn(`${this.toString()} already drawing`);
+            return this.drawing;
+        }
+        var self = this;
         visuals.events.call('before-draw', undefined, this);
-
         this.getData().then(frame => {
+            delete self.drawing;
             if (frame) {
                 this.doDraw(frame);
-                visuals.events.call('after-draw', undefined, this);
+                visuals.events.call('after-draw', undefined, self);
             }
         }, err => {
+            delete self.drawing;
             this.displayError(err);
         });
     }

@@ -36,6 +36,6 @@ export default assign({}, vizComponent, {
 
     // once the element is mounted in the dom, draw the visual
     mounted () {
-        this.model.visual.draw();
+        this.model.visual.redraw();
     }
 });
