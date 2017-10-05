@@ -83,6 +83,7 @@ export const chartPrototype = {
             }
         }, err => {
             delete self.drawing;
+            warn(`Could not draw ${self.toString()}: ${err}`);
             this.displayError(err);
         });
     }

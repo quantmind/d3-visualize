@@ -2,7 +2,7 @@ import assign from 'object-assign';
 
 import {map} from 'd3-collection';
 import {isArray, isString} from 'd3-let';
-import {resolvedPromise} from 'd3-view';
+import {resolvedPromise, viewExpression} from 'd3-view';
 
 import array from './array';
 import remote from './remote';
@@ -93,9 +93,15 @@ DataStore.prototype = {
         if (!ds) throw new Error(`Data source ${source} not available`);
         if (ds.cachedFrame) return resolvedPromise(ds.cachedFrame);
         return ds.getData().then(frame => {
-            ds.cachedFrame = frame;
+            if (ds.config.cache) ds.cachedFrame = frame;
             return frame;
         });
+    },
+
+    eval (expr, context) {
+        let ctx = this.model;
+        if (context) ctx = ctx.$child(context);
+        return viewExpression(expr).eval(ctx);
     },
 
     dataName (name) {

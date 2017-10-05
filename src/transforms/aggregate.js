@@ -16,6 +16,14 @@ export const operations = map({
     deviation
 });
 
+export const scalar_operations = map({
+    count (agg) {return agg + 1;},
+    sum (agg, v) {return agg + v;},
+    max: Math.max,
+    min: Math.min
+});
+
+
 function count (array, accessor) {
     return array.reduce((v, d) => {
         if (accessor(d) !== undefined) v += 1;
@@ -30,7 +38,8 @@ function count (array, accessor) {
 export default function (config) {
     let fields = config.fields,
         ops = config.ops,
-        as = config.as;
+        as = config.as,
+        groupby = config.groupby;
 
     if (!fields && !ops) return countAll;
 
@@ -58,6 +67,9 @@ export default function (config) {
     function aggregate (frame) {
         var data = [],
             name, op;
+
+        if (groupby) return group(frame);
+
         fields.forEach((field, index) => {
             name = ops[index];
             op = count;
@@ -74,5 +86,39 @@ export default function (config) {
             });
         });
         return data;
+    }
+
+    //
+    //  Perform aggregation with a set of data fields to group by
+    function group (frame) {
+        let v, name, op;
+        const entries = fields.map((field, index) => {
+            name = ops[index];
+            op = scalar_operations.get('count');
+            if (name) {
+                op = scalar_operations.get(name);
+                if (!op) {
+                    op = scalar_operations.get('count');
+                    warn(`Operation ${name} is not supported, use count`);
+                }
+            }
+            return {
+                field: field,
+                as: as[index] || field,
+                op: op
+            };
+        });
+
+        return frame.dimension(groupby).group().reduce((o, record) => {
+            return entries.reduce((oo, entry) => {
+                v = 0;
+                if (entry.as in oo) v = oo[entry.as];
+                oo[entry.as] = entry.op(v, record[entry.field]);
+                return oo;
+            }, o);
+        }, null, Object).all().map(d => {
+            d.value[groupby] = d.key;
+            return d.value;
+        });
     }
 }

@@ -9,6 +9,28 @@ import camelFunction from '../utils/camelfunction';
 
 export const lineDrawing = {
 
+    getDataInfo (frame) {
+        var model = this.getModel(),
+            range = this.newRange(),
+            nseries = frame.series.size(),
+            data = nseries ? frame.series.values() : [frame.data],
+            keys = nseries ? frame.series.keys() : [model.y],
+            x = accessor(model.x),
+            y = accessor(model.y),
+            self = this;
+        return {
+            data: data,
+            range: range,
+            meta: keys.map((label, index) => {
+                return {
+                    index: index,
+                    label: label,
+                    range: self.range(data[index], x, y, range)
+                };
+            })
+        };
+    },
+
     fill (data) {
         var colors = this.colors(data.length);
 
@@ -45,6 +67,27 @@ export const lineDrawing = {
         return {
             x: [],
             y: []
+        };
+    },
+
+    x (box, ranges) {
+        var model = this.getModel(),
+            scale = this.getScale(model.scaleX)
+                .domain(extent(ranges))
+                .range([0, box.innerWidth]);
+        return function (d) {
+            return scale(d[model.x]);
+        };
+    },
+
+    y (box, ranges, value) {
+        var model = this.getModel(),
+            scale = this.getScale(model.scaleY)
+                .domain(extent(ranges))
+                .range([box.innerHeight, 0]);
+        if (arguments.length === 2) value = d => d[model.y];
+        return function (d) {
+            return scale(value(d));
         };
     }
 };
@@ -113,25 +156,5 @@ export default createChart('linechart', lineDrawing, {
         lines
             .exit()
             .remove();
-    },
-
-    x (box, ranges) {
-        var model = this.getModel(),
-            scale = this.getScale(model.scaleX)
-                .domain(extent(ranges))
-                .range([0, box.innerWidth]);
-        return function (d) {
-            return scale(d[model.x]);
-        };
-    },
-
-    y (box, ranges) {
-        var model = this.getModel(),
-            scale = this.getScale(model.scaleY)
-                .domain(extent(ranges))
-                .range([box.innerHeight, 0]);
-        return function (d) {
-            return scale(d[model.y]);
-        };
     }
 });

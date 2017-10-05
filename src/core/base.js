@@ -54,7 +54,7 @@ export const visualPrototype = assign({}, {
     redraw () {
         if (this.drawing) {
             var self = this,
-                event = `after-draw.${this.toString()}`
+                event = `after-draw.${this.toString()}`;
             visuals.events.on(event, () => {
                 // remove callback
                 visuals.events.on(event, null);

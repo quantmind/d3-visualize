@@ -28,6 +28,7 @@ export {default as pyramid} from './src/transforms/pyramid';
 export {default as Visual} from './src/core/visual';
 export {default as BarChart} from './src/charts/bar';
 export {default as LineChart} from './src/charts/line';
+export {default as AreaChart} from './src/charts/area';
 export {default as PieChart} from './src/charts/pie';
 export {default as PyramidChart} from './src/charts/pyramid';
 export {default as Treemap} from './src/charts/treemap';

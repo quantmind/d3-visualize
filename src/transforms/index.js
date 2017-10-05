@@ -4,8 +4,10 @@ import {isArray} from 'd3-let';
 
 import filter from './filter';
 import aggregate from './aggregate';
+import crossfilter from './crossfilter';
 import timeseries from './timeseries';
 import mapfields from './mapfields';
+import movingaverage from './moving-average';
 
 //
 //  transforms Store
@@ -13,7 +15,9 @@ export default map({
     filter,
     aggregate,
     mapfields,
-    timeseries
+    timeseries,
+    crossfilter,
+    movingaverage
 });
 
 
