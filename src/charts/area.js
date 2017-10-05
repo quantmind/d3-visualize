@@ -28,8 +28,11 @@ export default createChart('areachart', lineDrawing, {
             areas = paper.group()
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .selectAll('.area').data(info.data),
-            fill = this.fill(info.meta),
-            area_ = area()
+            fill = this.fill(info.meta);
+
+        // TODO: fix this hack
+        info.range.y[0] = 0;
+        var area_ = area()
                 .x(this.x(box, info.range.x))
                 .y1(this.y(box, info.range.y))
                 .y0(this.y(box, info.range.y, constant(0)))

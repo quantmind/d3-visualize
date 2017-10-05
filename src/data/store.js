@@ -101,7 +101,7 @@ DataStore.prototype = {
     eval (expr, context) {
         let ctx = this.model;
         if (context) ctx = ctx.$child(context);
-        return viewExpression(expr).eval(ctx);
+        return viewExpression(expr).safeEval(ctx);
     },
 
     dataName (name) {

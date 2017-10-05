@@ -19,7 +19,7 @@ export default function (config) {
             q = query[index];
             if (isString(q)) q = frame.store.eval(q);
             if (q) {
-                dim = df.dimension(field);
+                dim = df.dimension(field).filterAll();
                 df = df.new(dim.filter(q).top(Infinity));
             }
             return df;
