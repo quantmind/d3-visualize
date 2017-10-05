@@ -40,7 +40,6 @@ export default transformFactory({
     },
     transform (frame, config) {
         const as = config.as || [],
-            alpha = minmax(config.alpha || DEFAULT_ALPHA, 1-MAXALPHA, MAXALPHA),
             method = config.method || DEFAULT_METHOD;
         let fieldto, y, s;
 

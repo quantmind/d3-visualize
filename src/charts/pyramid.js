@@ -14,6 +14,7 @@ export default createChart('pyramidchart', proportional, {
         label: 'label',
         pad: 0,
         lineWidth: 1,
+        inverted: false,
         legendType: 'color',
         legendLabel: "label + ' - ' + format('.1%', fraction)"
     },

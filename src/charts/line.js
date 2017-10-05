@@ -9,6 +9,14 @@ import camelFunction from '../utils/camelfunction';
 
 export const lineDrawing = {
 
+    // get information about
+    //  * data []
+    //  * range {x: [min, max], y: [min, max]}
+    //  * meta []
+    //      * index
+    //      * label
+    //      * range
+    //
     getDataInfo (frame) {
         var model = this.getModel(),
             range = this.newRange(),
