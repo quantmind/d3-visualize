@@ -11,8 +11,9 @@ export {default as dataLocale} from './src/data/locale';
 //
 //  Core API
 export {visuals} from './src/core/base';
-export {default as crateChart} from './src/core/chart';
-export {default as cratePaper, Svg} from './src/core/paper';
+export {default as createChart} from './src/core/chart';
+export {default as createPaper, Svg} from './src/core/paper';
+export {default as visualTransforms} from './src/transforms/index';
 //
 //  Components
 export {default as visualComponents} from './src/components/index';
@@ -27,6 +28,7 @@ export {default as pyramid} from './src/transforms/pyramid';
 //  Last import, important!
 export {default as Visual} from './src/core/visual';
 export {default as BarChart} from './src/charts/bar';
+export {default as BoxChart} from './src/charts/box';
 export {default as LineChart} from './src/charts/line';
 export {default as AreaChart} from './src/charts/area';
 export {default as PieChart} from './src/charts/pie';
