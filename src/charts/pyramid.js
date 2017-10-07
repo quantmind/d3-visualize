@@ -16,6 +16,7 @@ export default createChart('pyramidchart', proportional, {
         lineWidth: 1,
         inverted: false,
         legendType: 'color',
+        invereted: false,
         legendLabel: "label + ' - ' + format('.1%', fraction)"
     },
 
@@ -47,6 +48,7 @@ export default createChart('pyramidchart', proportional, {
                 .attr('fill-opacity', 0)
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
+                .attr('d', marks)
             .merge(segments)
                 .transition()
                 .attr('stroke', color.stroke)

@@ -1,8 +1,9 @@
-import {ascending, range, extent} from 'd3-array';
+import {ascending, range, extent, quantile} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
 
 import createChart from '../core/chart';
 import accessor from '../utils/accessor';
+import constant from '../utils/constant';
 import {lineDrawing} from './line';
 
 //
@@ -31,34 +32,29 @@ export default createChart('boxchart', lineDrawing, {
     doDraw (frame) {
         var self = this,
             model = this.getModel(),
-            color = this.getModel('color'),
+            //color = this.getModel('color'),
             info = self.getDataInfo(frame),
             box = this.boundingBox(),
             chart = boxplot(),
             paper = this.paper().size(box),
-            sx = this.getScale(model.scaleX),
-            sy = this.getScale(model.scaleY),
             x = accessor(model.x),
-            y = accessor(model.y),
+            //y = accessor(model.y),
             boxes = paper.group()
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .selectAll('.box')
                 .data(info.data),
-            fill = this.fill(info.meta),
-            rangeY = extend(frame.data, y),
+            //fill = this.fill(info.meta),
             groups = frame.groupby(model.x),
             sx = this.getScale(model.scaleX)
-                .domain(extend(frame.data, x)),
-            sy = this.getScale(model.scaleY)
-                .domain(extend(frame.data, y)),
+                .domain(extent(frame.data, x)),
+            //sy = this.getScale(model.scaleY)
+            //    .domain(extent(frame.data, y)),
             width = box.innerWidth;
 
         if (model.orientation === 'vertical') {
             sx.range([0, box.innerWidth]);
-            sy.rangeRound([box.innerHeight, 0]);
         } else {
             sx.range([0, box.innerHeight]);
-            sy.rangeRound([0, box.innerWidth]);
             width = this.innerHeight;
         }
         chart.width(this.dim(model.width, width, width/groups.length - 2));
@@ -85,8 +81,9 @@ function boxplot () {
     // For each small multiple
     function box (g) {
         g.each((d, i) => {
+            d = d.map(value).sort(ascending);
+
             const
-                d = data.map(value).sort(ascending),
                 n = d.length,
                 min = d[0],
                 max = d[n - 1],
@@ -94,7 +91,7 @@ function boxplot () {
                 quartileData = d.quartiles = quartiles(d),
                 // Compute whiskers. Must return exactly 2 elements, or null.
                 whiskerIndices = whiskers && whiskers(d),
-                whiskerData = whiskerIndices && whiskerIndices.map(i => d[i]);
+                whiskerData = whiskerIndices && whiskerIndices.map(i => d[i]),
                 // Compute outliers. If no whiskers are specified, all data are "outliers".
                 // We compute the outliers as indices, so that we can join across transitions!
                 outlierIndices = whiskerIndices
@@ -252,8 +249,8 @@ function boxplot () {
             boxTick.enter().append("text")
               .attr("class", "box")
               .attr("dy", ".3em")
-              .attr("dx", function(d, i) { return i & 1 ? 6 : -6 })
-              .attr("x", function(d, i) { return i & 1 ? width : 0 })
+              .attr("dx", (d, i) => i & 1 ? 6 : -6)
+              .attr("x", (d, i) => i & 1 ? width : 0)
               .attr("y", x0)
               .attr("text-anchor", function(d, i) { return i & 1 ? "start" : "end"; })
               .text(format)
@@ -327,7 +324,7 @@ function boxplot () {
 
     box.domain = function(x) {
         if (!arguments.length) return domain;
-        domain = x == null ? x : d3.functor(x);
+        domain = x === null ? x : constant(x);
         return box;
     };
 
@@ -360,8 +357,8 @@ function boxWhiskers (d) {
 
 function boxQuartiles (d) {
     return [
-        quantile(d, .25),
-        quantile(d, .5),
-        quantile(d, .75)
+        quantile(d, 0.25),
+        quantile(d, 0.5),
+        quantile(d, 0.75)
     ];
 }
