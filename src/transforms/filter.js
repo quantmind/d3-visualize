@@ -1,18 +1,24 @@
-import warn from '../utils/warn';
+import {viewExpression} from 'd3-view';
+
+import transformFactory from './base';
 
 //
 // Create a groupby transform from a config object
-export default function (config) {
-    var dimension = config.dimension;
-
-    if (!dimension) warn('Filter transform requires a "dimenstion" entry');
-
-    return filter;
-
-    function filter (frame) {
-        if (dimension) {
-            var d = frame.dimension(dimension);
-            return frame.new(d.group());
-        }
+export default transformFactory ({
+    schema: {
+        description: "The filter transform removes objects from a data frame based on a provided filter expression",
+        properties: {
+            expr: {
+                type: "string"
+            }
+        },
+        required: ["expr"]
+    },
+    transform (frame, config) {
+        var expr = viewExpression(config.expr);
+        return frame.data.reduce((data, d, index) => {
+            if (expr.safeEval({d: d, index: index, frame: frame})) data.push(d);
+            return data;
+        }, []);
     }
-}
+});

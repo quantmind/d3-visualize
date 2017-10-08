@@ -2,6 +2,7 @@ import assign from 'object-assign';
 import {isString, isObject} from 'd3-let';
 
 import VisualContainer from '../core/container';
+import warn from '../utils/warn';
 
 //
 //  vizComponent base prototype
@@ -34,12 +35,14 @@ export const vizComponent = {
         // allow to specify the schema as an entry of
         // visuals object in the dashboard schema
         if (parent && parent !== this.model && isString(input)) {
-            var schema = parent.options.visuals[input];
+            var schema = parent.getVisualSchema(input);
             if (schema) input = schema;
         }
 
         if (isString(input)) {
-            return this.json(input).then(build);
+            return this.json(input).then(build).catch(err => {
+                warn(`Could not reach ${input}: ${err}`);
+            });
         }
         else return build(input);
     },

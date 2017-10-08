@@ -1,5 +1,5 @@
 import assign from 'object-assign';
-import {pop} from 'd3-let';
+import {pop, isString, isObject} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
 import {select} from 'd3-selection';
 import {viewBase, viewModel} from 'd3-view';
@@ -7,6 +7,7 @@ import 'd3-transition';
 
 import globalOptions from './options';
 import {sizeValue} from '../utils/size';
+import clone from '../utils/clone';
 
 
 const CONTAINERS = ['visual', 'container'];
@@ -105,12 +106,24 @@ export const visualPrototype = assign({}, {
         }
         return size;
     },
-
+    // pop this visual from a container
     pop (container) {
         if (container) {
             var idx = container.live.indexOf(this);
             if (idx > -1) container.live.splice(idx, 1);
         }
+    },
+
+    getVisualSchema (name) {
+        var schema = this.options.visuals ? this.options.visuals[name] : null,
+            parent = this.visualParent;
+        if (parent && isString(schema)) {
+            name = schema;
+            schema = parent.getVisualSchema(name);
+        } else if (parent && !schema)
+            schema = parent.getVisualSchema(name);
+        if (isObject(schema))
+            return clone(schema);
     }
 }, viewBase);
 

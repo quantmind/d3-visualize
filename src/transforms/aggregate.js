@@ -28,7 +28,7 @@ function count (array, accessor) {
     return array.reduce((v, d) => {
         if (accessor(d) !== undefined) v += 1;
         return v;
-    });
+    }, 0);
 }
 //
 // The aggregate transform groups and summarizes an imput data stream to

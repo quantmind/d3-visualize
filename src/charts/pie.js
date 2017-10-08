@@ -5,6 +5,7 @@ import {format} from 'd3-format';
 
 import createChart from '../core/chart';
 import {sizeValue} from '../utils/size';
+import textWrap from '../utils/text-wrapping';
 
 
 const pi = Math.PI;
@@ -63,7 +64,13 @@ export default createChart('piechart', proportional, {
         //
         fractionFormat: '.1%',
         legendType: 'color',
-        legendLabel: "label + ' - ' + format(fraction)"
+        legendLabel: "label + ' - ' + format(fraction)",
+        //
+        // display information in the center of the pie chart
+        // Should be used with innerRadius greater than 0
+        center: null,
+        centerOpacity: 1,
+        centerFontSize: '7%'
     },
 
     doDraw (frame) {
@@ -83,11 +90,11 @@ export default createChart('piechart', proportional, {
                 .innerRadius(innerRadius)
                 .outerRadius(outerRadius)
                 .cornerRadius(model.cornerRadius),
-            paper = this.paper(),
+            paper = this.paper().size(box),
             //update = paper.transition('update'),
             data = angles(this.proportionalData(frame, field)),
             fill = this.fill(data),
-            slices = paper.size(box).group()
+            slices = paper.group()
                 .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
                 .selectAll('.slice').data(data);
 
@@ -108,8 +115,30 @@ export default createChart('piechart', proportional, {
                 .attr('fill', fill)
                 .attr('fill-opacity', color.fillOpacity);
 
-        slices.exit().remove();
+        slices.exit().transition().remove();
 
+        if (model.center) {
+            var text = this.dataStore.eval(model.center, {total: total.total()});
+            if (text) {
+                var size = this.dim(model.centerFontSize, box.innerWidth),
+                    center = paper.group('center-notation')
+                        .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
+                        .selectAll('.info').data([text]);
+                center
+                    .enter()
+                        .append('text')
+                        .attr('class', 'info')
+                        .attr("text-anchor", "middle")
+                        .attr("alignment-baseline", "middle")
+                        .style("font-size", `${size}px`)
+                        .style('fill-opacity', 0)
+                    .merge(center)
+                        .text(text)
+                        .style('fill-opacity', model.centerOpacity)
+                        .call(textWrap, 1.5*(innerRadius || outerRadius));
+
+            }
+        }
         if (!model.legendType) return;
         total = total.total();
         var expr = viewExpression(model.legendLabel),

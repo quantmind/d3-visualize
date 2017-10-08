@@ -15,14 +15,13 @@ export default function (config) {
 
     function crossfilter (frame) {
         let dim, q;
-        return fields.reduce((df, field, index) => {
+        fields.forEach((field, index) => {
             q = query[index];
             if (isString(q)) q = frame.store.eval(q);
-            if (q) {
-                dim = df.dimension(field).filterAll();
-                df = df.new(dim.filter(q).top(Infinity));
-            }
-            return df;
-        }, frame);
+            dim = frame.dimension(field).filterAll();
+            if (q) dim.filter(q);
+        });
+        if (dim) return frame.new(dim.top(Infinity));
+        return frame;
     }
 }

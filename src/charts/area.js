@@ -85,5 +85,7 @@ export default createChart('areachart', lineDrawing, {
         areas
             .exit()
             .remove();
+
+        // var axis = this.axis('bottom', sx);
     }
 });
