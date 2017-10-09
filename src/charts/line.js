@@ -97,6 +97,15 @@ export const lineDrawing = {
         return function (d) {
             return scale(value(d));
         };
+    },
+
+    getStack () {
+        var model = this.getModel();
+        if (model.stack) {
+            var s = d3_shape.stack();
+            if (model.stackOrder) s.order(model.stackOrder);
+            return s;
+        }
     }
 };
 

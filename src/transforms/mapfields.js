@@ -4,11 +4,11 @@
 //
 //  Convert a set af fields to a different data type
 //
-import assign from 'object-assign';
 import {map} from 'd3-collection';
 import {isString} from 'd3-let';
 import {utcParse} from 'd3-time-format';
 
+import transformFactory from './base';
 import warn from '../utils/warn';
 import globalOptions from '../core/options';
 
@@ -25,17 +25,23 @@ const converters = {
     }
 };
 
-
-//
-export default function (config) {
-    config = assign({}, globalOptions.dateFormat, config);
-    var fields = map(config.fields);
-    let i, converter;
-
-    return mapfields;
-
-    function mapfields (frame) {
-        var mappers = [];
+export default transformFactory({
+    shema: {
+        description: "map a field values into another type",
+        properties: {
+            fields: {
+                type: "object"
+            },
+            dateFormat: {
+                type: "string"
+            }
+        },
+        required: ["fields"]
+    },
+    transform (frame, config) {
+        var fields = map(config.fields),
+            mappers = [];
+        let i, converter;
 
         fields.each((entry, key) => {
             if (isString(entry)) entry = {type: entry};
@@ -53,4 +59,4 @@ export default function (config) {
 
         return frame;
     }
-}
+});

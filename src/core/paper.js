@@ -66,7 +66,8 @@ export const Svg = createPaper('svg', {
     initialise (viz) {
         var svg = viz.visualParent.paper.append('svg')
             .attr('id', viz.model.uid)
-            .classed(viz.visualType, true);
+            .classed(viz.visualType, true)
+            .style('position', 'absolute');
         return svg.node();
     }
 });

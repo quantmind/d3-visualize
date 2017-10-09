@@ -1,10 +1,12 @@
 import {csvParse} from 'd3-dsv';
+import {set} from 'd3-collection';
 import {isObject} from 'd3-let';
 import {viewProviders, resolvedPromise} from 'd3-view';
 
 import warn from './warn';
 import isUrl from '../utils/isurl';
 
+const CSV = set(['text/plain', 'text/csv', 'application/vnd.ms-excel']);
 //
 //  Remote dataSource
 //  ===================
@@ -36,7 +38,7 @@ export default {
 
 function parse (response) {
     var ct = (response.headers.get('content-type') || '').split(';')[0];
-    if (ct === 'text/plain' || ct === 'text/csv')
+    if (CSV.has(ct))
         return response.text().then(csvParse);
     else if (ct === 'application/json')
         return response.json();
