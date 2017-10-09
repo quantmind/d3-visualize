@@ -1,4 +1,7 @@
 import {area, line} from 'd3-shape';
+import {format} from 'd3-format';
+import {timeFormat} from 'd3-time-format';
+import {isDate} from 'd3-let';
 
 import createChart from '../core/chart';
 import constant from '../utils/constant';
@@ -17,7 +20,16 @@ export default createChart('areachart', lineDrawing, {
         scaleX: 'linear',
         scaleY: 'linear',
         // area with vertical gradient to zero opacity
-        gradient: true
+        gradient: true,
+        //
+        axisX: 'bottom',
+        axisXticks: 5,
+        axisY: 'left',
+        axisYticks: 5,
+        //
+        axisFormat: ',',
+        axisTimeFormat: '%Y-%m-%d',
+        axisTickSizeOuter: 0
     },
 
     doDraw (frame) {
@@ -86,6 +98,40 @@ export default createChart('areachart', lineDrawing, {
             .exit()
             .remove();
 
-        // var axis = this.axis('bottom', sx);
+        if (model.axisX) {
+            var sx = this.getScale(model.scaleX)
+                    .domain(info.range.x)
+                    .range([0, box.innerWidth]),
+                xa = this.axis(model.axisX, sx)
+                    .ticks(this.ticks(box.innerWidth, 50))
+                    .tickFormat(this.format(info.range.x[0]))
+                    .tickSizeOuter(model.axisTickSizeOuter);
+            paper
+                .group('x-axis')
+                .attr("transform", this.translate(box.total.left, box.total.top+box.innerHeight))
+                .call(xa);
+        }
+        if (model.axisY) {
+            var sy = this.getScale(model.scaleY)
+                    .domain(info.range.y)
+                    .range([box.innerHeight, 0]),
+                ya = this.axis(model.axisY, sy)
+                        .ticks(this.ticks(box.innerHeight, 30))
+                        .tickFormat(this.format(info.range.y[0]))
+                        .tickSizeOuter(model.axisTickSizeOuter);
+            paper
+                .group('y-axis')
+                .attr("transform", this.translate(box.total.left, box.total.top))
+                .call(ya);
+        }
+    },
+
+    format (value) {
+        if (isDate(value)) return timeFormat(this.getModel().axisTimeFormat);
+        else return format(this.getModel().axisFormat);
+    },
+
+    ticks (size, spacing) {
+        return Math.max(Math.floor(size/spacing), 1);
     }
 });
