@@ -1,7 +1,5 @@
 import {extent} from 'd3-array';
 
-import accessor from '../utils/accessor';
-
 //
 //  Create a Grouper generator
 //  ===============================
@@ -33,22 +31,24 @@ export default function () {
                     data = normalizeData(data);
                 data = stack.keys(labels)(data);
                 stacked = true;
-            } else {
-                data = labels.map((key, index) => {
-                    s = data.map(d => {
-                        s = [0, d[key]];
-                        s.data = d;
-                        return s;
-                    });
-                    s.index = index;
-                    s.key = key;
-                    return s;
-                });
             }
         } else {
             data = frame.data;
-            labels = ['data'];
+            labels = [y];
         }
+
+        if (!stacked)
+            data = labels.map((key, index) => {
+                s = data.map(d => {
+                    s = [0, d[key]];
+                    s.data = d;
+                    return s;
+                });
+                s.index = index;
+                s.key = key;
+                return s;
+            });
+
         return new GroupedData(data, x, y, stacked);
     }
 
@@ -120,11 +120,11 @@ GroupedData.prototype = {
         }
 
         function acc1 (d) {
-            return d[1]
+            return d[1];
         }
 
         function acc (d) {
-            return d.data[key]
+            return d.data[key];
         }
     }
 };

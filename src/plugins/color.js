@@ -1,7 +1,7 @@
 import {map} from 'd3-collection';
 import {range} from 'd3-array';
+import {color} from 'd3-color';
 import {isObject} from 'd3-let';
-import {viewUid} from 'd3-view';
 import {
     scaleSequential,
     interpolateViridis, interpolateInferno, interpolateMagma,
@@ -60,18 +60,33 @@ vizPrototype.colors = function (n) {
 //
 //  Create a monocromatic linear gradient in the visualization box,
 //  either horizontal or vertical
-vizPrototype.linearGradient = function (box, orientation) {
-    var gid = viewUid();
-    var defs = this.paper.select('defs');
-    if (!defs.node()) defs = this.paper.append(defs);
-    const grad = defs
-                    .append('linearGradient')
-                    .attr('id', gid)
-                    .attr('x1', '0%')
-                    .attr('y1', '0%');
-    if (orientation === 'vertical') {
-        grad.attr('x2', '0%').attr('y2', '100%');
-    } else {
-        grad.attr('x2', '100%').attr('y2', '0%');
-    }
+vizPrototype.linearGradient = function (col, box, orientation, gid) {
+    var paper = this.paper().sel,
+        defs = paper.select('defs');
+    if (!defs.node()) defs = paper.append('defs');
+    const
+        grad = defs.selectAll(`#${gid}`).data([0]),
+        colto = color(col);
+
+    colto.opacity = 0.1;
+
+    grad.enter()
+        .append('linearGradient')
+        .attr('id', gid)
+        .attr('x1', '0%')
+        .attr('y1', '0%')
+        .attr('x2', orientation === 'vertical' ? '0%' : '100%')
+        .attr('y2', orientation === 'vertical' ? '100%' : '0%');
+
+    var stops = defs.select(`#${gid}`)
+                    .selectAll('stop')
+                    .data([{offset: '0%', color: col}, {offset: '100%', color: colto}]);
+
+    stops.enter()
+            .append('stop')
+        .merge(stops)
+            .attr('offset', d => d.offset)
+            .attr('stop-color', d => d.color);
+
+    return `url(#${gid})`;
 };

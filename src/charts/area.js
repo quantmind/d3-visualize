@@ -2,9 +2,9 @@ import {area, line} from 'd3-shape';
 import {format} from 'd3-format';
 import {timeFormat} from 'd3-time-format';
 import {isDate} from 'd3-let';
+import {color} from 'd3-color';
 
 import createChart from '../core/chart';
-import constant from '../utils/constant';
 import grouper from '../transforms/groups';
 import {lineDrawing} from './line';
 
@@ -15,7 +15,7 @@ export default createChart('areachart', lineDrawing, {
 
     options: {
         lineWidth: 1,
-        curve: 'cardinalOpen',
+        curve: 'natural',
         x: 'x',
         y: 'y',
         groupby: null,  // group data by a field for staked or grouped area chart
@@ -23,6 +23,7 @@ export default createChart('areachart', lineDrawing, {
         scaleY: 'linear',
         // area with vertical gradient to zero opacity
         gradient: true,
+        lineDarken: 0.2,
         //
         axisX: 'bottom',
         axisXticks: 5,
@@ -37,35 +38,30 @@ export default createChart('areachart', lineDrawing, {
     doDraw (frame) {
         var self = this,
             model = this.getModel(),
-            color = this.getModel('color'),
+            x = model.x,
+            y = model.y,
+            col = this.getModel('color'),
+            box = this.boundingBox(),
             info = grouper()
                         .groupby(model.groupby)
                         .stack(this.getStack())
-                        .x(model.x)
-                        .y(model.y)(frame),
+                        .x(x)
+                        .y(y)(frame),
             rangeX = info.rangeX(),
             rangeY = info.rangeY(),
-            box = this.boundingBox(),
+            scaleX = this.getScale(model.scaleX)
+                            .domain(rangeX)
+                            .rangeRound([0, box.innerWidth]),
+            scaleY = this.getScale(model.scaleY)
+                            .domain(rangeY)
+                            .rangeRound([box.innerHeight, 0]).nice(),
             paper = this.paper().size(box),
             areas = paper.group()
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .selectAll('.areagroup').data(info.data),
-            fill = this.fill(info.data),
-            curve = this.curve(model.curve),
-            data = info.data;
-
-        // TODO: fix this hack
-        rangeY[0] = Math.min(0, rangeY[0]);
-
-        var line_ = line()
-                .x(this.x(box, rangeX))
-                .y(this.y(box, rangeY))
-                .curve(curve),
-            area_ = area()
-                .x(this.x(box, rangeX))
-                .y1(this.y(box, rangeY))
-                .y0(this.y(box, rangeY, constant(0)))
-                .curve(curve);
+            colors = this.colors(info.data.length),
+            fill = model.gradient ? colors.map((c, i) => self.linearGradient(c, box, 'vertical', `fill${self.model.uid}-${i}`)) : colors,
+            curve = this.curve(model.curve);
 
         var areagroup = areas
             .enter()
@@ -73,51 +69,21 @@ export default createChart('areachart', lineDrawing, {
                 .classed('areagroup', true)
             .merge(areas)
                 .selectAll('path')
-                .data(d => [{
-                    type: 'area',
-                    fill: fill,
-                    data: d
-                }, {
-                    type: 'line',
-                    data: d,
-                    fill: 'none'
-                }]);
+                .data(arealine);
 
-        var areapath = areagroup
-                        .enter()
-                            .append('path')
-                            .data(d => d)
-                            .attr('class', d => d.type)
-                            .attr('fill', d => d.fill)
-
-
-        areapath
+        areagroup
+            .enter()
                 .append('path')
-                .attr('class', 'area')
-                .attr('fill', fill)
-                .attr('stroke', 'none')
-                .attr('stroke-width', 0)
-                .attr('d', area_);
-
-        areapath.merge(areagroup)
-                .transition()
-                .attr('d', area_)
-                .attr('fill', fill)
-                .attr('fill-opacity', color.fillOpacity);
-
-        areapath
-                .append('path')
-                .attr('class', 'line')
-                .attr('fill', 'none')
-                .attr('stroke', color.stroke)
-                .attr('stroke-opacity', 0)
-                .attr('stroke-width', model.lineWidth)
-                .attr('d', line_)
+                .attr('class', d => d.type)
+                .attr('fill', d => d.fill)
+                .attr('stroke', d => d.stroke)
+                .attr('d', d => d.draw)
             .merge(areagroup)
-                .transition()
-                .attr('d', line_)
-                .attr('stroke', color.stroke)
-                .attr('stroke-opacity', color.strokeOpacity)
+                .attr('d', d => d.draw)
+                .attr('fill', d => d.fill)
+                .attr('stroke', d => d.stroke)
+                .attr('fill-opacity', col.fillOpacity)
+                .attr('fill-opacity', col.fillOpacity)
                 .attr('stroke-width', model.lineWidth);
 
         areagroup
@@ -126,10 +92,7 @@ export default createChart('areachart', lineDrawing, {
             .remove();
 
         if (model.axisX) {
-            var sx = this.getScale(model.scaleX)
-                    .domain(rangeX)
-                    .range([0, box.innerWidth]),
-                xa = this.axis(model.axisX, sx)
+            var xa = this.axis(model.axisX, scaleX)
                     .ticks(this.ticks(box.innerWidth, 50))
                     .tickFormat(this.format(rangeX[0]))
                     .tickSizeOuter(model.axisTickSizeOuter);
@@ -139,10 +102,7 @@ export default createChart('areachart', lineDrawing, {
                 .call(xa);
         }
         if (model.axisY) {
-            var sy = this.getScale(model.scaleY)
-                    .domain(rangeY)
-                    .range([box.innerHeight, 0]),
-                ya = this.axis(model.axisY, sy)
+            var ya = this.axis(model.axisY, scaleY)
                         .ticks(this.ticks(box.innerHeight, 30))
                         .tickFormat(this.format(rangeY[0]))
                         .tickSizeOuter(model.axisTickSizeOuter);
@@ -150,6 +110,48 @@ export default createChart('areachart', lineDrawing, {
                 .group('y-axis')
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .call(ya);
+        }
+
+        function xx(d) {
+            return scaleX(d.data[x]);
+        }
+
+        function y0(d) {
+            return scaleY(d[0]);
+        }
+
+        function y1(d) {
+            return scaleY(d[1]);
+        }
+
+        function arealine (d) {
+            var area_ = area()
+                            .curve(curve)
+                            .x(xx)
+                            .y1(y1)
+                            .y0(y0),
+                line_ = line()
+                            .curve(curve)
+                            .x(xx)
+                            .y(y1),
+                c = color(colors[d.index]);
+
+            return [
+                {
+                    type: 'area',
+                    data: d,
+                    draw: area_(d),
+                    stroke: 'none',
+                    fill: fill[d.index]
+                },
+                {
+                    type: 'line',
+                    data: d,
+                    draw: line_(d),
+                    fill: 'none',
+                    stroke: c.darker(model.lineDarken)
+                }
+            ];
         }
     },
 
