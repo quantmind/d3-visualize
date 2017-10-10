@@ -12,7 +12,7 @@ export default createChart('pyramidchart', proportional, {
     options: {
         field: 'data',
         label: 'label',
-        pad: 0,
+        pad: 0.005,
         lineWidth: 1,
         inverted: false,
         legendType: 'color',
@@ -27,12 +27,12 @@ export default createChart('pyramidchart', proportional, {
             box = this.boundingBox(),
             pad = this.dim(model.pad, Math.min(box.innerWidth, box.innerHeight)),
             polygons = pyramid()
-                .base(box.innerWidth)
-                .height(box.innerHeight)
                 .pad(pad)
                 .value(d => d[field]),
+            scaleX = this.getScale('linear').rangeRound([0, box.innerWidth]),
+            scaleY = this.getScale('linear').rangeRound(model.inverted ? [box.innerHeight, 0] : [0, box.innerHeight]),
             data = frame.new(polygons(this.proportionalData(frame, field))).dimension('fraction').bottom(Infinity),
-            marks = symbol().type(d => polygon(d.points)).size(1),
+            marks = symbol().type(d => polygon(d.points.map(xy => [scaleX(xy[0]), scaleY(xy[1])]))).size(1),
             fill = this.fill(data),
             paper = this.paper(),
             segments = paper.size(box).group()
