@@ -1,5 +1,6 @@
 import {legendColor, legendSize, legendSymbol} from 'd3-svg-legend';
 import {map} from 'd3-collection';
+import {pop} from 'd3-let';
 
 import globalOptions from '../core/options';
 import {vizPrototype} from '../core/chart';
@@ -34,7 +35,7 @@ const legends = {
 vizPrototype.legend = function (cfg, box) {
     var vizModel = this.getModel(),
         lgModel = this.getModel('legend'),
-        name = vizModel.legendType,
+        name = pop(cfg, 'type') || vizModel.legendType,
         size = this.dim(lgModel.fontSize, box.height, lgModel.minFontSize, lgModel.maxFontSize);
     if (!name) return;
     var legend = legends[name];

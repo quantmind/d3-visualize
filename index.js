@@ -21,6 +21,7 @@ export {default as visualComponents} from './src/components/index';
 // utilities
 export {colorScales} from './src/plugins/color';
 export {default as pyramid} from './src/transforms/pyramid';
+export {default as niceRange} from './src/utils/nicerange';
 //
 //  Charts
 //  =========
@@ -35,3 +36,4 @@ export {default as PieChart} from './src/charts/pie';
 export {default as PyramidChart} from './src/charts/pyramid';
 export {default as Treemap} from './src/charts/treemap';
 export {default as TextChart} from './src/charts/text';
+export {default as Heatmap} from './src/charts/heatmap';
