@@ -83,8 +83,8 @@ export default createChart('areachart', lineDrawing, {
                 .attr('fill', d => d.fill)
                 .attr('stroke', d => d.stroke)
                 .attr('fill-opacity', col.fillOpacity)
-                .attr('fill-opacity', col.fillOpacity)
-                .attr('stroke-width', model.lineWidth);
+                .attr('stroke-width', model.lineWidth)
+                .attr('stroke-opacity', col.strokeOpacity);
 
         areagroup
             .exit()

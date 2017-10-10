@@ -1,4 +1,4 @@
-import {stack} from 'd3-shape';
+import {stack, stackOrderDescending} from 'd3-shape';
 import {max} from 'd3-array';
 
 import createChart from '../core/chart';
@@ -92,7 +92,7 @@ export default createChart('barchart', lineDrawing, {
 
         if (stacked) {
             sy.domain([0, max(data, d => d.total)]).nice();
-            data = stack().keys(groups)(data);
+            data = stack().order(stackOrderDescending).keys(groups)(data);
             var rects = bars.data(data)
                             .enter()
                                 .append('g')

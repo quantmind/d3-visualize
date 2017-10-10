@@ -13,6 +13,7 @@ globalOptions.legend = {
     fontSize: '3%',
     title: '',
     titleWidth: "20%",
+    labelFormat: null,
     titleMinWidth: 30,
     titleMaxWidth: 60,
     minFontSize: 10,
@@ -45,7 +46,12 @@ vizPrototype.legend = function (cfg, box) {
         var width = this.dim(lgModel.titleWidth, box.width, lgModel.titleMinWidth, lgModel.titleMaxWidth);
         legend.title(lgModel.title).titleWidth(width);
     }
+
+    if (lgModel.labelFormat) legend.labelFormat(lgModel.labelFormat);
+
+    // apply cfg parameters
     for (let key in cfg) legend[key](cfg[key]);
+
     var g = this.paper()
             .group('legend')
             .style('font-size', `${size}px`)
@@ -86,7 +92,7 @@ function bottom (bb, box, options) {
 function right (bb, box, options) {
     return {
         x: box.width - bb.width - options.offsetX,
-        y: options.offsetY
+        y: box.total.top + (box.innerHeight - bb.height)/2 
     };
 }
 

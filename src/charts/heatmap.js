@@ -20,7 +20,7 @@ export default createChart('heatmap', lineDrawing, {
     options: {
         shape: 'square',
         layout: 'heatmap',
-        buckets: 9,
+        buckets: 10,
         pad: 0.005,     // padding for heatmap & punchcard
         x: 'x',
         y: 'y',
@@ -31,12 +31,11 @@ export default createChart('heatmap', lineDrawing, {
 
     doDraw (frame) {
         var model = this.getModel(),
+        color = this.getModel('color'),
             layout = model.layout,
             box = this.boundingBox(),
             zrange = extent(frame.data, accessor(model.z)),
-            paper = this.paper().size(box),
-            tickSize = model.axisTickSize,
-            axisTickSizeOuter = model.axisTickSizeOuter;
+            paper = this.paper().size(box);
 
         if (zrange[0] < 0 && layout === 'punchcard') layout = 'heatmap';
 
@@ -57,11 +56,17 @@ export default createChart('heatmap', lineDrawing, {
                 .classed('shape', true)
                 .attr("transform", d => `translate(${d.x}, ${d.y})`)
                 .attr("fill", d => d.color)
+                .attr("fill-opacity", 0)
+                .attr("stroke-opacity", 0)
+                .attr("stroke", color.stroke)
                 .attr('d', shape)
             .merge(shapes)
                 .transition()
                 .attr("transform", d => `translate(${d.x}, ${d.y})`)
+                .attr("fill-opacity", color.fillOpacity)
                 .attr("fill", d => d.color)
+                .attr("stroke-opacity", color.strokeOpacity)
+                .attr("stroke", color.stroke)
                 .attr('d', shape);
 
         if (model.axisX === 'bottom')
@@ -75,7 +80,7 @@ export default createChart('heatmap', lineDrawing, {
                 shape: model.shape,
                 scale: heat.colors
             }, box);
-        else (layout === 'punchcard')
+        else if (layout === 'punchcard')
             this.legend({
                 type: 'size',
                 shape: model.shape,
