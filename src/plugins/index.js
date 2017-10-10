@@ -8,6 +8,7 @@ import './responsive';
 import './title';
 import './margin';
 import './axis';
+import './shapes';
 import './color';
 import './legend';
 //
