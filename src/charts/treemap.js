@@ -1,3 +1,5 @@
+import {require} from 'd3-view';
+
 import createChart from '../core/chart';
 
 //
@@ -5,6 +7,9 @@ import createChart from '../core/chart';
 //  =============
 //
 export default createChart('treemap', {
-    requires: ['d3-treemap']
+    requires: ['d3-hierarchy'],
 
+    doDraw (frame, hierarchy) {
+        
+    }
 });

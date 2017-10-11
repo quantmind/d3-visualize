@@ -145,6 +145,12 @@ export default function (type, proto) {
                 get () {
                     return CONTAINERS.indexOf(type) === -1;
                 }
+            },
+            visualRoot: {
+                get () {
+                    if (this.visualParent) return this.visualParent.visualRoot;
+                    return this;
+                }
             }
         });
         this.visualParent = parent;

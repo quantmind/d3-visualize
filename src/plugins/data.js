@@ -15,6 +15,12 @@ visuals.options.dataContext = {
     $format: cachedFormat
 };
 
+//
+//  Additional data required by visuals
+visuals.options.metadata = {
+
+}
+
 //  getData method
 //  =====================
 //

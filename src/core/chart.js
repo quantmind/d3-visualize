@@ -75,6 +75,11 @@ export const chartPrototype = {
         }
         var self = this;
         visuals.events.call('before-draw', undefined, this);
+        if (this.requires) {
+            //require('d3-hierarchy').then(hierarchy => {
+        //        self._draw(frame, hierarchy);
+        //    });
+        }
         this.getData().then(frame => {
             delete self.drawing;
             if (frame) {
