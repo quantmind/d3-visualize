@@ -6,7 +6,7 @@ export {default as randomPath} from './src/utils/randompath';
 // Data layer
 export {default as DataStore} from './src/data/store';
 export {default as dataSources} from './src/data/sources';
-export {default as dataLocale} from './src/data/locale';
+//export {default as dataLocale} from './src/data/locale';
 
 //
 //  Core API
@@ -37,3 +37,4 @@ export {default as PyramidChart} from './src/charts/pyramid';
 export {default as Treemap} from './src/charts/treemap';
 export {default as TextChart} from './src/charts/text';
 export {default as Heatmap} from './src/charts/heatmap';
+export {default as Tabular} from './src/charts/tabular';

@@ -1,5 +1,4 @@
 import {isArray, isObject} from 'd3-let';
-import {resolvedPromise} from 'd3-view';
 
 //
 //  Array DataSource
@@ -18,6 +17,6 @@ export default {
     },
 
     getData () {
-        return resolvedPromise(this.asFrame(this._data));
+        return this.asFrame(this._data);
     }
 };

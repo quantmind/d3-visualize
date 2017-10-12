@@ -71,10 +71,6 @@ export default createVisual('visual', {
         if (this.visualParent) this.visualParent.live.push(this);
     },
 
-    toString () {
-        return `visual ${this.model.uid}`;
-    },
-
     // Draw the visual
     draw() {
         if (this.drawing) {
@@ -107,7 +103,7 @@ export default createVisual('visual', {
         var type = pop(options, 'type');
         var VisualClass = visuals.types[type];
         if (!VisualClass)
-            warn(`Cannot add visual ${options.type}`);
+            warn(`Cannot add visual "${type}", not available`);
         else
             return new VisualClass(this.element, options, this);
     },

@@ -1,5 +1,6 @@
 import assign from 'object-assign';
-import {isFunction} from 'd3-let';
+import {isFunction, isArray} from 'd3-let';
+import {require} from 'd3-view';
 import * as d3_scale from 'd3-scale';
 
 import createVisual, {visuals} from './base';
@@ -73,17 +74,22 @@ export const chartPrototype = {
             warn(`${this.toString()} already drawing`);
             return this.drawing;
         }
-        var self = this;
+        var self = this,
+            doDraw = this.doDraw;
+
         visuals.events.call('before-draw', undefined, this);
-        if (this.requires) {
-            //require('d3-hierarchy').then(hierarchy => {
-        //        self._draw(frame, hierarchy);
-        //    });
-        }
-        this.getData().then(frame => {
+
+        return Promise.all([
+            this.requires ? require.apply(undefined, this.requires) : [],
+            // this.getMetaData(),
+            this.getData()
+        ]).then(args => {
             delete self.drawing;
+            var frame = args[1];
             if (frame) {
-                this.doDraw(frame);
+                args = isArray(args[0]) ? args[0] : [args[0]];
+                args.unshift(frame);
+                doDraw.apply(self, args);
                 visuals.events.call('after-draw', undefined, self);
             }
         }, err => {

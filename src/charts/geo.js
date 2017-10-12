@@ -1,10 +1,4 @@
-import {extent, range} from 'd3-array';
-import {map} from 'd3-collection';
-
-import accessor from '../utils/accessor';
-import niceRange from '../utils/nicerange';
 import createChart from '../core/chart';
-import {lineDrawing} from './line';
 //
 //  GeoChart
 //  =============
@@ -17,7 +11,7 @@ export default createChart('geochart', {
         geometry: null
     },
 
-    doDraw (frame) {
-        var box = this.boundingBox();
+    doDraw () {
+        //var box = this.boundingBox();
     }
 });

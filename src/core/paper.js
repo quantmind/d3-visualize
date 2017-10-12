@@ -71,3 +71,25 @@ export const Svg = createPaper('svg', {
         return svg.node();
     }
 });
+
+
+export const Div = createPaper('div', {
+
+    initialise (viz) {
+        var div = viz.visualParent.paper.append('div')
+            .attr('id', viz.model.uid)
+            .classed(viz.visualType, true)
+            .style('position', 'absolute');
+        return div.node();
+    },
+
+    group (cname) {
+        if (!cname) cname = 'main';
+        var sel = this.sel;
+        sel
+            .selectAll(`.${cname}`)
+            .data([0]).enter()
+            .append('div').classed(cname, true);
+        return sel.select(`.${cname}`);
+    },
+});

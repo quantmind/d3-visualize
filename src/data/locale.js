@@ -6,7 +6,7 @@ import dataSources from './sources';
 
 //
 // manage locale
-export default {
+export default  {
     formatDate: timeFormat('%d/%m/%Y'),
 
     formatDateTime: timeFormat('%a %e %b %X %Y'),
