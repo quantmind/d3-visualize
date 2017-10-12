@@ -71,9 +71,7 @@ export const visualPrototype = assign({}, {
     },
 
     // destroy the visual
-    destroy () {
-
-    },
+    destroy () {},
 
     toString () {
         return `${this.visualType}-${this.model.uid}`;

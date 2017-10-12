@@ -121,7 +121,8 @@ export default createVisual('visual', {
             if (!fit) viewDebug(`Resizing "${this.toString()}"`);
             this.width = size.width;
             this.height = size.height;
-            this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
+            // this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
+            this.paper.style('height', this.height + 'px');
             if (!fit) this.draw();
         }
     },

@@ -12,7 +12,7 @@ export {default as dataSources} from './src/data/sources';
 //  Core API
 export {visuals} from './src/core/base';
 export {default as createChart} from './src/core/chart';
-export {default as createPaper, Svg} from './src/core/paper';
+export {default as createPaper, Svg, Div} from './src/core/paper';
 export {default as visualTransforms} from './src/transforms/index';
 //
 //  Components
@@ -37,4 +37,3 @@ export {default as PyramidChart} from './src/charts/pyramid';
 export {default as Treemap} from './src/charts/treemap';
 export {default as TextChart} from './src/charts/text';
 export {default as Heatmap} from './src/charts/heatmap';
-export {default as Tabular} from './src/charts/tabular';

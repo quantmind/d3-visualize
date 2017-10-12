@@ -78,8 +78,8 @@ export const Div = createPaper('div', {
     initialise (viz) {
         var div = viz.visualParent.paper.append('div')
             .attr('id', viz.model.uid)
-            .classed(viz.visualType, true)
-            .style('position', 'absolute');
+            .classed(viz.visualType, true);
+            //.style('position', 'absolute');
         return div.node();
     },
 
