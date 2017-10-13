@@ -7,6 +7,7 @@
 //  visual plugins first
 import '../plugins/menu';
 import '../plugins/data';
+import '../plugins/font';
 import '../plugins/responsive';
 import '../plugins/title';
 import '../plugins/margin';
