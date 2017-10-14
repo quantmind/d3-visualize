@@ -1,5 +1,5 @@
-import {isObject} from 'd3-let';
-import {viewExpression, resolvedPromise} from 'd3-view';
+import {isObject, isPromise} from 'd3-let';
+import {viewExpression} from 'd3-view';
 
 
 export default {
@@ -15,7 +15,9 @@ export default {
 
     getData () {
         var self = this,
-            model = this.store.model;
-        return resolvedPromise(this.expression.eval(model)).then((data) => self.asFrame(data));
+            model = this.store.model,
+            result = this.expression.eval(model);
+        if (isPromise(result)) return result.then(data => self.asFrame(data));
+        else return result;
     }
 };

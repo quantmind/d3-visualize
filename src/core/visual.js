@@ -113,6 +113,7 @@ export default createVisual('visual', {
         this.resize(null, true);
     },
 
+    // resize the chart
     resize (size, fit) {
         if (!size) size = getSize(this.element.parentNode || this.element, this.getModel());
         var currentSize = this.size;
@@ -123,7 +124,8 @@ export default createVisual('visual', {
             this.height = size.height;
             // this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
             this.paper.style('height', this.height + 'px');
-            if (!fit) this.draw();
+            // if we are not just fitting draw the visual without fetching data!!
+            if (!fit) this.draw(false);
         }
     },
 

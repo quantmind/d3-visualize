@@ -1,7 +1,7 @@
 import {csvParse} from 'd3-dsv';
 import {set} from 'd3-collection';
 import {isObject} from 'd3-let';
-import {viewProviders, resolvedPromise} from 'd3-view';
+import {viewProviders} from 'd3-view';
 
 import warn from './warn';
 import isUrl from '../utils/isurl';
@@ -29,9 +29,9 @@ export default {
             self = this;
         if (!fetch) {
             warn('fetch provider not available, cannot submit');
-            return resolvedPromise([]);
+            return [];
         }
-        return fetch(this.url).then(parse).then((data) => self.asFrame(data));
+        return fetch(this.url).then(parse).then(data => self.asFrame(data));
     }
 };
 

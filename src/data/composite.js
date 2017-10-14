@@ -25,14 +25,18 @@ export default {
 
     getData () {
         var store = this.store,
+            sources = this.source,
             self = this;
-        let frame;
-        return Promise.all(this.source.map(source => {
+
+        return Promise.all(sources.map(source => {
              return store.getData(source);
         })).then(frames => {
-            if (frames.length === 1) frame = frames[0];
-            else frame = self.mergeFrames(frames);
-            return self.asFrame(frame);
+            if (frames.length === 1) return frames[0];
+            else if (self.config.merge) return self.mergeFrames(frames);
+            else return frames.reduce((o, frame, index) => {
+                o[sources[index]] = frame;
+                return o;
+            }, {type: 'frameCollection'});
         });
     },
 
