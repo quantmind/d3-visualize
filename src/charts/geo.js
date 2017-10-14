@@ -12,14 +12,19 @@ export default createChart('geochart', {
     requires: ['d3-geo', 'topojson', 'd3-geo-projection', 'leaflet'],
 
     options: {
-        // list of geometry data to display in this chart
+        // Geometry data to display in this chart - must be in the topojson source
         geometry: 'countries',
         propertyid: 'id',
-        center: 'italy',
+        //
+        // for choropleth maps - how many color buckets to visualise
+        buckets: 10,
+        //
         // specify one of the topojson geometry object for calculating
         // the projected bounding box
         boundGeometry: null,
+        // how much to zoom out, 1 = no zoom out, 0.95 to 0.8 are sensible values
         boundScaleFactor: 0.9,
+        //
         projection: null,
         graticule: false,
         leaflet: false,
@@ -34,22 +39,22 @@ export default createChart('geochart', {
             group = paper.group()
                     .attr("transform", this.translate(box.total.left, box.total.top)),
             info = this.getGeoData(frame),
-            propertyid = model.propertyid;
+            propertyid = model.propertyid,
+            fill = 'none';
 
         if (!info) return warn ('Topojson data not available - cannot draw topology');
 
         var topoData = info.topology,
             geometryData = geo.feature(topoData, topoData.objects[model.geometry]).features,
-            boundGeometry = model.boundGeometry ? geo.feature(topoData, topoData.objects[model.boundGeometry]).features : null,
             // neighbors = geo.neighbors(geometry.geometries),
             projection = camelFunction(geo, 'geo', info.projection).scale(model.scale),
             path = geo.geoPath().projection(projection),
-            // drawing paths
             paths = group.selectAll('.geometry').data(geometryData);
 
-        // If we are centering on a given geometry, calculate bounds andnew scale & translate
+        // If we are centering on a given geometry, calculate bounds and the new scale & translate
         // Thanks to https://bl.ocks.org/mbostock/4707858
-        if (boundGeometry) {
+        if (model.boundGeometry) {
+            var boundGeometry = geo.feature(topoData, topoData.objects[model.boundGeometry]).features;
             // reset scale and translate
             projection.scale(1).translate([0, 0]);
             // get boudns and new scale and translate
@@ -59,6 +64,8 @@ export default createChart('geochart', {
 
             projection.scale(s).translate(t);
         }
+
+        if (info.data) fill = this.choropleth(info.data);
         //var map = new geo.Map("map", {center: [37.8, -96.9], zoom: 4})
         //            .addLayer(new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"));
 
@@ -75,7 +82,12 @@ export default createChart('geochart', {
                 .transition()
                 .attr("d", path)
                 .style("stroke", color.stroke)
-                .style("stroke-opacity", color.strokeOpacity);
+                .style("stroke-opacity", color.strokeOpacity)
+                .style("fill", fill);
+
+        paths
+            .exit()
+            .remove();
     },
 
     getGeoData (frame) {
@@ -95,5 +107,15 @@ export default createChart('geochart', {
             }
             return info;
         }
+    },
+
+    // choropleth map based on data
+    choropleth (frame) {
+        var scale = this.colors(frame.data.length);
+
+        return d => {
+            return 'none';
+        }
     }
+
 });
