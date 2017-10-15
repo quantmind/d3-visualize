@@ -1,5 +1,9 @@
+import {extent} from 'd3-array';
+
 import createChart from '../core/chart';
 import camelFunction from '../utils/camelfunction';
+import accessor from '../utils/accessor';
+import niceRange from '../utils/nicerange';
 import warn from '../utils/warn';
 
 //
@@ -14,10 +18,17 @@ export default createChart('geochart', {
     options: {
         // Geometry data to display in this chart - must be in the topojson source
         geometry: 'countries',
-        propertyid: 'id',
         //
-        // for choropleth maps - how many color buckets to visualise
+        // for choropleth maps
+        // field in the dataframe which provide values to match against a topojson
+        // object properties
+        dataKey: 'id',
+        geoKey: 'id',
+        // field in the dataframe which provide values for the choropleth
+        dataValueKey: 'value',
+        // how many color buckets to visualise
         buckets: 10,
+        choroplethScale: 'quantile',
         //
         // specify one of the topojson geometry object for calculating
         // the projected bounding box
@@ -32,62 +43,78 @@ export default createChart('geochart', {
     },
 
     doDraw (frame, geo) {
+        var info = this.getGeoData(frame);
+        if (!info) return warn ('Topojson data not available - cannot draw topology');
+        if (!this._geoPath) this.createGeoPath(geo, info);
+        this.update(geo, info);
+    },
+
+    update (geo, info) {
         var model = this.getModel(),
             color = this.getModel('color'),
             box = this.boundingBox(),
             paper = this.paper().size(box),
             group = paper.group()
                     .attr("transform", this.translate(box.total.left, box.total.top)),
-            info = this.getGeoData(frame),
-            propertyid = model.propertyid,
+            path = this._geoPath,
+            geometryData = geo.feature(info.topology, info.topology.objects[model.geometry]).features,
+            paths = group.selectAll('.geometry').data(geometryData),
             fill = 'none';
 
-        if (!info) return warn ('Topojson data not available - cannot draw topology');
-
-        var topoData = info.topology,
-            geometryData = geo.feature(topoData, topoData.objects[model.geometry]).features,
-            // neighbors = geo.neighbors(geometry.geometries),
-            projection = camelFunction(geo, 'geo', info.projection).scale(model.scale),
-            path = geo.geoPath().projection(projection),
-            paths = group.selectAll('.geometry').data(geometryData);
-
-        // If we are centering on a given geometry, calculate bounds and the new scale & translate
-        // Thanks to https://bl.ocks.org/mbostock/4707858
-        if (model.boundGeometry) {
-            var boundGeometry = geo.feature(topoData, topoData.objects[model.boundGeometry]).features;
-            // reset scale and translate
-            projection.scale(1).translate([0, 0]);
-            // get boudns and new scale and translate
-            var b = path.bounds(boundGeometry[0]),
-                s = Math.round(model.boundScaleFactor / Math.max((b[1][0] - b[0][0]) / box.innerWidth, (b[1][1] - b[0][1]) / box.innerHeight)),
-                t = [(box.innerWidth - s * (b[1][0] + b[0][0])) / 2, (box.innerHeight - s * (b[1][1] + b[0][1])) / 2];
-
-            projection.scale(s).translate(t);
-        }
-
-        if (info.data) fill = this.choropleth(info.data);
-        //var map = new geo.Map("map", {center: [37.8, -96.9], zoom: 4})
-        //            .addLayer(new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"));
+        this.center(geo, info);
+        if (info.data) fill = this.choropleth(info.data, box);
 
         paths
             .enter()
                 .append("path")
                 .attr("class", "geometry")
                 .attr("d", path)
-                .attr("id", d => d.properties[propertyid])
                 .style('fill', 'none')
                 .style("stroke", color.stroke)
                 .style("stroke-opacity", 0)
+                .style("fill-opacity", 0)
             .merge(paths)
                 .transition()
                 .attr("d", path)
                 .style("stroke", color.stroke)
                 .style("stroke-opacity", color.strokeOpacity)
-                .style("fill", fill);
+                .style("fill", fill)
+                .style("fill-opacity", color.fillOpacity);
 
         paths
             .exit()
             .remove();
+    },
+
+    createGeoPath (geo, info) {
+        var model = this.getModel(),
+            projection = camelFunction(geo, 'geo', info.projection).scale(model.scale),
+            path = geo.geoPath().projection(projection),
+            self = this,
+            lefletMap;
+
+        this._geoPath = path;
+        this.center(geo, info);
+
+        if (model.leaflet) {
+            var leafletId = `leaflet-${model.uid}`,
+                paper = this.paper();
+            this.visualParent.paper
+                    .append('div')
+                    .attr('id', leafletId);
+            lefletMap = new geo.Map(leafletId, {center: [37.8, -96.9], zoom: 4})
+                            .addLayer(new geo.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")),
+            lefletMap.getPanes().overlayPane.appendChild(paper.element);
+            projection = geo.transform({point: projectPoint});
+            lefletMap.on("viewreset", () => self.update(geo, info));
+        }
+
+        return path;
+
+        function projectPoint(x, y) {
+            var point = lefletMap.latLngToLayerPoint(new geo.LatLng(y, x));
+            this.stream.point(point.x, point.y);
+        }
     },
 
     getGeoData (frame) {
@@ -109,13 +136,52 @@ export default createChart('geochart', {
         }
     },
 
+    center (geo, info) {
+        var model = this.getModel();
+        if (!model.boundGeometry) return;
+
+        var path = this._geoPath,
+            projection = path.projection(),
+            box = this.boundingBox(),
+            boundGeometry = geo.feature(info.topology, info.topology.objects[model.boundGeometry]).features;
+
+        projection.scale(1).translate([0, 0]);
+
+        var b = path.bounds(boundGeometry[0]),
+            topLeft = b[0],
+            bottomRight = b[1],
+            scaleX = (bottomRight[0] - topLeft[0]) / box.innerWidth,
+            scaleY = (bottomRight[1] - topLeft[1]) / box.innerHeight,
+            scale = Math.round(model.boundScaleFactor / Math.max(scaleX, scaleY)),
+            translate = [
+                (box.innerWidth - scale * (bottomRight[0] + topLeft[0])) / 2,
+                (box.innerHeight - scale * (bottomRight[1] + topLeft[1])) / 2
+            ];
+
+        projection.scale(scale).translate(translate);
+    },
+
     // choropleth map based on data
-    choropleth (frame) {
-        var scale = this.colors(frame.data.length);
+    choropleth (frame, box) {
+        var model = this.getModel(),
+            buckets = Math.min(model.buckets, frame.data.length),
+            dataKey = model.dataKey,
+            dataValueKey = model.dataValueKey,
+            geoKey = model.geoKey,
+            valueRange = niceRange(extent(frame.data, accessor(dataValueKey)), buckets),
+            values = frame.data.reduce((o, d) => {o[d[dataKey]] = d[dataValueKey]; return o;}, {}),
+            colors = this.getScale(model.choroplethScale).range(this.colors(buckets).reverse()).domain(valueRange);
+        let key;
+
+        this.legend({
+            type: 'color',
+            scale: colors
+        }, box);
 
         return d => {
-            return 'none';
-        }
+            key = d.properties[geoKey];
+            return colors(values[key]);
+        };
     }
 
 });

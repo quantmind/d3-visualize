@@ -69,7 +69,7 @@ export const vizPrototype = {
 export const chartPrototype = {
 
     //  override draw method
-    draw () {
+    draw (fetchData) {
         if (this.drawing) {
             warn(`${this.toString()} already drawing`);
             return this.drawing;
@@ -79,23 +79,30 @@ export const chartPrototype = {
 
         visuals.events.call('before-draw', undefined, this);
 
-        return Promise.all([
-            this.requires ? require.apply(undefined, this.requires) : [],
-            // this.getMetaData(),
-            this.getData()
-        ]).then(args => {
+        if (fetchData === false && this._drawArgs) {
             delete self.drawing;
-            var frame = args[1];
-            if (frame) {
-                args = isArray(args[0]) ? args[0] : [args[0]];
-                args.unshift(frame);
-                doDraw.apply(self, args);
-                visuals.events.call('after-draw', undefined, self);
-            }
-        }, err => {
-            delete self.drawing;
-            warn(`Could not draw ${self.toString()}: ${err}`);
-            this.displayError(err);
-        });
+            doDraw.apply(self, this._drawArgs);
+            visuals.events.call('after-draw', undefined, self);
+        } else {
+            return Promise.all([
+                this.requires ? require.apply(undefined, this.requires) : [],
+                // this.getMetaData(),
+                this.getData()
+            ]).then(args => {
+                delete self.drawing;
+                var frame = args[1];
+                if (frame) {
+                    args = isArray(args[0]) ? args[0] : [args[0]];
+                    args.unshift(frame);
+                    this._drawArgs = args;
+                    doDraw.apply(self, args);
+                    visuals.events.call('after-draw', undefined, self);
+                }
+            }, err => {
+                delete self.drawing;
+                warn(`Could not draw ${self.toString()}: ${err}`);
+                this.displayError(err);
+            });
+        }
     }
 };

@@ -31,7 +31,7 @@ export default createChart('heatmap', lineDrawing, {
 
     doDraw (frame) {
         var model = this.getModel(),
-        color = this.getModel('color'),
+            color = this.getModel('color'),
             layout = model.layout,
             box = this.boundingBox(),
             zrange = extent(frame.data, accessor(model.z)),

@@ -72,7 +72,7 @@ export default createVisual('visual', {
     },
 
     // Draw the visual
-    draw() {
+    draw (fetchData) {
         if (this.drawing) {
             warn(`${this.toString()} already drawing`);
             return this.drawing;
@@ -86,7 +86,7 @@ export default createVisual('visual', {
         }
         var self = this;
         visuals.events.call('before-draw', undefined, this);
-        return Promise.all(this.layers.map(visual => visual.redraw()))
+        return Promise.all(this.layers.map(visual => visual.redraw(fetchData)))
             .then(() => {
                 delete self.drawing;
                 visuals.events.call('after-draw', undefined, self);

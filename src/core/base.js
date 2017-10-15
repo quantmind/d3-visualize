@@ -52,17 +52,17 @@ export const visualPrototype = assign({}, {
 
     // redraw the visual
     // this is the method that should be invoked by applications
-    redraw () {
+    redraw (fetchData) {
         if (this.drawing) {
             var self = this,
                 event = `after-draw.${this.toString()}`;
             visuals.events.on(event, () => {
                 // remove callback
                 visuals.events.on(event, null);
-                self.redraw();
+                self.redraw(fetchData);
             });
         } else
-            this.drawing = this.draw();
+            this.drawing = this.draw(fetchData);
         return this.drawing;
     },
 

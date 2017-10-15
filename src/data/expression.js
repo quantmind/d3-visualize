@@ -18,6 +18,6 @@ export default {
             model = this.store.model,
             result = this.expression.eval(model);
         if (isPromise(result)) return result.then(data => self.asFrame(data));
-        else return result;
+        else return self.asFrame(result);
     }
 };
