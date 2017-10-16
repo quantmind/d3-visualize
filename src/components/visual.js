@@ -26,7 +26,7 @@ export default assign({}, vizComponent, {
         else
             options.visual = pop(schema, 'visual') || {};
 
-        model.visual = new Visual(sel.node(), options, model.visual);
+        model.visual = new Visual(sel.node(), options, model.visual, model.visual ? null : model.$new());
         if (type !== 'visual') model.visual.addVisual(schema);
         else if (layers) {
             layers.forEach(layer => model.visual.addVisual(layer));

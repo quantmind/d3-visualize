@@ -46,8 +46,7 @@ visuals.events.on('after-init.data', viz => {
     Object.defineProperties(viz, {
         dataStore : {
             get () {
-                if (viz.visualParent) return viz.visualParent.dataStore;
-                return viz.model.dataStore;
+                return viz.model.root.dataStore;
             }
         },
     });
@@ -63,7 +62,7 @@ function setupVisual (visual) {
     if (!store) {
         // create the data store for the visual or container
         store = new DataStore(visual.getModel('dataContext'));
-        visual.model.dataStore = store;
+        visual.model.root.dataStore = store;
     }
     store.addSources(data);
 }

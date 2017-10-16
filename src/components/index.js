@@ -15,6 +15,8 @@ import '../plugins/axis';
 import '../plugins/shapes';
 import '../plugins/color';
 import '../plugins/legend';
+import '../plugins/tooltip';
+import '../plugins/mouse';
 import dashboard from './dashboard';
 import visual from './visual';
 

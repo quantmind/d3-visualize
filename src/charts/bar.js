@@ -107,6 +107,12 @@ export default createChart('barchart', lineDrawing, {
                                 .data(d => d);
             rects.enter()
                 .append('rect')
+                    .attr('x', xrect)
+                    .attr('y', yrect)
+                    .attr('height', height)
+                    .attr('width', width)
+                    .on("mouseover", this.mouseOver())
+                    .on("mouseout", this.mouseOut())
                 .merge(rects)
                     .transition()
                     .attr('x', xrect)

@@ -20,11 +20,10 @@ export default createChart('geochart', {
         geometry: 'countries',
         //
         // for choropleth maps
-        // field in the dataframe which provide values to match against a topojson
-        // object properties
-        dataKey: 'id',
+        // geoKey and dataKey are used to match geometry with data
         geoKey: 'id',
-        // field in the dataframe which provide values for the choropleth
+        dataKey: 'id',
+        dataLabelKey : 'label',
         dataValueKey: 'value',
         // how many color buckets to visualise
         buckets: 10,
@@ -39,7 +38,10 @@ export default createChart('geochart', {
         projection: null,
         graticule: false,
         leaflet: false,
-        scale: 200
+        scale: 200,
+        //
+        // mouseover strategy
+        mouseover: ['darken', 'tooltip']
     },
 
     doDraw (frame, geo) {
@@ -73,6 +75,8 @@ export default createChart('geochart', {
                 .style("stroke", color.stroke)
                 .style("stroke-opacity", 0)
                 .style("fill-opacity", 0)
+                .on("mouseover", this.mouseOver())
+                .on("mouseout", this.mouseOut())
             .merge(paths)
                 .transition()
                 .attr("d", path)
@@ -166,12 +170,13 @@ export default createChart('geochart', {
         var model = this.getModel(),
             buckets = Math.min(model.buckets, frame.data.length),
             dataKey = model.dataKey,
+            dataLabelKey = model.dataLabelKey,
             dataValueKey = model.dataValueKey,
             geoKey = model.geoKey,
             valueRange = niceRange(extent(frame.data, accessor(dataValueKey)), buckets),
-            values = frame.data.reduce((o, d) => {o[d[dataKey]] = d[dataValueKey]; return o;}, {}),
-            colors = this.getScale(model.choroplethScale).range(this.colors(buckets).reverse()).domain(valueRange);
-        let key;
+            colors = this.getScale(model.choroplethScale).range(this.colors(buckets).reverse()).domain(valueRange),
+            values = frame.data.reduce((o, d) => {o[d[dataKey]] = d; return o;}, {});
+        let key, value;
 
         this.legend({
             type: 'color',
@@ -180,7 +185,13 @@ export default createChart('geochart', {
 
         return d => {
             key = d.properties[geoKey];
-            return colors(values[key]);
+            value = values[key];
+            d.choropleth = {
+                label: value[dataLabelKey] || key,
+                value: value[dataValueKey],
+                color: colors(value[dataValueKey])
+            };
+            return d.choropleth.color;
         };
     }
 

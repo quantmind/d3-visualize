@@ -72,7 +72,7 @@ export default assign({}, vizComponent, {
             root = model.root;
         if (attrs.class) sel.attr('class', attrs.class);
         if (!schema.visuals) schema.visuals = {};
-        model.visual = new VisualContainer(sel.node(), schema, model.visual);
+        model.visual = new VisualContainer(sel.node(), schema, model.visual, model.visual ? null : model.$new());
         if (!root.visualDashboard) root.visualDashboard = model.visual;
         return this.mountInner(sel, inner);
     }

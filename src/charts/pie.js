@@ -107,6 +107,8 @@ export default createChart('piechart', proportional, {
                 .attr('fill-opacity', 0)
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
+                .on("mouseover", this.mouseOver())
+                .on("mouseout", this.mouseOut())
             .merge(slices)
                 .transition()
                 .attr('stroke', color.stroke)
