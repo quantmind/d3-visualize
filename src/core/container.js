@@ -9,14 +9,14 @@ export default createVisual('container', {
         if (this.visualParent) this.visualParent.live.push(this);
     },
 
-    draw() {
+    draw (fetchData) {
         if (this.drawing) {
             warn(`${this.toString()} already drawing`);
             return this.drawing;
         }
         var self = this;
         visuals.events.call('before-draw', undefined, self);
-        return Promise.all(this.live.map(visual => visual.redraw())).then(() => {
+        return Promise.all(this.live.map(visual => visual.redraw(fetchData))).then(() => {
             delete self.drawing;
             visuals.events.call('after-draw', undefined, self);
         });

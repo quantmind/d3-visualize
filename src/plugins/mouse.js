@@ -85,13 +85,13 @@ function fillStrategy () {
             fill = color(sel.style('fill')),
             node = sel.node();
         node.__mouse_over__.fill = fill;
-        sel.style('fill', model.fillColor);
+        sel.transition().style('fill', model.fillColor);
     }
 
     fill.out = function (viz, sel) {
         var node = sel.node(),
             fill = node.__mouse_over__.fill;
-        if (fill) sel.style('fill', fill);
+        if (fill) sel.transition().style('fill', fill);
     };
 
     return fill;

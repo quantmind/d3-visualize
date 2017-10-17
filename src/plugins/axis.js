@@ -38,6 +38,7 @@ vizPrototype.xAxis = function (scale, x, y) {
     this.paper()
         .group('x-axis')
         .attr("transform", this.translate(x, y))
+        .transition()
         .call(axis).select('path.domain').attr('stroke', model.stroke);
 };
 
@@ -47,6 +48,7 @@ vizPrototype.yAxis = function (scale, x, y) {
     this.paper()
         .group('y-axis')
         .attr("transform", this.translate(x, y))
+        .transition()
         .call(axis).select('path.domain').attr('stroke', model.stroke);
 };
 

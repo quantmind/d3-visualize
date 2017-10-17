@@ -60,6 +60,8 @@ export default createChart('heatmap', lineDrawing, {
                 .attr("stroke-opacity", 0)
                 .attr("stroke", color.stroke)
                 .attr('d', shape)
+                .on("mouseover", this.mouseOver())
+                .on("mouseout", this.mouseOut())
             .merge(shapes)
                 .transition()
                 .attr("transform", d => `translate(${d.x}, ${d.y})`)

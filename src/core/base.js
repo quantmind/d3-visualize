@@ -91,7 +91,10 @@ export const visualPrototype = assign({}, {
                 model.$update(options);
             }
             this.model[type] = model;
-            model.$on(() => self.draw());
+            //
+            // Trigger redraw when model change
+            // Do not fecth data
+            model.$on(() => self.redraw(false));
         }
         return model;
     },
