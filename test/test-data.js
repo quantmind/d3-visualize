@@ -1,4 +1,4 @@
-import {testAsync} from './utils';
+import {test} from './utils';
 import {DataStore, randomPath} from '../index';
 
 
@@ -16,7 +16,7 @@ describe('dataStore', () => {
         expect(store.source('foo')).toBe(undefined);
     });
 
-    it('test expression provider', testAsync(async () => {
+    test('test expression provider', async () => {
         var store = new DataStore({
             randomPath: randomPath
         });
@@ -36,9 +36,9 @@ describe('dataStore', () => {
         var cf = await source.getData();
         expect(cf).toBeTruthy();
         expect(cf.size()).toBe(300);
-    }));
+    });
 
-    it('test array provider', testAsync(async () => {
+    test('test array provider', async () => {
         var store = new DataStore();
         store.addSources({
             name: 'random',
@@ -50,5 +50,5 @@ describe('dataStore', () => {
         var df = await store.getData('random');
         expect(df).toBeTruthy();
         expect(df.size()).toBe(20);
-    }));
+    });
 });

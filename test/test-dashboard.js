@@ -1,5 +1,6 @@
 import {view} from 'd3-view';
 import {visualComponents} from '../index';
+import {test} from './utils.js';
 
 
 const dashboard =  `<dashboard class="dashboard container-fluid">
@@ -13,15 +14,15 @@ const dashboard =  `<dashboard class="dashboard container-fluid">
 
 describe('dashboard', () => {
 
-    it('test dashboard component', () => {
+    test('test dashboard component', async () => {
         var vm = view().use(visualComponents);
         expect(vm.components.get('dashboard')).toBeTruthy();
     });
 
-    it('test dashboard empty datastore', () => {
+    test('test dashboard empty datastore', async () => {
         var vm = view().use(visualComponents),
             el = vm.viewElement('<div><dashboard class="dashboard"></dashboard></div>');
-        vm.mount(el);
+        await vm.mount(el);
         var d = vm.sel.select('.dashboard').view();
         expect(d).toBeTruthy();
         var visual = d.model.visual;
@@ -29,10 +30,10 @@ describe('dashboard', () => {
         expect(visual.dataStore.size()).toBe(0);
     });
 
-    it('test dashboard', () => {
+    test('test dashboard', async () => {
         var vm = view().use(visualComponents),
             el = vm.viewElement(`<div>${dashboard}</div>`);
-        vm.mount(el);
+        await vm.mount(el);
         var d = vm.sel.select('.dashboard').view();
         expect(d).toBeTruthy();
         var viz = vm.sel.select('.d3-visual');

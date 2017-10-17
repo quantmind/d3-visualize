@@ -12,10 +12,10 @@ export function trigger (target, event, process) {
 }
 
 
-export function testAsync (runAsync) {
-    return (done) => {
+export function test (name, runAsync) {
+    return it(name, done => {
         runAsync().then(done, done.fail);
-    };
+    });
 }
 
 export const nextTick = viewDebounce();

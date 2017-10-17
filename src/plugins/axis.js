@@ -17,6 +17,7 @@ const axisOrientation = map({
 const axisDefaults = {
     tickSize: 6,
     tickSizeOuter: null,
+    format: null,
     stroke: '#333'
 };
 
@@ -33,8 +34,7 @@ visuals.options.yAxis = assign({
 
 vizPrototype.xAxis = function (scale, x, y) {
     var model = this.getModel('xAxis'),
-        axis = axisOrientation.get(model.location)(scale).tickSize(model.tickSize);
-    if (model.tickSizeOuter !== null) axis.tickSizeOuter(model.tickSizeOuter);
+        axis = getAxis(model, scale);
     this.paper()
         .group('x-axis')
         .attr("transform", this.translate(x, y))
@@ -43,8 +43,7 @@ vizPrototype.xAxis = function (scale, x, y) {
 
 vizPrototype.yAxis = function (scale, x, y) {
     var model = this.getModel('yAxis'),
-        axis = axisOrientation.get(model.location)(scale).tickSize(model.tickSize);
-    if (model.tickSizeOuter !== null) axis.tickSizeOuter(model.tickSizeOuter);
+        axis = getAxis(model, scale);
     this.paper()
         .group('y-axis')
         .attr("transform", this.translate(x, y))
@@ -55,3 +54,11 @@ vizPrototype.yAxis = function (scale, x, y) {
 vizPrototype.axis = function (orientation, scale) {
     return axisOrientation.get(orientation)(scale);
 };
+
+
+function getAxis (model, scale) {
+    var axis = axisOrientation.get(model.location)(scale).tickSize(model.tickSize);
+    if (model.tickSizeOuter !== null) axis.tickSizeOuter(model.tickSizeOuter);
+    if (model.format !== null) axis.tickFormat(model.format);
+    return axis;
+}
