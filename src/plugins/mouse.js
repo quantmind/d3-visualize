@@ -12,13 +12,15 @@ import warn from '../utils/warn';
 
 
 export const mouseStrategies = map({
-    darker: darkerStrategy()
+    darker: darkerStrategy(),
+    fill: fillStrategy()
 });
 
 
 visuals.options.mouse = {
     over: ['darker'],
-    darkerFactor: 0.5
+    darkerFactor: 0.5,
+    fillColor: '#addd8e'
 };
 
 
@@ -73,4 +75,24 @@ function darkerStrategy () {
     };
 
     return darker;
+}
+
+
+function fillStrategy () {
+
+    function fill (viz, sel) {
+        var model = viz.getModel('mouse'),
+            fill = color(sel.style('fill')),
+            node = sel.node();
+        node.__mouse_over__.fill = fill;
+        sel.style('fill', model.fillColor);
+    }
+
+    fill.out = function (viz, sel) {
+        var node = sel.node(),
+            fill = node.__mouse_over__.fill;
+        if (fill) sel.style('fill', fill);
+    };
+
+    return fill;
 }

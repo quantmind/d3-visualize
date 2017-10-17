@@ -49,6 +49,8 @@ export default createChart('pyramidchart', proportional, {
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
                 .attr('d', marks)
+                .on("mouseover", this.mouseOver())
+                .on("mouseout", this.mouseOut())
             .merge(segments)
                 .transition()
                 .attr('stroke', color.stroke)

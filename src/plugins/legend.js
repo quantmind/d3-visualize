@@ -19,7 +19,9 @@ globalOptions.legend = {
     minFontSize: 10,
     maxFontSize: 20,
     offsetX: 10,
-    offsetY: 10
+    offsetY: 10,
+    shapeWidth: 15,
+    shapeHeight: 15
 };
 
 
@@ -48,6 +50,7 @@ vizPrototype.legend = function (cfg, box) {
     }
 
     if (lgModel.labelFormat) legend.labelFormat(lgModel.labelFormat);
+    legend.shapeWidth(lgModel.shapeWidth).shapeHeight(lgModel.shapeHeight);
 
     // apply cfg parameters
     for (let key in cfg) legend[key](cfg[key]);
@@ -55,6 +58,7 @@ vizPrototype.legend = function (cfg, box) {
     var g = this.paper()
             .group('legend')
             .style('font-size', `${size}px`)
+            .html('')
             .call(legend),
         bb = locations.get(lgModel.location)(g.node().getBBox(), box, lgModel);
     g.attr('transform', this.translate(bb.x, bb.y));
@@ -92,7 +96,7 @@ function bottom (bb, box, options) {
 function right (bb, box, options) {
     return {
         x: box.width - bb.width - options.offsetX,
-        y: box.total.top + (box.innerHeight - bb.height)/2 
+        y: box.total.top + (box.innerHeight - bb.height)/2
     };
 }
 
