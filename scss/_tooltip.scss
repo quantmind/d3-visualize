@@ -1,9 +1,8 @@
 .d3-tooltip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
+  line-height: $tooltip-line-height;
+  padding: $tooltip-padding;
+  background: $tooltip-background;
+  color: $tooltip-color;
   border-radius: 2px;
   pointer-events: none;
 }

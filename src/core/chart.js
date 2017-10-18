@@ -48,6 +48,11 @@ export const vizPrototype = {
         return paper;
     },
 
+    group (cname) {
+        if (!cname) cname = `${this.visualType}-${this.model.uid}`;
+        return this.paper().group(cname);
+    },
+
     translate (x, y) {
         if (isFunction(x)) {
             return function (d) {

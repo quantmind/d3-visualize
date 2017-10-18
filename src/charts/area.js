@@ -1,7 +1,4 @@
 import {area, line} from 'd3-shape';
-import {format} from 'd3-format';
-import {timeFormat} from 'd3-time-format';
-import {isDate} from 'd3-let';
 import {color} from 'd3-color';
 
 import createChart from '../core/chart';
@@ -25,9 +22,9 @@ export default createChart('areachart', lineDrawing, {
         gradient: true,
         lineDarken: 0.2,
         //
-        axisX: 'bottom',
+        axisX: true,
         axisXticks: 5,
-        axisY: 'left',
+        axisY: true,
         axisYticks: 5,
         //
         axisFormat: ',',
@@ -47,21 +44,22 @@ export default createChart('areachart', lineDrawing, {
                         .stack(this.getStack())
                         .x(x)
                         .y(y)(frame),
-            rangeX = info.rangeX(),
-            rangeY = info.rangeY(),
+            domainX = info.rangeX(),
+            domainY = info.rangeY(),
             scaleX = this.getScale(model.scaleX)
-                            .domain(rangeX)
+                            .domain(domainX)
                             .rangeRound([0, box.innerWidth]),
             scaleY = this.getScale(model.scaleY)
-                            .domain(rangeY)
+                            .domain(domainY)
                             .rangeRound([box.innerHeight, 0]).nice(),
-            paper = this.paper().size(box),
-            areas = paper.group()
+            areas = this.group()
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .selectAll('.areagroup').data(info.data),
             colors = this.colors(info.data.length),
             fill = model.gradient ? colors.map((c, i) => self.linearGradient(c, box, 'vertical', `fill${self.model.uid}-${i}`)) : colors,
             curve = this.curve(model.curve);
+
+        this.paper().size(box);
 
         var areagroup = areas
             .enter()
@@ -91,26 +89,10 @@ export default createChart('areachart', lineDrawing, {
             .transition()
             .remove();
 
-        if (model.axisX) {
-            var xa = this.axis(model.axisX, scaleX)
-                    .ticks(this.ticks(box.innerWidth, 50))
-                    .tickFormat(this.format(rangeX[0]))
-                    .tickSizeOuter(model.axisTickSizeOuter);
-            paper
-                .group('x-axis')
-                .attr("transform", this.translate(box.total.left, box.total.top+box.innerHeight))
-                .call(xa);
-        }
-        if (model.axisY) {
-            var ya = this.axis(model.axisY, scaleY)
-                        .ticks(this.ticks(box.innerHeight, 30))
-                        .tickFormat(this.format(rangeY[0]))
-                        .tickSizeOuter(model.axisTickSizeOuter);
-            paper
-                .group('y-axis')
-                .attr("transform", this.translate(box.total.left, box.total.top))
-                .call(ya);
-        }
+        if (model.axisX)
+            this.xAxis1(model.axisX === true ? "bottom" : model.axisX, scaleX, box, domainX[0]);
+        if (model.axisY)
+            this.yAxis1(model.axisY === true ? "left" : model.axisY, scaleY, box, domainY[0]);
 
         function xx(d) {
             return scaleX(d.data[x]);
@@ -153,11 +135,6 @@ export default createChart('areachart', lineDrawing, {
                 }
             ];
         }
-    },
-
-    format (value) {
-        if (isDate(value)) return timeFormat(this.getModel().axisTimeFormat);
-        else return format(this.getModel().axisFormat);
     },
 
     ticks (size, spacing) {

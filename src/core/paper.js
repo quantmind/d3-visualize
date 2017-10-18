@@ -64,10 +64,12 @@ const paperPrototype = {
 export const Svg = createPaper('svg', {
 
     initialise (viz) {
-        var svg = viz.visualParent.paper.append('svg')
-            .attr('id', viz.model.uid)
-            .classed(viz.visualType, true)
-            .style('position', 'absolute');
+        var svg = viz.visualParent.paper.select(`svg#${viz.visualParent.model.uid}`);
+        if (!svg.size())
+            svg = viz.visualParent.paper.append('svg')
+                .attr('id', viz.visualParent.model.uid)
+                .classed(viz.visualType, true)
+                .style('position', 'absolute');
         return svg.node();
     }
 });

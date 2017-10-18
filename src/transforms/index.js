@@ -8,6 +8,7 @@ import crossfilter from './crossfilter';
 import timeseries from './timeseries';
 import mapfields from './mapfields';
 import movingaverage from './moving-average';
+import groupsmall from './group-small';
 
 //
 //  transforms Store
@@ -17,7 +18,8 @@ export default map({
     mapfields,
     timeseries,
     crossfilter,
-    movingaverage
+    movingaverage,
+    groupsmall
 });
 
 

@@ -37,6 +37,7 @@ export default createChart('pyramidchart', proportional, {
             paper = this.paper(),
             segments = paper.size(box).group()
                 .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top))
+                .style("shape-rendering", "crispEdges")
                 .selectAll('.segment').data(data);
 
         segments

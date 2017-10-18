@@ -16,14 +16,14 @@ export default createChart('text', {
             color = this.getModel('color'),
             box = this.boundingBox(),
             size = this.font(box),
-            paper = this.paper().size(box),
-            group = paper.group()
+            group = this.group()
                     .attr("transform", this.translate(box.total.left, box.total.top))
                     .selectAll('text').data(frame.data),
             width = box.innerWidth/frame.data.length,
             widthWrap = 0.4*width,
             store = this.dataStore;
 
+        this.paper().size(box);
         group
             .enter()
                 .append('text')

@@ -32,7 +32,7 @@ const dataSourcePrototype = {
         if (!isArray(transforms)) transforms = [transforms];
         transforms.forEach(transform => {
             t = transformStore.get(transform.type);
-            if (!t) warn(`Transform "${transform.type}" not known`);
+            if (!t) warn(`Transform type "${transform.type}" not known`);
             else self.transforms.push(t(transform));
         });
     },
