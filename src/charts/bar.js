@@ -25,8 +25,8 @@ export default createChart('barchart', lineDrawing, {
         y: 'y',
         groupby: null,  // group data by a field for staked or grouped bar chart
         //
-        axisY: 'left',
-        axisX: 'bottom',
+        axisY: true,
+        axisX: true,
         //
         // legend & tooltip
         valueformat: '.1f',
@@ -112,7 +112,7 @@ export default createChart('barchart', lineDrawing, {
                             .attr('stroke-opacity', color.strokeOpacity)
                             .attr('fill-opacity', color.fillOpacity)
                             .selectAll('rect')
-                            .data(d => d);
+                            .data(stackedData);
             rects.enter()
                 .append('rect')
                     .attr('x', xrect)
@@ -197,21 +197,17 @@ export default createChart('barchart', lineDrawing, {
 
         // Axis
         if (model.orientation === 'vertical') {
-            if (model.axisX) {
-                axis = this.axis(model.axisX, sx).tickSizeOuter(0);
-                paper.group('x-axis')
-                    .attr("transform", this.translate(box.total.left, box.total.top+box.innerHeight))
-                    .call(axis);
-            }
-
-            if (model.axisY) {
-                this.yAxis(sy, box.total.left, box.total.top);
-            }
+            if (model.axisX)
+                this.xAxis1(model.axisX === true ? "bottom" : model.axisX, sx, box);
+            if (model.axisY)
+                this.yAxis1(model.axisY === true ? "left" : model.axisY, sy, box);
         } else {
             axis = this.axis('left', sx).tickSizeOuter(0);
             paper.group('axis')
                 .attr("transform", this.translate(box.total.left, box.total.top))
                 .call(axis);
+            if (model.axisY)
+                this.yAxis1(model.axisY === true ? "bottom" : model.axisY, sy, box);
         }
 
         if (model.legendType && groups) {
@@ -242,6 +238,14 @@ export default createChart('barchart', lineDrawing, {
 
         function gh (d) {
             return sy(0) - sy(d.value);
+        }
+
+        function stackedData (d) {
+            d.forEach(r => {
+                r.key = d.key;
+                r.value = r.data[d.key];
+            });
+            return d;
         }
 
         function groupData (d) {

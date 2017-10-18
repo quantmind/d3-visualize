@@ -7,7 +7,10 @@ import createChart from '../core/chart';
 export default createChart('treemap', {
     requires: ['d3-hierarchy'],
 
-    doDraw () {
+    options: {
+        padding: 0.1
+    },
 
+    doDraw () {
     }
 });
