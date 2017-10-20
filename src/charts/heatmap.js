@@ -4,6 +4,8 @@ import {map} from 'd3-collection';
 import accessor from '../utils/accessor';
 import niceRange from '../utils/nicerange';
 import createChart from '../core/chart';
+import colorContrast from '../utils/contrast';
+import textWrap from '../utils/text-wrapping';
 import {lineDrawing} from './line';
 //
 //  Heatmap
@@ -25,13 +27,17 @@ export default createChart('heatmap', lineDrawing, {
         x: 'x',
         y: 'y',
         z: 'data',
+        label: null,
         axisX: true,
-        axisY: true
+        axisY: true,
+        reverseColors: true,
+        tableColors: null
     },
 
     doDraw (frame) {
         var model = this.getModel(),
             color = this.getModel('color'),
+            font = this.getModel('font'),
             layout = model.layout,
             box = this.boundingBox(),
             zrange = extent(frame.data, accessor(model.z));
@@ -72,6 +78,28 @@ export default createChart('heatmap', lineDrawing, {
                 .attr("stroke", color.stroke)
                 .attr('d', shape);
 
+        // add labels
+        if (model.label && layout === 'heatmap') {
+            var fontSize = `${this.font(box)}px`,
+                labels = chart.selectAll('.labels').data(heat.data);
+            labels
+                .enter()
+                    .append('text')
+                    .classed('labels', true)
+                    .attr("transform", d => `translate(${d.x}, ${d.y})`)
+                    .style("text-anchor", "middle")
+                    .style("alignment-baseline", "middle")
+                    .style("fill", fillLabel)
+                    .style('font-size', fontSize)
+                    .text(heatLabel)
+                .merge(labels)
+                    .attr("transform", d => `translate(${d.x}, ${d.y})`)
+                    .style("fill", fillLabel)
+                    .style('font-size', fontSize)
+                    .text(heatLabel)
+                    .call(textWrap, Math.ceil(0.8*heat.size));
+        }
+
         var bb = {
             innerWidth: heat.width,
             innerHeight: heat.height,
@@ -97,6 +125,14 @@ export default createChart('heatmap', lineDrawing, {
                 shape: model.shape,
                 scale: heat.sizes
             }, box);
+
+        function heatLabel (d) {
+            return d.data[model.label];
+        }
+
+        function fillLabel (d) {
+            return colorContrast(d.color, '#fff', font.stroke);
+        }
     },
 
     heatmap (layout, frame, box, zrange) {
@@ -132,7 +168,9 @@ export default createChart('heatmap', lineDrawing, {
         zrange = niceRange(zrange, buckets);
 
         if (layout === 'heatmap') {
-            colors = this.getScale('quantile').range(this.colors(buckets).reverse()).domain(zrange);
+            var cols = this.fill(range(buckets)).colors;
+            if (model.reverseColors) cols = cols.reverse();
+            colors = this.getScale('quantile').range(cols).domain(zrange);
             sizes = () => 1;
         } else {
             var color = this.colors(1)[0];

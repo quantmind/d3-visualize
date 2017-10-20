@@ -1,7 +1,7 @@
 import {map} from 'd3-collection';
 import {range} from 'd3-array';
 import {color} from 'd3-color';
-import {isObject} from 'd3-let';
+import {isObject, isFunction, isArray} from 'd3-let';
 import {
     scaleSequential,
     interpolateViridis, interpolateInferno, interpolateMagma,
@@ -39,24 +39,47 @@ colorScales.set('cubehelix', () =>  scaleSequential(interpolateCubehelixDefault)
 //  Color scale method
 //  ==========================
 vizPrototype.colors = function (n, opacity) {
-    var model = this.getModel('color'),
+    var model = this.getModel('color');
+    let reversed = false, scaleDef, scale;
+
+    if (isArray(model.scale)) scale = this.getScale('ordinal').range(model.scale);
+    else {
         scaleDef = colorScales.get(model.scale);
+        if (!scaleDef) throw new Error(`Unknown scale ${model.scale}`);
+        if (!isObject(scaleDef)) scaleDef = {scale: scaleDef};
+        if (scaleDef.minPoints === undefined) scaleDef.minPoints = model.scaleMinPoints;
+        scale = scaleDef.scale();
+        reversed = scaleDef.reversed;
+    }
 
-    if (!scaleDef) throw new Error(`Unknown scale ${model.scale}`);
-    if (!isObject(scaleDef)) scaleDef = {scale: scaleDef};
-    if (scaleDef.minPoints === undefined) scaleDef.minPoints = model.scaleMinPoints;
-
-    var offset = model.scaleOffset,
-        npoints = n + offset,
-        points = Math.max(npoints, scaleDef.minPoints),
-        domain = scaleDef.reversed ? [points-1, 0] : [0, points-1],
-        scale = scaleDef.scale().domain(domain);
-    let c;
-    return range(offset, Math.min(npoints, points)).map(v => {
-        c = color(scale(v));
-        c.opacity = opacity;
-        return c;
-    });
+    if (isFunction(scale.interpolator)) {
+        var offset = model.scaleOffset,
+            npoints = n + offset,
+            points = Math.max(npoints, scaleDef.minPoints),
+            domain = reversed ? [points-1, 0] : [0, points-1];
+        scale().domain(domain);
+        let c;
+        return range(offset, Math.min(npoints, points)).map(v => {
+            c = color(scale(v));
+            c.opacity = opacity;
+            return c;
+        });
+    } else {
+        var colors = scale.range().slice();
+        if (reversed) colors.reverse();
+        let b, c, m;
+        for (let i=0; i<model.scaleOffset; ++i) {
+            colors.push(colors.shift());
+        }
+        return range(n).map(() => {
+            b = colors.shift();
+            c = color(b);
+            m = color(b);
+            c.opacity = opacity;
+            colors.push(''+m.brighter(0.2));
+            return c;
+        });
+    }
 };
 
 

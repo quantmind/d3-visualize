@@ -44,6 +44,8 @@ vizPrototype.legend = function (cfg, box) {
         fontSize = this.dim(model.fontSize, vizSize, model.minFontSize, model.maxFontSize),
         legend = legends[name];
 
+    if (!legend.location) return;
+
     if (!legend) return warn(`Could not load legend ${name}`);
     legend = legend().orient(model.orient);
 
