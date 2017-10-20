@@ -1,4 +1,22 @@
-import * as d3_shape from 'd3-shape';
+import {
+    line,
+    curveBasisClosed,
+    curveBasisOpen,
+    curveBasis,
+    curveBundle,
+    curveCardinalClosed,
+    curveCardinalOpen,
+    curveCardinal,
+    curveCatmullRomClosed,
+    curveCatmullRomOpen,
+    curveCatmullRom,
+    curveLinearClosed,
+    curveLinear,
+    curveMonotoneX,
+    curveMonotoneY,
+    curveNatural
+} from 'd3-shape';
+
 import {isFunction} from 'd3-let';
 import {extent} from 'd3-array';
 
@@ -8,13 +26,31 @@ import camelFunction from '../utils/camelfunction';
 import grouper from '../transforms/groups';
 
 
+export const curves = {
+    curveBasisClosed,
+    curveBasisOpen,
+    curveBasis,
+    curveBundle,
+    curveCardinalClosed,
+    curveCardinalOpen,
+    curveCardinal,
+    curveCatmullRomClosed,
+    curveCatmullRomOpen,
+    curveCatmullRom,
+    curveLinearClosed,
+    curveLinear,
+    curveMonotoneX,
+    curveMonotoneY,
+    curveNatural
+};
+
 export const lineDrawing = {
 
     curve (name) {
-        var obj = camelFunction(d3_shape, 'curve', name, true);
+        var obj = camelFunction(curves, 'curve', name, true);
         if (!obj) {
             warn(`Could not locate curve type "${name}"`);
-            obj = camelFunction(d3_shape, 'curve', 'cardinalOpen', true);
+            obj = curveNatural;
         }
         return obj;
     },
@@ -114,7 +150,7 @@ export default createChart('linechart', lineDrawing, {
             colors = this.stroke(info.data).colors,
             sxshift = 0,
             //merge = paper.transition('update'),
-            line = d3_shape.line()
+            line_ = line()
                 .x(xl)
                 .y(yl)
                 .curve(this.curve(model.curve));
@@ -135,11 +171,12 @@ export default createChart('linechart', lineDrawing, {
                 .attr('fill', 'none')
                 .attr('stroke', stroke)
                 .attr('stroke-width', model.lineWidth)
+                .attr('d', line_)
             .merge(lines)
                 .transition()
                 .attr('stroke', stroke)
                 .attr('stroke-width', model.lineWidth)
-                .attr('d', line);
+                .attr('d', line_);
 
         lines
             .exit()
