@@ -93,11 +93,12 @@ export default createChart('heatmap', lineDrawing, {
                     .style('font-size', fontSize)
                     .text(heatLabel)
                 .merge(labels)
-                    .attr("transform", d => `translate(${d.x}, ${d.y})`)
-                    .style("fill", fillLabel)
-                    .style('font-size', fontSize)
                     .text(heatLabel)
-                    .call(textWrap, Math.ceil(0.8*heat.size));
+                    .style('font-size', fontSize)
+                    .call(textWrap, Math.ceil(0.8*heat.size))
+                    .transition(this.transition('text'))
+                    .attr("transform", d => `translate(${d.x}, ${d.y})`)
+                    .style("fill", fillLabel);
         }
 
         var bb = {
