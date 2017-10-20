@@ -22,6 +22,7 @@ export default createChart('treemap', {
 
     doDraw (frame, d3) {
         var model = this.getModel(),
+            font = this.getModel('font'),
             box = this.boundingBox(),
             labelAccessor = accessor(model.label),
             valueAccessor = accessor(model.field),
@@ -35,7 +36,7 @@ export default createChart('treemap', {
                         .size([box.innerWidth, box.innerHeight])
                         .round(true)
                         .padding(model.padding),
-            colors = this.colors(root.children.length),
+            colors = this.fill(root.children).colors,
             group = this.group()
                         .attr("transform", this.translate(box.total.left, box.total.top))
                         .style("shape-rendering", "crispEdges"),
@@ -60,6 +61,7 @@ export default createChart('treemap', {
                 .attr("width", d => d.x1 - d.x0)
                 .attr("height", d => d.y1 - d.y0)
                 .attr("fill", d => colors[d.data._counter])
+                .attr('stroke', 'none')
                 .on("mouseover", this.mouseOver())
                 .on("mouseout", this.mouseOut())
             .merge(rects)
@@ -71,7 +73,7 @@ export default createChart('treemap', {
         rects = cell.selectAll('text').data(singleData);
         rects.enter()
             .append("text")
-            .style('fill', d => colorContrast(colors[d.data._counter]))
+            .style('fill', d => colorContrast(colors[d.data._counter], '#fff', font.stroke))
             .selectAll("tspan")
                 .data(textData)
                 .enter()

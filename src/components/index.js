@@ -17,6 +17,8 @@ import '../plugins/color';
 import '../plugins/legend';
 import '../plugins/tooltip';
 import '../plugins/mouse';
+import '../plugins/expand';
+import '../plugins/transition';
 import dashboard from './dashboard';
 import visual from './visual';
 

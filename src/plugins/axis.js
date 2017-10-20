@@ -21,13 +21,19 @@ const axisDefaults = {
     ticks: 5,
     tickSize: 6,
     tickSizeOuter: null,
+    //
+    // tick labels
+    rotate: null,
+    ancor: 'end',
     format: null,
     timeFormat: '%Y-%m-%d',
     stroke: '#333',
+    hide: null, // specify a pixel size below which tick labels are not displayed
+    //
     // title
     title: null,
     titleRotate: null,
-    titleShift: 2/3
+    titleOffset: 0.7
 };
 
 
@@ -41,50 +47,25 @@ visuals.options.yAxis = assign({
 }, axisDefaults);
 
 
-vizPrototype.xAxis = function (scale, x, y) {
-    var model = this.getModel('xAxis'),
-        axis = getAxis(model.location, scale, model);
-    this.paper()
-        .group('x-axis')
-        .attr("transform", this.translate(x, y))
-        .transition()
-        .call(axis).select('path.domain').attr('stroke', model.stroke);
-};
-
-vizPrototype.yAxis = function (scale, x, y) {
-    var model = this.getModel('yAxis'),
-        axis = getAxis(model.location, scale, model);
-    this.paper()
-        .group('y-axis')
-        .attr("transform", this.translate(x, y))
-        .transition()
-        .call(axis).select('path.domain').attr('stroke', model.stroke);
-};
-
-
 vizPrototype.xAxis1 = function (location, scale, box, value) {
     var model = this.getModel('xAxis'),
-        axis = getAxis(location, scale, model, value);
-    this.paper()
-        .group('x-axis')
-        .attr("transform", this.translateAxis(location, box))
-        .transition()
-        .call(axis).select('path.domain').attr('stroke', model.stroke);
+        axis = getAxis(location, scale, model, value),
+        ga = this.group('x-axis');
+    this.applyTransform(ga, this.translateAxis(location, box));
+    formatAxis(ga.transition(this.transition('x-axis')).call(axis), model, scale);
     if (model.title)
-        this.axisTitle(location, scale, box, model);
+        this.axisTitle(ga, location, scale, box, model);
 };
 
 
 vizPrototype.yAxis1 = function (location, scale, box, value) {
     var model = this.getModel('yAxis'),
-        axis = getAxis(location, scale, model, value);
-    this.paper()
-        .group('y-axis')
-        .attr("transform", this.translateAxis(location, box))
-        .transition()
-        .call(axis).select('path.domain').attr('stroke', model.stroke);
+        axis = getAxis(location, scale, model, value),
+        ga = this.group('y-axis');
+    this.applyTransform(ga, this.translateAxis(location, box));
+    formatAxis(ga.transition(this.transition('x-axis')).call(axis), model, scale);
     if (model.title)
-        this.axisTitle(location, scale, box, model);
+        this.axisTitle(ga, location, scale, box, model);
 };
 
 
@@ -95,15 +76,15 @@ vizPrototype.axis = function (orientation, scale) {
 
 //
 //  Apply Axis title
-vizPrototype.axisTitle = function (location, scale, box, model) {
-    var rotate = model.titleRotate || 0, x = 0, y = 0,
-        title = this.group('axis-'+location+'-title')
-                    .attr("transform", this.translateAxis(location, box))
-                    .selectAll('text')
-                    .data([model.title]);
+vizPrototype.axisTitle = function (ga, location, scale, box, model) {
+    var title = ga.selectAll('text.title').data([model.title]),
+        rotate = model.titleRotate || 0,
+        x = 0,
+        y = 0;
+
     if (!rotate && (location === 'right' || location === 'left')) rotate = -90;
     if (location == "left") {
-        x =-model.titleShift*box.margin.left;
+        x =-model.titleOffset*box.margin.left;
         y = box.innerHeight/2;
     }
     var translate = `translate(${x},${y}) rotate(${rotate})`,
@@ -112,6 +93,7 @@ vizPrototype.axisTitle = function (location, scale, box, model) {
     title
         .enter()
             .append('text')
+            .classed('title', true)
             .attr("transform", translate)
             .style("text-anchor", "middle")
             .style("font-size", font)
@@ -127,11 +109,11 @@ vizPrototype.axisTitle = function (location, scale, box, model) {
 
 vizPrototype.translateAxis = function (location, box) {
     if (location === 'top' || location === 'left')
-        return this.translate(box.total.left, box.total.top);
+        return this.translate(box.margin.left, box.margin.top);
     else if (location === 'bottom')
-        return this.translate(box.total.left, box.total.top+box.innerHeight);
+        return this.translate(box.margin.left, box.margin.top+box.innerHeight);
     else
-        return this.translate(box.total.left+box.innerWidth, box.total.top);
+        return this.translate(box.margin.left+box.innerWidth, box.margin.top);
 };
 
 function getAxis (location, scale, model, value) {
@@ -140,4 +122,20 @@ function getAxis (location, scale, model, value) {
     if (isDate(value)) axis.tickFormat(timeFormat(model.timeFormat));
     else if (model.format !== null) axis.tickFormat(format(model.format));
     return axis.ticks(model.ticks);
+}
+
+
+function formatAxis (ga, model, scale) {
+    ga.select('path.domain').attr('stroke', model.stroke);
+    var ticks = ga.selectAll('text').attr('fill', model.stroke);
+    if (model.hide) {
+        var range = scale.range(),
+            dim = Math.abs(range[0] - range[range.length-1]);
+        if (dim < model.hide) ga.style('opacity', 0);
+        else ga.style('opacity', 1);
+    }
+    if (model.rotate) {
+        ticks.attr('transform', `rotate(${model.rotate})`)
+            .style('text-anchor', model.ancor);
+    }
 }

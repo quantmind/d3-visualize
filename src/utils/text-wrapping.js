@@ -1,7 +1,7 @@
 import {select} from 'd3-selection';
 
 //Text wrapping code adapted from Mike Bostock
-export default function (text, width) {
+export default function (text, width, callback) {
 
     text.each(function() {
         var text = select(this),
@@ -24,8 +24,12 @@ export default function (text, width) {
                 line = [word];
                 tspan = text.append("tspan")
                             .attr("x", 0)
-                            .attr("dy", lineHeight + dy + "em").text(word);
+                            .attr("dy", lineHeight + dy + "em")
+                            .text(word);
             }
         }
+        if (callback)
+            text.selectAll('tspan')
+                .each(callback);
     });
 }

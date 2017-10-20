@@ -7,6 +7,7 @@ import 'd3-transition';
 
 import globalOptions from './options';
 import {sizeValue} from '../utils/size';
+import minmax from '../utils/minmax';
 import clone from '../utils/clone';
 
 
@@ -99,13 +100,20 @@ export const visualPrototype = assign({}, {
         return model;
     },
 
+    // apply the visualmodel uid to a name
+    idname (name) {
+        if (!name) name = this.visualType;
+        return `${name}-${this.model.uid}`;
+    },
+
+    modelProperty (name, model) {
+        var me = this.getModel(),
+            value = me[name];
+        return value === undefined ? model[name] : value;
+    },
+
     dim (size, refSize, minSize, maxSize) {
-        size = Math.max(sizeValue(size, refSize), minSize || 0);
-        if (maxSize) {
-            maxSize = Math.max(maxSize, minSize || 0);
-            size = Math.min(size, maxSize);
-        }
-        return size;
+        return minmax(sizeValue(size, refSize), minSize, maxSize);
     },
     // pop this visual from a container
     pop (container) {

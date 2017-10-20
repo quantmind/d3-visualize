@@ -1,55 +1,14 @@
 import * as d3_shape from 'd3-shape';
+import {isFunction} from 'd3-let';
 import {extent} from 'd3-array';
 
 import createChart from '../core/chart';
 import warn from '../utils/warn';
-import accessor from '../utils/accessor';
 import camelFunction from '../utils/camelfunction';
+import grouper from '../transforms/groups';
 
 
 export const lineDrawing = {
-
-    // get information about
-    //  * data []
-    //  * range {x: [min, max], y: [min, max]}
-    //  * meta []
-    //      * index
-    //      * label
-    //      * range
-    //
-    getDataInfo (frame) {
-        var model = this.getModel(),
-            range = this.newRange(),
-            nseries = frame.series.size(),
-            data = nseries ? frame.series.values() : [frame.data],
-            keys = nseries ? frame.series.keys() : [model.y],
-            x = accessor(model.x),
-            y = accessor(model.y),
-            self = this;
-        return {
-            data: data,
-            range: range,
-            meta: keys.map((label, index) => {
-                return {
-                    index: index,
-                    label: label,
-                    range: self.range(data[index], x, y, range)
-                };
-            })
-        };
-    },
-
-    fill (data) {
-        var colors = this.colors(data.length);
-
-        function fill (d, index) {
-            return colors[index];
-        }
-
-        fill.colors = colors;
-
-        return fill;
-    },
 
     curve (name) {
         var obj = camelFunction(d3_shape, 'curve', name, true);
@@ -121,57 +80,88 @@ export default createChart('linechart', lineDrawing, {
 
     options: {
         lineWidth: 1,
-        curve: 'cardinalOpen',
+        curve: 'natural',
         x: 'x',
         y: 'y',
+        groupby: null,  // group data by a field for grouped line charts
         scaleX: 'linear',
-        scaleY: 'linear'
+        scaleY: 'linear',
+        //
+        axisX: true,
+        axisY: true
     },
 
     doDraw (frame) {
-        var self = this,
-            range = this.newRange(),
-            model = this.getModel(),
-            color = this.getModel('color'),
-            x = accessor(model.x),
-            y = accessor(model.y),
-            data = frame.series.values(),
-            meta = frame.series.keys().map((label, index) => {
-                return {
-                    index: index,
-                    label: label,
-                    range: self.range(data[index], x, y, range)
-                };
-            }),
+        var model = this.getModel(),
+            x = model.x,
+            y = model.y,
             box = this.boundingBox(),
-            paper = this.paper(),
-            lines = paper.size(box).group()
-                .attr("transform", this.translate(box.total.left, box.total.top))
-                .selectAll('.line').data(data),
-            strokeColor = this.fill(meta),
+            info = grouper()
+                        .groupby(model.groupby)
+                        .x(x)
+                        .y(y)(frame),
+            domainX = info.rangeX(),
+            domainY = info.rangeY(),
+            sx = this.getScale(model.scaleX)
+                            .domain(domainX)
+                            .rangeRound([0, box.innerWidth]),
+            sy = this.getScale(model.scaleY)
+                            .domain(domainY)
+                            .rangeRound([box.innerHeight, 0]).nice(),
+            group = this.group(),
+            chart = this.group('chart'),
+            lines = chart.selectAll('.line').data(info.data),
+            colors = this.stroke(info.data).colors,
+            sxshift = 0,
             //merge = paper.transition('update'),
             line = d3_shape.line()
-                .x(this.x(box, range.x))
-                .y(this.y(box, range.y))
+                .x(xl)
+                .y(yl)
                 .curve(this.curve(model.curve));
+
+        this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
+        this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));
+
+        // TODO: generalize this hack
+        if (isFunction(sx.bandwidth)) {
+            sx.domain(info.data[0].map(d => d.data[x]));
+            sxshift = sx.bandwidth()/2;
+        }
 
         lines
             .enter()
                 .append('path')
                 .attr('class', 'line')
                 .attr('fill', 'none')
-                .attr('stroke', strokeColor)
-                .attr('stroke-opacity', 0)
+                .attr('stroke', stroke)
                 .attr('stroke-width', model.lineWidth)
             .merge(lines)
-                //.transition(merge)
-                .attr('stroke', strokeColor)
-                .attr('stroke-opacity', color.strokeOpacity)
+                .transition()
+                .attr('stroke', stroke)
                 .attr('stroke-width', model.lineWidth)
                 .attr('d', line);
 
         lines
             .exit()
+            .transition()
+            .style('opacity', 0)
             .remove();
+
+        if (model.axisX)
+            this.xAxis1(model.axisX === true ? "bottom" : model.axisX, sy, box);
+        if (model.axisY)
+            this.yAxis1(model.axisY === true ? "left" : model.axisY, sy, box);
+
+        function stroke (d, i) {
+            return colors[i];
+        }
+
+        function xl(d) {
+            return sx(d.data[x]) + sxshift;
+        }
+
+        function yl(d) {
+            return sy(d[1]);
+        }
     }
 });

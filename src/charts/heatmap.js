@@ -25,8 +25,8 @@ export default createChart('heatmap', lineDrawing, {
         x: 'x',
         y: 'y',
         z: 'data',
-        axisX: 'bottom',
-        axisY: 'left'
+        axisX: true,
+        axisY: true
     },
 
     doDraw (frame) {
@@ -34,8 +34,7 @@ export default createChart('heatmap', lineDrawing, {
             color = this.getModel('color'),
             layout = model.layout,
             box = this.boundingBox(),
-            zrange = extent(frame.data, accessor(model.z)),
-            paper = this.paper().size(box);
+            zrange = extent(frame.data, accessor(model.z));
 
         if (zrange[0] < 0 && layout === 'punchcard') layout = 'heatmap';
 
@@ -43,10 +42,12 @@ export default createChart('heatmap', lineDrawing, {
             dx = (box.innerWidth - heat.width)/2,
             dy = (box.innerHeight - heat.height)/2,
             shape = this.getSymbol(model.shape).size(d => d.size*d.size),
-            shapes = paper.group()
-                        .attr("transform", this.translate(box.total.left + dx, box.total.top + dy))
-                        .selectAll('.shape')
-                        .data(heat.data);
+            group = this.group(),
+            chart = this.group('chart'),
+            shapes = chart.selectAll('.shape').data(heat.data);
+
+        this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
+        this.applyTransform(chart, this.translate(box.margin.left + dx, box.margin.top + dy));
 
         if (range[0] < 0 && layout === 'punchcard') layout = 'heatmap';
 
@@ -63,7 +64,7 @@ export default createChart('heatmap', lineDrawing, {
                 .on("mouseover", this.mouseOver())
                 .on("mouseout", this.mouseOut())
             .merge(shapes)
-                .transition()
+                .transition(this.transition())
                 .attr("transform", d => `translate(${d.x}, ${d.y})`)
                 .attr("fill-opacity", color.fillOpacity)
                 .attr("fill", d => d.color)
@@ -71,10 +72,18 @@ export default createChart('heatmap', lineDrawing, {
                 .attr("stroke", color.stroke)
                 .attr('d', shape);
 
-        if (model.axisX === 'bottom')
-            this.xAxis(heat.scaleX, box.total.left, box.total.top + heat.height + dy);
-        if (model.axisY === 'left')
-            this.yAxis(heat.scaleY, box.total.left, box.total.top + dy);
+        var bb = {
+            innerWidth: heat.width,
+            innerHeight: heat.height,
+            margin: {
+                top: box.margin.top + dy,
+                left: box.margin.left + dx
+            }
+        };
+        if (model.axisX)
+            this.xAxis1(model.axisX === true ? "bottom" : model.axisX, heat.scaleX, bb);
+        if (model.axisY)
+            this.yAxis1(model.axisY === true ? "left" : model.axisY, heat.scaleY, bb);
 
         if (layout === 'heatmap')
             this.legend({

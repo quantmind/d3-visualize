@@ -45,7 +45,7 @@ export default createVisual('visual', {
                     return element;
                 }
             },
-            paper : {
+            paperElement : {
                 get () {
                     return this.sel.select('.paper');
                 }
@@ -71,6 +71,14 @@ export default createVisual('visual', {
         if (this.visualParent) this.visualParent.live.push(this);
     },
 
+    activate () {
+        this.layers.forEach(layer => layer.activate());
+    },
+
+    deactivate () {
+        this.layers.forEach(layer => layer.deactivate());
+    },
+
     // Draw the visual
     draw (fetchData) {
         if (this.drawing) {
@@ -86,14 +94,18 @@ export default createVisual('visual', {
         }
         var self = this;
         visuals.events.call('before-draw', undefined, this);
-        return Promise.all(this.layers.map(visual => visual.redraw(fetchData)))
-            .then(() => {
-                delete self.drawing;
-                visuals.events.call('after-draw', undefined, self);
-            }, err => {
-                delete self.drawing;
-                warn(`Could not draw ${self.toString()}: ${err}`);
-            });
+        return Promise.all(this.layers.map(visual => {
+            if (visual.active) {
+                visual.paper().size(visual.boundingBox(true));
+                return visual.redraw(fetchData);
+            }
+        })).then(() => {
+            delete self.drawing;
+            visuals.events.call('after-draw', undefined, self);
+        }, err => {
+            delete self.drawing;
+            warn(`Could not draw ${self.toString()}: ${err}`);
+        });
     },
 
     clear () {},
@@ -123,10 +135,25 @@ export default createVisual('visual', {
             this.width = size.width;
             this.height = size.height;
             // this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
-            this.paper.style('height', this.height + 'px');
+            this.paperElement.style('height', this.height + 'px');
             // if we are not just fitting draw the visual without fetching data!!
             if (!fit) this.draw(false);
         }
+    },
+
+    paper () {
+        var paper = this.__paper,
+            render = this.getModel().render;
+        if (paper && paper.paperType === render) return paper;
+        var PaperType = visuals.papers[render];
+        if (!PaperType) throw new Error(`Unknown paper ${render}`);
+        paper = new PaperType(this);
+        this.__paper = paper;
+        return paper;
+    },
+
+    getPaperGroup (gname) {
+        return this.paper().group(gname);
     },
 
     destroy () {

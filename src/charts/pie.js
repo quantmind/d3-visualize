@@ -14,18 +14,6 @@ const rad = pi/180;
 
 export const proportional = {
 
-    fill (data) {
-        var colors = this.colors(data.length);
-
-        function fill (d, idx) {
-            return colors[idx];
-        }
-
-        fill.colors = colors;
-
-        return fill;
-    },
-
     proportionalData (frame, field) {
         return frame.dimension(field).top(Infinity);
     },
@@ -104,7 +92,6 @@ export default createChart('piechart', proportional, {
                 .attr('class', 'slice')
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', 0)
-                .attr('fill-opacity', 0)
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
                 .on("mouseover", this.mouseOver())
@@ -114,15 +101,15 @@ export default createChart('piechart', proportional, {
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', color.strokeOpacity)
                 .attr('d', arcs)
-                .attr('fill', fill)
-                .attr('fill-opacity', color.fillOpacity);
+                .attr('fill', fill);
 
         slices.exit().transition().remove();
 
         if (model.center) {
             var text = this.dataStore.eval(model.center, {total: total.total()});
             if (text) {
-                var size = this.dim(model.centerFontSize, box.innerWidth),
+                var font = this.getModel('font'),
+                    size = this.dim(model.centerFontSize, box.innerWidth),
                     center = paper.group('center-notation')
                         .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
                         .selectAll('.info').data([text]);
@@ -137,6 +124,7 @@ export default createChart('piechart', proportional, {
                     .merge(center)
                         .text(text)
                         .style('fill-opacity', model.centerOpacity)
+                        .style('fill', font.stroke)
                         .call(textWrap, 1.5*(innerRadius || outerRadius));
 
             }

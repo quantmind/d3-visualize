@@ -12,8 +12,8 @@ import warn from '../utils/warn';
 //
 //  A chart displaying a geographical map
 export default createChart('geochart', {
-    // load these libraries
-    requires: ['d3-geo', 'topojson', 'd3-geo-projection', 'leaflet'],
+    // load these libraries - add 'leaflet'?
+    requires: ['d3-geo', 'topojson', 'd3-geo-projection'],
 
     options: {
         // Geometry data to display in this chart - must be in the topojson source
@@ -55,13 +55,19 @@ export default createChart('geochart', {
         var model = this.getModel(),
             color = this.getModel('color'),
             box = this.boundingBox(),
-            paper = this.paper().size(box),
-            group = paper.group()
-                    .attr("transform", this.translate(box.total.left, box.total.top)),
+            group = this.group(),
+            geogroup = this.group('geo'),
             path = this._geoPath,
             geometryData = geo.feature(info.topology, info.topology.objects[model.geometry]).features,
-            paths = group.selectAll('.geometry').data(geometryData),
+            paths = geogroup.selectAll('.geometry').data(geometryData),
             fill = 'none';
+
+        group
+            .transition(this.transition('group0'))
+            .attr("transform", this.translate(box.padding.left, box.padding.top));
+        geogroup
+            .transition(this.transition('group1'))
+            .attr("transform", this.translate(box.margin.left, box.margin.top));
 
         this.center(geo, info);
         if (info.data) fill = this.choropleth(info.data, box);
@@ -78,7 +84,7 @@ export default createChart('geochart', {
                 .on("mouseover", this.mouseOver())
                 .on("mouseout", this.mouseOut())
             .merge(paths)
-                .transition()
+                .transition(this.transition('geometry'))
                 .attr("d", path)
                 .style("stroke", color.stroke)
                 .style("stroke-opacity", color.strokeOpacity)

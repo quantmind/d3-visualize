@@ -1,11 +1,12 @@
 import assign from 'object-assign';
-import {isFunction, isArray} from 'd3-let';
+import {isFunction, isArray, isString} from 'd3-let';
 import {require} from 'd3-view';
 import * as d3_scale from 'd3-scale';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
 import camelFunction from '../utils/camelfunction';
+import extendObject from '../utils/extend-object';
 import warn from '../utils/warn';
 
 //
@@ -30,27 +31,38 @@ export const vizPrototype = {
             this.visualParent = visual = new Visual(element, this.options, null, this.model);
             this.model = visual.model.$new();
             this.options = {};
-        } else if (visual.visualType !== 'visual')
-            throw new Error(`visual parent of ${this.visualType} can only be "visual"`);
+        } else if (!visual.layers)
+            throw new Error(`visual parent of ${this.visualType} does not have layers`);
+        this.active = true;
         visual.layers.push(this);
     },
 
     //
     // paper object for this visualisation
     paper () {
-        var visual = this.getModel('visual'),
-            paper = this._paper;
-        if (paper && paper.paperType === visual.render) return paper;
-        var PaperType = visuals.papers[visual.render];
-        if (!PaperType) throw new Error(`Unknown paper ${visual.render}`);
-        paper = new PaperType(this);
-        this._paper = paper;
-        return paper;
+        return this.visualParent.paper();
     },
 
-    group (cname) {
-        if (!cname) cname = `${this.visualType}-${this.model.uid}`;
-        return this.paper().group(cname);
+    activate () {
+        if (!this.active) {
+            this.active = true;
+            this.group().transition(this.model.uid).style('opacity', 1);
+        }
+    },
+
+    deactivate () {
+        if (this.active) {
+            this.active = false;
+            this.group().style('opacity', 1).transition(this.model.uid).style('opacity', 0);
+        }
+    },
+
+    // a group selection for a given name
+    group (name) {
+        var me = `${this.visualType}-${this.model.uid}`,
+            group = this.visualParent.getPaperGroup(me);
+        if (name && name !== this.visualType) return this.paper().childGroup(group, name);
+        else return group;
     },
 
     translate (x, y) {
@@ -63,8 +75,9 @@ export const vizPrototype = {
         } else return `translate(${x}, ${y})`;
     },
 
-    getScale (name) {
-        return camelFunction(d3_scale, 'scale', name);
+    getScale (cfg) {
+        if (isString(cfg)) cfg = {type: cfg};
+        return extendObject(camelFunction(d3_scale, 'scale', cfg.type), cfg);
     },
 
     displayError () {}

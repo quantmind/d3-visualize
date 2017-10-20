@@ -1,3 +1,4 @@
+import assign from 'object-assign';
 import {stack, stackOrderDescending} from 'd3-shape';
 import {max} from 'd3-array';
 
@@ -19,10 +20,14 @@ export default createChart('barchart', lineDrawing, {
         sortby: null, // specify "x" or "y"
         stack: true,
         normalize: false,
-        scale: 'linear',
-        padding: 0.2,
+        scaleX: {
+            type: 'band',
+            padding: 0.2
+        },
+        scaleY: 'linear',
         x: 'x',
         y: 'y',
+        radius: 0,
         groupby: null,  // group data by a field for staked or grouped bar chart
         //
         axisY: true,
@@ -36,36 +41,20 @@ export default createChart('barchart', lineDrawing, {
 
     doDraw (frame) {
         var model = this.getModel(),
-            color = this.getModel('color'),
             data = frame.data,
             box = this.boundingBox(),
-            paper = this.paper().size(box),
-            bars = paper.group()
-                .attr("transform", this.translate(box.total.left, box.total.top))
-                .selectAll('.group'),
+            group = this.group(),
+            chart = this.group('chart'),
+            bars = chart.selectAll('.group'),
             x = model.x,
             y = model.y,
             groupby = model.groupby,
-            sx = this.getScale('band'),
-            sy = this.getScale(model.scale),
-            sz = this.getScale('ordinal');
+            barChart = model.orientation === 'vertical' ? new VerticalBarChart(this) : new HorizontalBarChart(this);
 
-        let stacked = false,
-            width = null,
-            height = null,
-            xrect, yrect, yi, groups, rects, axis;
+        let groups, stacked = false;
 
-        if (model.orientation === 'vertical') {
-            sx.rangeRound([0, box.innerWidth]).paddingInner(model.padding);
-            sy.rangeRound([box.innerHeight, 0]);
-            width = sx.bandwidth;
-            height = bardim;
-        } else {
-            sx.rangeRound([0, box.innerHeight]).paddingInner(model.padding);
-            sy.rangeRound([0, box.innerWidth]);
-            width = bardim;
-            height = sx.bandwidth;
-        }
+        this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
+        this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));
 
         if (groupby) {
             groups = frame.dimension(groupby).group().top(Infinity).map(g => g['key']);
@@ -76,145 +65,127 @@ export default createChart('barchart', lineDrawing, {
             var gframe = frame.pivot(x, groupby, y);
             if (model.sortby === 'y') gframe = gframe.sortby('total');
             data = gframe.data;
-            sz.domain(groups).range(this.colors(groups.length));
+            barChart.sz.domain(groups).range(this.fill(groups).colors);
             if (model.stack) {
                 if (model.normalize)
                     data = this.normalize(gframe);
                 stacked = true;
             }
+        } else {
+            barChart.sz.domain([y]).range(this.fill([y]).colors);
+            stacked = true;
         }
 
         // set domain for the labels
-        sx.domain(data.map(d => d[x]));
-
+        var domainX = data.map(d => d[x]);
+        barChart.sx.domain(domainX);
         //
         // Stacked bar chart
-        if (stacked) {
-            if (model.orientation === 'vertical') {
-                xrect = x0;
-                yrect = y0;
-                yi = 1;
-            } else {
-                xrect = y0;
-                yrect = x0;
-                yi = 0;
-            }
-            sy.domain([0, max(data, d => d.total)]).nice();
-            data = stack().order(stackOrderDescending).keys(groups)(data);
-            rects = bars.data(data)
-                        .enter()
-                            .append('g')
-                            .classed('group', true)
-                            .attr('fill', d => sz(d.key))
-                        .merge(bars)
-                            .attr('fill', d => sz(d.key))
-                            .attr('stroke', color.stroke)
-                            .attr('stroke-opacity', color.strokeOpacity)
-                            .attr('fill-opacity', color.fillOpacity)
-                            .selectAll('rect')
-                            .data(stackedData);
-            rects.enter()
-                .append('rect')
-                    .attr('x', xrect)
-                    .attr('y', yrect)
-                    .attr('height', height)
-                    .attr('width', width)
-                    .on("mouseover", this.mouseOver())
-                    .on("mouseout", this.mouseOut())
-                .merge(rects)
-                    .transition()
-                    .attr('x', xrect)
-                    .attr('y', yrect)
-                    .attr('height', height)
-                    .attr('width', width);
-
-        } else if (groups) {
-            //
-            //  Grouped bar chart
-            var x1 = this.getScale('band')
-                            .domain(groups)
-                            .paddingInner(0.5*model.padding);
-
-            // set the value domain
-            sy.domain([0, max(frame.data, d => d[y])]).nice();
-
-            if (model.orientation === 'vertical') {
-                x1.rangeRound([0, sx.bandwidth()]);
-                xrect = gx;
-                width = x1.bandwidth;
-                height = gh;
-            } else {
-                yrect = gx;
-                height = x1.bandwidth;
-                width = gh;
-            }
-
-            bars = bars.data(data);
-            bars.exit().remove();
-            //
-            // join for rectangles
-            rects = bars
-                .enter()
-                    .append('g')
-                    .classed('group', true)
-                    .attr("transform", d => this.translate(xrect(d), 0))
-                .merge(bars)
-                    .attr("transform", d => this.translate(xrect(d), 0))
-                    .selectAll('rect')
-                    .data(groupData);
-            //
-            rects.exit()
-                .transition()
-                .style('opacity', 0)
-                .remove();
-            //
-            rects
-                .enter()
-                    .append('rect')
-                    .attr('x', d => x1(d.key))
-                    .attr('y', gy)
-                    .attr('height', height)
-                    .attr('width', width)
-                    .attr('stroke', color.stroke)
-                    .attr('stroke-opacity', 0)
-                    .attr('fill-opacity', 0)
-                    .attr('fill', d => sz(d.key))
-                    .on("mouseover", this.mouseOver())
-                    .on("mouseout", this.mouseOut())
-                .merge(rects)
-                    .transition()
-                    .attr('x', d => x1(d.key))
-                    .attr('y', gy)
-                    .attr('height', height)
-                    .attr('width', width)
-                    .attr('stroke', color.stroke)
-                    .attr('stroke-opacity', color.strokeOpacity)
-                    .attr('fill-opacity', color.fillOpacity)
-                    .attr('fill', d => sz(d.key));
-
-            rects.exit().remove();
-        }
+        if (stacked || !groups)
+            barChart.stacked(bars, data, groups);
+        else
+            barChart.grouped(bars, data, groups);
 
         // Axis
-        if (model.orientation === 'vertical') {
-            if (model.axisX)
-                this.xAxis1(model.axisX === true ? "bottom" : model.axisX, sx, box);
-            if (model.axisY)
-                this.yAxis1(model.axisY === true ? "left" : model.axisY, sy, box);
+        barChart.axis(domainX);
+        // Legend
+        barChart.legend(groups);
+    }
+});
+
+
+function VerticalBarChart (viz) {
+    this.vertical = true;
+    this.init(viz);
+    this.sx.rangeRound([0, this.box.innerWidth]);
+    this.sy.rangeRound([this.box.innerHeight, 0]);
+}
+
+function HorizontalBarChart (viz) {
+    this.init(viz);
+    this.sx.rangeRound([0, this.box.innerHeight]);
+    this.sy.rangeRound([0, this.box.innerWidth]);
+}
+
+const barChartPrototype = {
+
+    init (viz) {
+        this.viz = viz;
+        this.model = viz.getModel();
+        this.box = viz.boundingBox();
+        this.sx = viz.getScale(this.model.scaleX),
+        this.sy = viz.getScale(this.model.scaleY),
+        this.sz = viz.getScale('ordinal');
+    },
+
+    legend (groups) {
+        if (this.model.legendType && groups) {
+            this.viz.legend({scale: this.sz}, this.box);
+        }
+    },
+
+    stacked (bars, data, groups) {
+        // TODO: generalize this
+        var stackOrder = stackOrderDescending,
+            color = this.viz.getModel('color'),
+            sx = this.sx,
+            sy = this.sy,
+            sz = this.sz,
+            x = this.model.x,
+            y = this.model.y,
+            viz = this.viz,
+            radius = this.model.radius;
+        let width, height, xrect, yrect, yi, rects;
+
+        if (groups) {
+            this.sy.domain([0, max(data, d => d.total)]).nice();
         } else {
-            axis = this.axis('left', sx).tickSizeOuter(0);
-            paper.group('axis')
-                .attr("transform", this.translate(box.total.left, box.total.top))
-                .call(axis);
-            if (model.axisY)
-                this.yAxis1(model.axisY === true ? "bottom" : model.axisY, sy, box);
+            this.sy.domain([0, max(data, d => d[y])]).nice();
+            groups = [this.model.y];
         }
 
-        if (model.legendType && groups) {
-            this.legend({scale: sz}, box);
+        if (this.vertical) {
+            xrect = x0;
+            yrect = y0;
+            width = sx.bandwidth;
+            height = bardim;
+            yi = 1;
+        } else {
+            xrect = y0;
+            yrect = x0;
+            width = bardim;
+            height = sx.bandwidth;
+            yi = 0;
         }
+        data = stack().order(stackOrder).keys(groups)(data);
+        rects = bars.data(data)
+                    .enter()
+                        .append('g')
+                        .classed('group', true)
+                        .attr('fill', d => sz(d.key))
+                    .merge(bars)
+                        .attr('fill', d => sz(d.key))
+                        .attr('stroke', viz.modelProperty('stroke', color))
+                        .attr('stroke-opacity', viz.modelProperty('strokeOpacity', color))
+                        .selectAll('rect')
+                        .data(stackedData);
+        rects.enter()
+            .append('rect')
+                .attr('x', xrect)
+                .attr('y', yrect)
+                .attr('height', height)
+                .attr('width', width)
+                .attr('rx', radius)
+                .attr('ry', radius)
+                .on("mouseover", viz.mouseOver())
+                .on("mouseout", viz.mouseOut())
+            .merge(rects)
+                .transition()
+                .attr('x', xrect)
+                .attr('y', yrect)
+                .attr('height', height)
+                .attr('width', width);
 
-        // utilities for stacked charts
         function bardim (d) {
             return sy(d[1-yi]) - sy(d[yi]);
         }
@@ -227,7 +198,88 @@ export default createChart('barchart', lineDrawing, {
             return sy(d[yi]);
         }
 
-        // utilities for grouped charts
+        function stackedData (d) {
+            d.forEach(r => {
+                r.key = d.key;
+                r.value = r.data[d.key];
+            });
+            return d;
+        }
+    },
+
+    grouped (bars, data, groups) {
+        var color = this.viz.getModel('color'),
+            sx = this.sx,
+            sy = this.sy,
+            sz = this.sz,
+            x = this.model.x,
+            viz = this.viz,
+            radius = this.model.radius,
+            padding = sx.paddingInner(),
+            x1 = viz.getScale('band')
+                    .domain(groups)
+                    .paddingInner(0.5*padding);
+        let width, height, xrect, rects;
+
+        // set the value domain
+        sy.domain([0, max(data, maxValue)]).nice();
+
+        if (this.vertical) {
+            x1.rangeRound([0, sx.bandwidth()]);
+            xrect = gx;
+            width = x1.bandwidth;
+            height = gh;
+        } else {
+            xrect = gx;
+            height = x1.bandwidth;
+            width = gh;
+        }
+
+        bars = bars.data(data);
+        bars.exit().remove();
+        //
+        // join for rectangles
+        rects = bars
+            .enter()
+                .append('g')
+                .classed('group', true)
+                .attr("transform", d => viz.translate(xrect(d), 0))
+            .merge(bars)
+                .attr("transform", d => viz.translate(xrect(d), 0))
+                .selectAll('rect')
+                .data(groupData);
+        //
+        rects.exit()
+            .transition()
+            .style('opacity', 0)
+            .remove();
+        //
+        rects
+            .enter()
+                .append('rect')
+                .attr('x', d => x1(d.key))
+                .attr('y', gy)
+                .attr('rx', radius)
+                .attr('ry', radius)
+                .attr('height', height)
+                .attr('width', width)
+                .attr('stroke', color.stroke)
+                .attr('stroke-opacity', 0)
+                .attr('fill', d => sz(d.key))
+                .on("mouseover", viz.mouseOver())
+                .on("mouseout", viz.mouseOut())
+            .merge(rects)
+                .transition(viz.transition('rect'))
+                .attr('x', d => x1(d.key))
+                .attr('y', gy)
+                .attr('height', height)
+                .attr('width', width)
+                .attr('stroke', color.stroke)
+                .attr('stroke-opacity', color.strokeOpacity)
+                .attr('fill', d => sz(d.key));
+
+        rects.exit().remove();
+
         function gx (d) {
             return sx(d[x]);
         }
@@ -240,18 +292,35 @@ export default createChart('barchart', lineDrawing, {
             return sy(0) - sy(d.value);
         }
 
-        function stackedData (d) {
-            d.forEach(r => {
-                r.key = d.key;
-                r.value = r.data[d.key];
-            });
-            return d;
-        }
-
         function groupData (d) {
             return groups.map(key => {
                 return {key: key, value: d[key]};
             });
         }
+
+        function maxValue (d) {
+            return groups.reduce((v, key) => {
+                return Math.max(v, d[key]);
+            }, 0);
+        }
+    }
+};
+
+
+VerticalBarChart.prototype = assign({}, barChartPrototype, {
+    axis (domainX) {
+        if (this.model.axisX)
+            this.viz.xAxis1(this.model.axisX === true ? "bottom" : this.model.axisX, this.sx, this.box, domainX[0]);
+        if (this.model.axisY)
+            this.viz.yAxis1(this.model.axisY === true ? "left" : this.model.axisY, this.sy, this.box);
+    }
+});
+
+HorizontalBarChart.prototype = assign({}, barChartPrototype, {
+    axis (domainX) {
+        if (this.model.axisX)
+            this.viz.xAxis1(this.model.axisX === true ? "left" : this.model.axisX, this.sx, this.box, domainX[0]);
+        if (this.model.axisY)
+            this.viz.yAxis1(this.model.axisY === true ? "bottom" : this.model.axisY, this.sy, this.box);
     }
 });

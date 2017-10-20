@@ -8,11 +8,13 @@ import DataStore from '../data/store';
 import {vizPrototype} from '../core/chart';
 import warn from '../utils/warn';
 import cachedFormat from '../utils/format';
+import cachedFormatTime from '../utils/format-time';
 
 //
 // Visual Data Context
 visuals.options.dataContext = {
-    $format: cachedFormat
+    $format: cachedFormat,
+    $formatTime: cachedFormatTime
 };
 
 //  getData method

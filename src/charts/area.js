@@ -23,13 +23,7 @@ export default createChart('areachart', lineDrawing, {
         lineDarken: 0.2,
         //
         axisX: true,
-        axisXticks: 5,
-        axisY: true,
-        axisYticks: 5,
-        //
-        axisFormat: ',',
-        axisTimeFormat: '%Y-%m-%d',
-        axisTickSizeOuter: 0
+        axisY: true
     },
 
     doDraw (frame) {
@@ -52,14 +46,15 @@ export default createChart('areachart', lineDrawing, {
             scaleY = this.getScale(model.scaleY)
                             .domain(domainY)
                             .rangeRound([box.innerHeight, 0]).nice(),
-            areas = this.group()
-                .attr("transform", this.translate(box.total.left, box.total.top))
-                .selectAll('.areagroup').data(info.data),
+            group = this.group(),
+            chart = this.group('chart'),
+            areas = chart.selectAll('.areagroup').data(info.data),
             colors = this.colors(info.data.length),
             fill = model.gradient ? colors.map((c, i) => self.linearGradient(c, box, 'vertical', `fill${self.model.uid}-${i}`)) : colors,
             curve = this.curve(model.curve);
 
-        this.paper().size(box);
+        this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
+        this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));
 
         var areagroup = areas
             .enter()

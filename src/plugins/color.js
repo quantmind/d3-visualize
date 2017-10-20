@@ -38,20 +38,54 @@ colorScales.set('cubehelix', () =>  scaleSequential(interpolateCubehelixDefault)
 //
 //  Color scale method
 //  ==========================
-vizPrototype.colors = function (n) {
-    var color = this.getModel('color'),
-        scaleDef = colorScales.get(color.scale);
+vizPrototype.colors = function (n, opacity) {
+    var model = this.getModel('color'),
+        scaleDef = colorScales.get(model.scale);
 
-    if (!scaleDef) throw new Error(`Unknown scale ${color.scale}`);
+    if (!scaleDef) throw new Error(`Unknown scale ${model.scale}`);
     if (!isObject(scaleDef)) scaleDef = {scale: scaleDef};
-    if (scaleDef.minPoints === undefined) scaleDef.minPoints = color.scaleMinPoints;
+    if (scaleDef.minPoints === undefined) scaleDef.minPoints = model.scaleMinPoints;
 
-    var offset = color.scaleOffset,
+    var offset = model.scaleOffset,
         npoints = n + offset,
         points = Math.max(npoints, scaleDef.minPoints),
         domain = scaleDef.reversed ? [points-1, 0] : [0, points-1],
         scale = scaleDef.scale().domain(domain);
-    return range(offset, Math.min(npoints, points)).map(v => scale(v));
+    let c;
+    return range(offset, Math.min(npoints, points)).map(v => {
+        c = color(scale(v));
+        c.opacity = opacity;
+        return c;
+    });
+};
+
+
+vizPrototype.fill = function (data) {
+    var model = this.getModel('color'),
+        opacity = this.modelProperty('fillOpacity', model),
+        colors = this.colors(data.length, opacity);
+
+    function fill (d, idx) {
+        return colors[idx];
+    }
+
+    fill.colors = colors;
+
+    return fill;
+};
+
+vizPrototype.stroke = function (data) {
+    var model = this.getModel('color'),
+        opacity = this.modelProperty('strokeOpacity', model),
+        colors = this.colors(data.length, opacity);
+
+    function stroke (d, idx) {
+        return colors[idx];
+    }
+
+    stroke.colors = colors;
+
+    return stroke;
 };
 
 //

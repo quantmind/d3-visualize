@@ -1,3 +1,4 @@
 export default function (value, min, max) {
-    return Math.max(Math.min(value, max), min);
+    if (max !== undefined) value = Math.min(value, max);
+    return min === undefined ? value : Math.max(value, min);
 }

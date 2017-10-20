@@ -18,10 +18,10 @@ globalOptions.legend = {
     titleMaxWidth: 60,
     minFontSize: 10,
     maxFontSize: 20,
-    offsetX: 10,
-    offsetY: 10,
+    offset: [10, 10],
     shapeWidth: 15,
-    shapeHeight: 15
+    shapeHeight: 15,
+    hide: 300, // specify a pixel size below which tick labels are not displayed
 };
 
 
@@ -37,35 +37,50 @@ const legends = {
 //  ==========================
 vizPrototype.legend = function (cfg, box) {
     var vizModel = this.getModel(),
-        lgModel = this.getModel('legend'),
+        model = this.getModel('legend'),
+        font = this.getModel('font'),
         name = pop(cfg, 'type') || vizModel.legendType,
-        size = this.dim(lgModel.fontSize, box.height, lgModel.minFontSize, lgModel.maxFontSize);
-    if (!name) return;
-    var legend = legends[name];
+        vizSize = Math.max(box.vizHeight, box.vizWidth),
+        fontSize = this.dim(model.fontSize, vizSize, model.minFontSize, model.maxFontSize),
+        legend = legends[name];
+
     if (!legend) return warn(`Could not load legend ${name}`);
-    legend = legend().orient(lgModel.orient);
-    if (lgModel.title) {
-        var width = this.dim(lgModel.titleWidth, box.width, lgModel.titleMinWidth, lgModel.titleMaxWidth);
-        legend.title(lgModel.title).titleWidth(width);
+    legend = legend().orient(model.orient);
+
+    if (model.title) {
+        legend.title(model.title);
+        if (model.titleWidth) {
+            var width = this.dim(model.titleWidth, vizSize, model.titleMinWidth, model.titleMaxWidth);
+            legend.titleWidth(width);
+        }
     }
 
-    if (lgModel.labelFormat) legend.labelFormat(lgModel.labelFormat);
-    legend.shapeWidth(lgModel.shapeWidth).shapeHeight(lgModel.shapeHeight);
+    if (model.labelFormat) legend.labelFormat(model.labelFormat);
+    legend.shapeWidth(model.shapeWidth).shapeHeight(model.shapeHeight);
 
     // apply cfg parameters
     for (let key in cfg) legend[key](cfg[key]);
 
-    var g = this.paper()
-            .group('legend')
-            .style('font-size', `${size}px`)
+    var gl = this.group('legend')
+            .style('font-size', `${fontSize}px`)
             .html('')
             .call(legend),
-        bb = locations.get(lgModel.location)(g.node().getBBox(), box, lgModel);
-    g.attr('transform', this.translate(bb.x, bb.y));
+        bb = gl.node().getBBox(),
+        offset = locations.get(model.location).call(this, bb, box, model),
+        transform = this.translate(offset.x, offset.y);
+    gl.selectAll('text').style('fill', model.stroke || font.stroke);
+    this.applyTransform(gl, transform);
+    //
+    //
+    // if the legend needs to be hidden below a certain size
+    if (model.hide) {
+        if (vizSize < model.hide) gl.style('opacity', 0);
+        else gl.style('opacity', 1);
+    }
 };
 
 
-const locations = map({
+export const locations = map({
     top,
     bottom,
     right,
@@ -78,64 +93,76 @@ const locations = map({
 
 
 function top (bb, box, options) {
+    var offsetY = this.dim(options.offset[1], box.vizHeight);
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
-        y: options.offsetY
+        x: box.margin.left + (box.innerWidth - bb.width)/2,
+        y: offsetY
     };
 }
 
 
 function bottom (bb, box, options) {
+    var offsetY = this.dim(options.offset[1], box.vizHeight);
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
-        y: box.height - bb.height - options.offsetY
+        x: box.margin.left + (box.innerWidth - bb.width)/2,
+        y: box.vizHeight - bb.height - offsetY
     };
 }
 
 
 function right (bb, box, options) {
+    var offsetX = this.dim(options.offset[0], box.vizWidth);
     return {
-        x: box.width - bb.width - options.offsetX,
-        y: box.total.top + (box.innerHeight - bb.height)/2
+        x: box.vizWidth - bb.width - offsetX,
+        y: box.margin.top + (box.innerHeight - bb.height)/2
     };
 }
 
 
 function left (bb, box, options) {
+    var offsetX = this.dim(options.offset[0], box.vizWidth);
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
-        y: options.offsetY
+        x: box.margin.left - offsetX,
+        y: box.margin.top + (box.innerHeight - bb.height)/2
     };
 }
 
 
 function topLeft (bb, box, options) {
+    var offsetX = this.dim(options.offset[0], box.vizWidth),
+        offsetY = this.dim(options.offset[1], box.vizHeight);
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
-        y: options.offsetY
+        x: box.margin.left + (box.innerWidth - bb.width)/2 + offsetX,
+        y: offsetY
     };
 }
 
 
 function topRight (bb, box, options) {
+    var offsetX = this.dim(options.offset[0], box.vizWidth),
+        offsetY = this.dim(options.offset[1], box.vizHeight);
     return {
-        x: box.width - bb.width - options.offsetX,
-        y: options.offsetY
+        x: box.vizWidth - bb.width - offsetX,
+        y: offsetY
     };
 }
 
 
 function bottomLeft (bb, box, options) {
+    var offsetX = this.dim(options.offset[0], box.vizWidth),
+        offsetY = this.dim(options.offset[1], box.vizHeight);
     return {
-        x: box.total.left + (box.innerWidth - bb.width)/2,
-        y: box.height - bb.height - options.offsetY
+        x: bb.width + offsetX,
+        y: box.vizHeight - bb.height - offsetY
     };
 }
 
 
 function bottomRight (bb, box, options) {
+    var offsetX = this.dim(options.offset[0], box.vizWidth),
+        offsetY = this.dim(options.offset[1], box.vizHeight);
     return {
-        x: box.width - bb.width - options.offsetX,
-        y: box.height - bb.height - options.offsetY
+        x: box.vizWidth - bb.width - offsetX,
+        y: box.vizHeight - bb.height - offsetY
     };
 }

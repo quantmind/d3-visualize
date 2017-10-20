@@ -45,14 +45,22 @@ const paperPrototype = {
         return this;
     },
 
-    group (cname) {
+    group (cname, transform) {
+        return this.childGroup(this.sel, cname, transform);
+    },
+
+    childGroup (g, cname, transform) {
         if (!cname) cname = 'main';
-        var sel = this.sel;
-        sel
-            .selectAll(`.${cname}`)
-            .data([0]).enter()
-            .append('g').classed(cname, true);
-        return sel.select(`.${cname}`);
+        var ge = g.selectAll(`.${cname}`)
+                    .data([0])
+                    .enter()
+                    .append('g').classed(cname, true);
+        // TODO, not sure we need this anymore - we gave applyTransform
+        if (transform)
+            ge.attr('transform', transform)
+                .merge()
+                .attr('transform', transform);
+        return g.select(`.${cname}`);
     },
 
     dim (value) {
@@ -63,12 +71,12 @@ const paperPrototype = {
 
 export const Svg = createPaper('svg', {
 
-    initialise (viz) {
-        var svg = viz.visualParent.paper.select(`svg#${viz.visualParent.model.uid}`);
+    initialise (visual) {
+        var svg = visual.paperElement.select(`svg#${visual.model.uid}`);
         if (!svg.size())
-            svg = viz.visualParent.paper.append('svg')
-                .attr('id', viz.visualParent.model.uid)
-                .classed(viz.visualType, true)
+            svg = visual.paperElement.append('svg')
+                .attr('id', visual.model.uid)
+                .classed(visual.visualType, true)
                 .style('position', 'absolute');
         return svg.node();
     }
@@ -77,21 +85,21 @@ export const Svg = createPaper('svg', {
 
 export const Div = createPaper('div', {
 
-    initialise (viz) {
-        var div = viz.visualParent.paper.append('div')
-            .attr('id', viz.model.uid)
-            .classed(viz.visualType, true);
-            //.style('position', 'absolute');
+    initialise (visual) {
+        var div = visual.paperElement.select(`div#${visual.model.uid}`);
+        if (!div.size())
+            div = visual.paperElement.append('div')
+                    .attr('id', visual.model.uid)
+                    .classed(visual.visualType, true);
+                    //.style('position', 'absolute');
         return div.node();
     },
 
-    group (cname) {
+    childGroup (g, cname) {
         if (!cname) cname = 'main';
-        var sel = this.sel;
-        sel
-            .selectAll(`.${cname}`)
+        g.selectAll(`.${cname}`)
             .data([0]).enter()
             .append('div').classed(cname, true);
-        return sel.select(`.${cname}`);
+        return g.select(`.${cname}`);
     },
 });

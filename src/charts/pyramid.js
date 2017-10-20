@@ -25,20 +25,22 @@ export default createChart('pyramidchart', proportional, {
             field = model.field,
             color = this.getModel('color'),
             box = this.boundingBox(),
-            pad = this.dim(model.pad, Math.min(box.innerWidth, box.innerHeight)),
             polygons = pyramid()
-                .pad(pad)
+                .pad(model.pad)
                 .value(d => d[field]),
             scaleX = this.getScale('linear').rangeRound([0, box.innerWidth]),
             scaleY = this.getScale('linear').rangeRound(model.inverted ? [box.innerHeight, 0] : [0, box.innerHeight]),
             data = frame.new(polygons(this.proportionalData(frame, field))).dimension('fraction').bottom(Infinity),
             marks = symbol().type(d => polygon(d.points.map(xy => [scaleX(xy[0]), scaleY(xy[1])]))).size(1),
             fill = this.fill(data),
-            paper = this.paper(),
-            segments = paper.size(box).group()
-                .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top))
+            group = this.group(),
+            chart = this.group('chart'),
+            segments = chart
                 .style("shape-rendering", "crispEdges")
                 .selectAll('.segment').data(data);
+
+        this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
+        this.applyTransform(chart, this.translate(box.margin.left+box.innerWidth/2, box.margin.top));
 
         segments
             .enter()
@@ -46,7 +48,6 @@ export default createChart('pyramidchart', proportional, {
                 .attr('class', 'segment')
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', 0)
-                .attr('fill-opacity', 0)
                 .attr('fill', fill)
                 .attr('stroke-width', model.lineWidth)
                 .attr('d', marks)
@@ -57,8 +58,7 @@ export default createChart('pyramidchart', proportional, {
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', color.strokeOpacity)
                 .attr('d', marks)
-                .attr('fill', fill)
-                .attr('fill-opacity', color.fillOpacity);
+                .attr('fill', fill);
 
         segments.exit().remove();
 
