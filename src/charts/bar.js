@@ -1,9 +1,33 @@
 import assign from 'object-assign';
-import {stack, stackOrderDescending} from 'd3-shape';
 import {max} from 'd3-array';
 
 import createChart from '../core/chart';
+import colorContrast from '../utils/contrast';
+import textWrap from '../utils/text-wrapping';
 import {lineDrawing} from './line';
+
+
+const baselines = {
+    center: "middle",
+    top: "hanging",
+    bottom: "baseline",
+    outside: "baseline"
+};
+const heightShifts = {
+    center (d, h, offset) {
+        return h/2;
+    },
+    top (d, h, offset) {
+        return offset;
+    },
+    bottom (d, h, offset) {
+        return h - offset;
+    },
+    outside (d, h, offset) {
+        return -offset;
+    }
+};
+
 //
 //  Bar Chart
 //  =============
@@ -19,6 +43,8 @@ export default createChart('barchart', lineDrawing, {
         // stack multiple y series?
         sortby: null, // specify "x" or "y"
         stack: true,
+        stackOrder: 'descending',   // stack order
+        waffle: false,      // ability to draw a waffle chart (only when stack is true)
         normalize: false,
         scaleX: {
             type: 'band',
@@ -27,6 +53,13 @@ export default createChart('barchart', lineDrawing, {
         scaleY: 'linear',
         x: 'x',
         y: 'y',
+        //
+        // allow to place labels in bars
+        label: null,    // expression for label text
+        labelLocation: "center",
+        labelOffset: 10,
+        labelWidth: 0.7,
+        //
         radius: 0,
         groupby: null,  // group data by a field for staked or grouped bar chart
         //
@@ -45,7 +78,6 @@ export default createChart('barchart', lineDrawing, {
             box = this.boundingBox(),
             group = this.group(),
             chart = this.group('chart'),
-            bars = chart.selectAll('.group'),
             x = model.x,
             y = model.y,
             groupby = model.groupby,
@@ -82,9 +114,9 @@ export default createChart('barchart', lineDrawing, {
         //
         // Stacked bar chart
         if (stacked || !groups)
-            barChart.stacked(bars, data, groups);
+            barChart.stacked(chart, data, groups);
         else
-            barChart.grouped(bars, data, groups);
+            barChart.grouped(chart, data, groups);
 
         // Axis
         barChart.axis(domainX);
@@ -124,17 +156,16 @@ const barChartPrototype = {
         }
     },
 
-    stacked (bars, data, groups) {
-        // TODO: generalize this
-        var stackOrder = stackOrderDescending,
-            color = this.viz.getModel('color'),
+    stacked (chart, data, groups) {
+        var color = this.viz.getModel('color'),
             sx = this.sx,
             sy = this.sy,
             sz = this.sz,
             x = this.model.x,
             y = this.model.y,
             viz = this.viz,
-            radius = this.model.radius;
+            radius = this.model.radius,
+            bars = chart.selectAll('.group');
         let width, height, xrect, yrect, yi, rects;
 
         if (groups) {
@@ -157,7 +188,7 @@ const barChartPrototype = {
             height = sx.bandwidth;
             yi = 0;
         }
-        data = stack().order(stackOrder).keys(groups)(data);
+        data = viz.getStack().keys(groups)(data);
         rects = bars.data(data)
                     .enter()
                         .append('g')
@@ -186,6 +217,41 @@ const barChartPrototype = {
                 .attr('height', height)
                 .attr('width', width);
 
+        // add labels
+        if (this.model.label) {
+            var font = viz.getModel('font'),
+                label = this.model.label,
+                fontSize = `${viz.font(this.box)}px`,
+                labels = chart.selectAll('.labels').data(data),
+                baseline = this.vertical ? baselines[this.model.labelLocation] || "baseline" : "middle",
+                offset = this.model.labelOffset,
+                heightShift = heightShifts[this.model.labelLocation],
+                labelWidth = this.model.labelWidth,
+                labelOffset = this.model.labelOffset;
+
+            rects = labels.enter()
+                    .append('g')
+                    .classed('labels', true)
+                .merge(labels)
+                    .selectAll('text')
+                    .data(stackedData);
+
+            rects.enter()
+                .append('text')
+                .classed('label', true)
+                .attr("transform", labelTranslate)
+                .style("fill", fillLabel)
+                .style('font-size', fontSize)
+                .text(labelText)
+            .merge(rects)
+                .text(labelText)
+                .style('font-size', fontSize)
+                .call(textWrap, d => labelWidth*width(d), labelAlign)
+                .transition(viz.transition('text'))
+                .attr("transform", labelTranslate)
+                .style("fill", fillLabel);
+        }
+
         function bardim (d) {
             return sy(d[1-yi]) - sy(d[yi]);
         }
@@ -205,9 +271,29 @@ const barChartPrototype = {
             });
             return d;
         }
+
+        function labelTranslate (d, index) {
+            var x = xrect(d, index) + width(d, index)/2,
+                y = yrect(d, index) + heightShift(d, height(d, index), labelOffset);
+            return viz.translate(x, y);
+        }
+
+        function fillLabel (d) {
+            return colorContrast(sz(d.key), '#fff', font.stroke);
+        }
+
+        function labelText (d, index) {
+            return viz.dataStore.eval(label, {d: d, index: index});
+        }
+
+        function labelAlign () {
+            viz.select(this)
+                .attr("alignment-baseline", baseline)
+                .attr("text-anchor", "middle");
+        }
     },
 
-    grouped (bars, data, groups) {
+    grouped (chart, data, groups) {
         var color = this.viz.getModel('color'),
             sx = this.sx,
             sy = this.sy,
@@ -218,7 +304,8 @@ const barChartPrototype = {
             padding = sx.paddingInner(),
             x1 = viz.getScale('band')
                     .domain(groups)
-                    .paddingInner(0.5*padding);
+                    .paddingInner(0.5*padding),
+            bars = chart.selectAll('.group');
         let width, height, xrect, rects;
 
         // set the value domain

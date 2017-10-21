@@ -22,6 +22,9 @@ export default createChart('areachart', lineDrawing, {
         gradient: true,
         lineDarken: 0.2,
         //
+        stack: true,
+        stackOrder: 'descending',   // stack order
+        //
         axisX: true,
         axisY: true
     },
@@ -72,6 +75,7 @@ export default createChart('areachart', lineDrawing, {
                 .attr('stroke', d => d.stroke)
                 .attr('d', d => d.draw)
             .merge(areagroup)
+                .transition(this.transition('area'))
                 .attr('d', d => d.draw)
                 .attr('fill', d => d.fill)
                 .attr('stroke', d => d.stroke)
@@ -82,12 +86,19 @@ export default createChart('areachart', lineDrawing, {
         areagroup
             .exit()
             .transition()
+            .style('opacity', 0)
             .remove();
 
         if (model.axisX)
             this.xAxis1(model.axisX === true ? "bottom" : model.axisX, scaleX, box, domainX[0]);
         if (model.axisY)
             this.yAxis1(model.axisY === true ? "left" : model.axisY, scaleY, box, domainY[0]);
+
+        if (info.data.length > 1)
+            this.legend({
+                type: 'color',
+                scale: this.getScale('ordinal').range(colors).domain(info.data.map(d => d.key))
+            }, box);
 
         function xx(d) {
             return scaleX(d.data[x]);

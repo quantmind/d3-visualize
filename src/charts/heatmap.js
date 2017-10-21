@@ -27,7 +27,9 @@ export default createChart('heatmap', lineDrawing, {
         x: 'x',
         y: 'y',
         z: 'data',
-        label: null,
+        //
+        label: null,    // expression for label text
+        //
         axisX: true,
         axisY: true,
         reverseColors: true,

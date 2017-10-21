@@ -1,33 +1,48 @@
 import {select} from 'd3-selection';
 
+import functor from './functor';
+
+
 //Text wrapping code adapted from Mike Bostock
 export default function (text, width, callback) {
+    width = functor(width);
 
-    text.each(function() {
+    text.each(function(d, i) {
         var text = select(this),
-            words = text.text().split(/\s+/).reverse(),
-            word,
-            line = [],
-            lineHeight = 1.2,
             dy = parseFloat(text.attr("dy")) || 0,
+            wd = width(d, i),
+            lineHeight = 1.2,
+            lines = text.text().split('\n');
+
+        let word, words, done,
             tspan = text.text(null)
                         .append("tspan")
                         .attr("x", 0)
                         .attr("dy", dy + "em");
 
-        while (word = words.pop()) {
-            line.push(word);
-            tspan.text(line.join(" "));
-            if (tspan.node().getComputedTextLength() > width && line.length > 1) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
+        lines.forEach((t, i) => {
+            done = [];
+            words = t.split(/\s+/).reverse();
+            if (i)
                 tspan = text.append("tspan")
-                            .attr("x", 0)
-                            .attr("dy", lineHeight + dy + "em")
-                            .text(word);
+                        .attr("x", 0)
+                        .attr("dy", lineHeight + dy + "em");
+
+            while (word = words.pop()) {
+                done.push(word);
+                tspan.text(done.join(' '));
+                if (tspan.node().getComputedTextLength() > wd && done.length > 1) {
+                    done.pop();
+                    tspan.text(done.join(' '));
+                    done = [word];
+                    tspan = text.append("tspan")
+                                .attr("x", 0)
+                                .attr("dy", lineHeight + dy + "em")
+                                .text(word);
+                }
             }
-        }
+        });
+
         if (callback)
             text.selectAll('tspan')
                 .each(callback);

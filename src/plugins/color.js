@@ -57,7 +57,7 @@ vizPrototype.colors = function (n, opacity) {
             npoints = n + offset,
             points = Math.max(npoints, scaleDef.minPoints),
             domain = reversed ? [points-1, 0] : [0, points-1];
-        scale().domain(domain);
+        scale.domain(domain);
         let c;
         return range(offset, Math.min(npoints, points)).map(v => {
             c = color(scale(v));

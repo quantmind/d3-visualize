@@ -1,5 +1,5 @@
 {
-    "version": "0.2.4",
+    "version": "0.2.5",
     "name": "d3-visualize",
     "description": "d3-view components for data visualization",
     "author": {
@@ -40,7 +40,7 @@
         "d3-svg-legend": "2.24",
         "d3-time-format": "2.1",
         "d3-transition": "1.1",
-        "d3-view": "0.8.0"
+        "d3-view": "0.8.1"
     },
     "devDependencies": {
         "babel-eslint": "8.0",

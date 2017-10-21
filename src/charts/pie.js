@@ -1,5 +1,6 @@
 import {pie, arc} from 'd3-shape';
 import {scaleOrdinal} from 'd3-scale';
+import {map} from 'd3-collection';
 import {viewExpression} from 'd3-view';
 import {format} from 'd3-format';
 
@@ -78,13 +79,14 @@ export default createChart('piechart', proportional, {
                 .innerRadius(innerRadius)
                 .outerRadius(outerRadius)
                 .cornerRadius(model.cornerRadius),
-            paper = this.paper().size(box),
-            //update = paper.transition('update'),
+            group = this.group(),
+            chart = this.group('chart'),
             data = angles(this.proportionalData(frame, field)),
             fill = this.fill(data),
-            slices = paper.group()
-                .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
-                .selectAll('.slice').data(data);
+            slices = chart.selectAll('.slice').data(data);
+
+        this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
+        this.applyTransform(chart, this.translate(box.margin.left+box.innerWidth/2, box.margin.top+box.innerHeight/2));
 
         slices
             .enter()
@@ -106,13 +108,13 @@ export default createChart('piechart', proportional, {
         slices.exit().transition().remove();
 
         if (model.center) {
-            var text = this.dataStore.eval(model.center, {total: total.total()});
+            var d = map(data.reduce((o, d) => {o[d.data.label] = d; return o;})),
+                text = this.dataStore.eval(model.center, {total: total.total(), d: d});
             if (text) {
                 var font = this.getModel('font'),
                     size = this.dim(model.centerFontSize, box.innerWidth),
-                    center = paper.group('center-notation')
-                        .attr("transform", this.translate(box.total.left+box.innerWidth/2, box.total.top+box.innerHeight/2))
-                        .selectAll('.info').data([text]);
+                    center = chart.selectAll('.info').data([text]);
+                    
                 center
                     .enter()
                         .append('text')
