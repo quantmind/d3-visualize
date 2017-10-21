@@ -14,7 +14,7 @@ const baselines = {
     outside: "baseline"
 };
 const heightShifts = {
-    center (d, h, offset) {
+    center (d, h) {
         return h/2;
     },
     top (d, h, offset) {
@@ -224,7 +224,6 @@ const barChartPrototype = {
                 fontSize = `${viz.font(this.box)}px`,
                 labels = chart.selectAll('.labels').data(data),
                 baseline = this.vertical ? baselines[this.model.labelLocation] || "baseline" : "middle",
-                offset = this.model.labelOffset,
                 heightShift = heightShifts[this.model.labelLocation],
                 labelWidth = this.model.labelWidth,
                 labelOffset = this.model.labelOffset;
