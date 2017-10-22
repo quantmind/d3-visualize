@@ -180,7 +180,7 @@ function visualManager (records) {
         var nodes = record.removedNodes;
         if (!nodes || !nodes.length) return;  // phantomJs hack
         nodes.forEach(node => {
-            if (node.nodeName !== '#text') {
+            if (node.querySelectorAll) {
                 if (!node.__visual__)
                     select(node).selectAll('.d3-visual').each(destroy);
                 else

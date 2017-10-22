@@ -74,6 +74,6 @@ export default assign({}, vizComponent, {
         if (!schema.visuals) schema.visuals = {};
         model.visual = new VisualContainer(sel.node(), schema, model.visual, model.visual ? null : model.$new());
         if (!root.visualDashboard) root.visualDashboard = model.visual;
-        return this.mountInner(sel, inner);
+        return sel.html(inner);
     }
 });

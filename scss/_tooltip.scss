@@ -5,6 +5,7 @@
   color: $tooltip-color;
   border-radius: 2px;
   pointer-events: none;
+  z-index: 10001
 }
 
 /* Creates a small triangle extender for the tooltip */
