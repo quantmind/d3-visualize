@@ -109,8 +109,8 @@ function tooltip () {
         while (i--) snode.classed(locations[i], false);
         coords = locationCallbacks.get(dir).call(this, target);
         snode.classed(dir, true)
-            .style('top', (coords.top + poffset[0]) + scrollTop + 'px')
-            .style('left', (coords.left + poffset[1]) + scrollLeft + 'px');
+            .style('top', (coords.top + poffset[1]) + scrollTop + 'px')
+            .style('left', (coords.left + poffset[0]) + scrollLeft + 'px');
 
         return tooltip;
     };
