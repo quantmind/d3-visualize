@@ -28,7 +28,10 @@ visuals.events.on('after-draw.expand', viz => {
     if (!viz.isViz || visual.layers.length <= 1) return;
 
     var model = viz.getModel('expand');
-    if (!model.location) return;
+    // If not expanded already check if this can be expanded
+    if (!viz.__expanded)
+        if (!model.location || !hasMargin(viz.getModel('padding'))) return;
+
     var font = viz.getModel('font'),
         box = viz.boundingBox(),
         button = viz.group('expand'),
@@ -120,3 +123,8 @@ visuals.events.on('after-draw.expand', viz => {
     }
 
 });
+
+
+function hasMargin(mg) {
+    return mg.left || mg.right || mg.top || mg.bottom;
+}

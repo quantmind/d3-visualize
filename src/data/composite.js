@@ -1,3 +1,4 @@
+import {map} from 'd3-collection';
 import {isArray, isObject} from 'd3-let';
 //
 //  A composite dataSource
@@ -33,15 +34,40 @@ export default {
         })).then(frames => {
             if (frames.length === 1) return frames[0];
             else if (self.config.merge) return self.mergeFrames(frames);
-            else return frames.reduce((o, frame, index) => {
-                o[sources[index]] = frame;
-                return o;
-            }, {type: 'frameCollection'});
+            else {
+                var fc = new FrameCollection();
+                frames.forEach((frame, index) => {
+                    fc.frames.set(sources[index], frame);
+                });
+                return fc;
+            }
         });
     },
 
     // TODO: implement frame merging
     mergeFrames (frames) {
         return frames[0];
+    }
+};
+
+
+function FrameCollection () {
+    this.frames = map();
+    Object.defineProperties(this, {
+        type: {
+            get () {
+                return 'frameCollection';
+            }
+        }
+    });
+}
+
+FrameCollection.prototype = {
+
+    dataFrame () {
+        var frames = this.frames.values();
+        for (let i=0; i<frames.length; ++i) {
+            if (frames[i].type === 'dataframe') return frames[i];
+        }
     }
 };

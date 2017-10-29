@@ -79,6 +79,10 @@ export default createVisual('visual', {
         this.layers.forEach(layer => layer.deactivate());
     },
 
+    getVisual () {
+        return this;
+    },
+
     // Draw the visual
     draw (fetchData) {
         if (this.drawing) {
@@ -95,10 +99,7 @@ export default createVisual('visual', {
         var self = this;
         visuals.events.call('before-draw', undefined, this);
         return Promise.all(this.layers.map(visual => {
-            if (visual.active) {
-                visual.paper().size(visual.boundingBox(true));
-                return visual.redraw(fetchData);
-            }
+            return visual.redraw(fetchData);
         })).then(() => {
             delete self.drawing;
             visuals.events.call('after-draw', undefined, self);
@@ -123,6 +124,7 @@ export default createVisual('visual', {
     // Fit the root element to the size of the parent element
     fit () {
         this.resize(null, true);
+        return this;
     },
 
     // resize the chart
@@ -136,9 +138,11 @@ export default createVisual('visual', {
             this.height = size.height;
             // this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
             this.paperElement.style('height', this.height + 'px');
+            visuals.events.call('resize', undefined, this);
             // if we are not just fitting draw the visual without fetching data!!
             if (!fit) this.draw(false);
         }
+        return this;
     },
 
     paper () {

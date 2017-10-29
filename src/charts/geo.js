@@ -130,10 +130,10 @@ export default createChart('geochart', {
     getGeoData (frame) {
         var info = {};
         if (frame.type === 'frameCollection')
-            for (let key in frame) {
-                if (frame[key].type === 'Topology') info.topology = frame[key];
-                else info.data = frame[key];
-            }
+            frame.frames.each(frame => {
+                if (frame.type === 'Topology') info.topology = frame;
+                else if (frame.type === 'dataframe') info.data = frame;
+            });
         else if (frame.type === 'Topology')
             info.topology = frame;
         if (info.topology) {

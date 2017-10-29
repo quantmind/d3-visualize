@@ -1,5 +1,5 @@
 import assign from 'object-assign';
-import {isFunction, isArray, isString} from 'd3-let';
+import {isFunction, isArray, isString, pop} from 'd3-let';
 import {require} from 'd3-view';
 import * as d3_scale from 'd3-scale';
 
@@ -27,13 +27,16 @@ export const vizPrototype = {
     initialise (element) {
         // No visual parent, create the visual
         var visual = this.visualParent;
+        if (this.options.active !== undefined)
+            this.active = pop(this.options, 'active');
+        else
+            this.active = true;
         if (!visual) {
             this.visualParent = visual = new Visual(element, this.options, null, this.model);
             this.model = visual.model.$new();
             this.options = {};
         } else if (!visual.layers)
             throw new Error(`visual parent of ${this.visualType} does not have layers`);
-        this.active = true;
         visual.layers.push(this);
     },
 
@@ -43,18 +46,34 @@ export const vizPrototype = {
         return this.visualParent.paper();
     },
 
-    activate () {
+    activate (callback) {
         if (!this.active) {
             this.active = true;
-            this.group().transition(this.model.uid).style('opacity', 1);
+            this.group()
+                .transition(this.model.uid)
+                .on('end', () => {
+                    if(callback) callback();
+                })
+                .style('opacity', 1);
         }
+        return this;
     },
 
-    deactivate () {
+    deactivate (callback) {
         if (this.active) {
             this.active = false;
-            this.group().style('opacity', 1).transition(this.model.uid).style('opacity', 0);
+            this.group()
+                .transition(this.model.uid)
+                .on('end', () => {
+                    if(callback) callback();
+                })
+                .style('opacity', 0);
         }
+        return this;
+    },
+
+    getVisual () {
+        return this.visualParent.getVisual();
     },
 
     // a group selection for a given name
@@ -94,6 +113,10 @@ export const chartPrototype = {
         }
         var self = this,
             doDraw = this.doDraw;
+
+        this.paper().size(this.boundingBox(true));
+
+        if(!this.active) return;
 
         visuals.events.call('before-draw', undefined, this);
 

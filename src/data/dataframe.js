@@ -37,6 +37,11 @@ export default function DataFrame (data, serie, store) {
             get () {
                 return data.series;
             }
+        },
+        type: {
+            get () {
+                return 'dataframe';
+            }
         }
     });
     this.serie = serie;
@@ -45,6 +50,10 @@ export default function DataFrame (data, serie, store) {
 
 DataFrame.prototype = {
 
+    dataFrame () {
+        return this;
+    },
+    
     size () {
         return this.data.length;
     },

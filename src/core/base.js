@@ -30,6 +30,7 @@ export const visuals = {
     events: dispatch(
         'before-init',
         'after-init',
+        'resize',
         'before-draw',
         'after-draw'
     )

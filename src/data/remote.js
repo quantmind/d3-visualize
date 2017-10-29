@@ -1,4 +1,4 @@
-import {csvParse} from 'd3-dsv';
+import {csvParse, tsvParse} from 'd3-dsv';
 import {set} from 'd3-collection';
 import {isObject} from 'd3-let';
 import {viewProviders} from 'd3-view';
@@ -40,6 +40,8 @@ function parse (response) {
     var ct = (response.headers.get('content-type') || '').split(';')[0];
     if (CSV.has(ct))
         return response.text().then(csvParse);
+    else if (ct === 'text/tab-separated-values')
+        return response.text().then(tsvParse);
     else if (ct === 'application/json')
         return response.json();
     else {

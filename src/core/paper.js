@@ -6,8 +6,8 @@ import {visuals} from './base';
 
 export default function createPaper (type, proto) {
 
-    function Paper (viz) {
-        var element = this.initialise(viz);
+    function Paper (viz, uid) {
+        var element = this.initialise(viz, uid);
         Object.defineProperties(this, {
             element: {
                 get () {
@@ -71,11 +71,12 @@ const paperPrototype = {
 
 export const Svg = createPaper('svg', {
 
-    initialise (visual) {
-        var svg = visual.paperElement.select(`svg#${visual.model.uid}`);
+    initialise (visual, uid) {
+        if (!uid) visual.model.uid;
+        var svg = visual.paperElement.select(`svg#${uid}`);
         if (!svg.size())
             svg = visual.paperElement.append('svg')
-                .attr('id', visual.model.uid)
+                .attr('id', uid)
                 .classed(visual.visualType, true)
                 .style('position', 'absolute');
         return svg.node();
@@ -85,14 +86,23 @@ export const Svg = createPaper('svg', {
 
 export const Div = createPaper('div', {
 
-    initialise (visual) {
-        var div = visual.paperElement.select(`div#${visual.model.uid}`);
+    initialise (viz) {
+        var uid = viz.model.uid,
+            visual = viz.visualParent;
+        var div = visual.paperElement.select(`div#${uid}`);
         if (!div.size())
             div = visual.paperElement.append('div')
-                    .attr('id', visual.model.uid)
-                    .classed(visual.visualType, true);
-                    //.style('position', 'absolute');
+                    .attr('id', uid)
+                    .classed(visual.visualType, true)
+                    .style('position', 'absolute');
         return div.node();
+    },
+
+    size (box) {
+        this.sel
+            .style('width', `${box.width}px`)
+            .style('height', `${box.height}px`);
+        return this;
     },
 
     childGroup (g, cname) {

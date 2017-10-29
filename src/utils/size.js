@@ -1,6 +1,7 @@
 import {select} from 'd3-selection';
 
 import round from './round';
+import minmax from './minmax';
 
 
 const WIDTH = 400;
@@ -37,7 +38,7 @@ export function getSize (element, options) {
     }
 
     // Allow to specify height as a percentage of width
-    size.height = sizeValue(size.height, size.width);
+    size.height = minmax(sizeValue(size.height, size.width), undefined, windowHeight());
     return size;
 }
 
@@ -61,6 +62,11 @@ export function getWidthElement (element) {
 
 export function getHeightElement (element) {
     return getParentElementRect(element, 'height');
+}
+
+
+function windowHeight () {
+    return window.innerHeight;
 }
 
 
@@ -98,17 +104,4 @@ function padding (value) {
     if (value && value.substring(value.length-2) == 'px')
         return +value.substring(0, value.length-2);
     return 0;
-}
-
-
-export function boundingBox (size) {
-    var w = size.widthElement ? getWidth(size.widthElement) : size.width,
-        h;
-    if (size.heightPercentage)
-        h = round(w*size.heightPercentage, 0);
-    else
-        h = size.heightElement ? getHeight(size.heightElement) : size.height;
-    if (size.minHeight)
-        h = Math.max(h, size.minHeight);
-    return [round(w), round(h)];
 }
