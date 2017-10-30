@@ -1,8 +1,9 @@
+import './utils.js';
+
 import {view} from 'd3-view';
 import {polygonArea} from 'd3-polygon';
 
-import {PyramidChart} from '../index';
-import {pyramid} from '../index';
+import {PyramidChart, pyramid} from '../index';
 
 
 describe('pyramid', () => {

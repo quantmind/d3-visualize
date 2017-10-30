@@ -23,7 +23,7 @@ module.exports = {
             [
                 'babelify',
                 {
-                    presets: ["es2015"],
+                    presets: ["env"],
                     plugins: ["transform-async-to-generator"]
                 }
             ]

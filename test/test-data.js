@@ -1,4 +1,5 @@
 import {test} from './utils';
+
 import {DataStore, randomPath} from '../index';
 
 

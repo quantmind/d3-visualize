@@ -16,6 +16,7 @@ export default assign({}, vizComponent, {
         var sel = this.createElement('div'),
             type = schema.type || 'visual',
             model = this.model,
+            visualDrawOnMount = pop(schema, 'visualDrawOnMount'),
             options = {},
             layers;
 
@@ -26,6 +27,7 @@ export default assign({}, vizComponent, {
         else
             options.visual = pop(schema, 'visual') || {};
 
+        if (visualDrawOnMount !== undefined) model.visualDrawOnMount = visualDrawOnMount;
         model.visual = new Visual(sel.node(), options, model.visual, model.visual ? null : model.$new());
         if (type !== 'visual') model.visual.addVisual(schema);
         else if (layers) {

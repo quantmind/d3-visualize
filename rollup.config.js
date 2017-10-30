@@ -39,7 +39,9 @@ export default {
         json(),
         babel({
             babelrc: false,
-            presets: ['es2015-rollup']
+            plugins: ['external-helpers'],
+            presets: ['es2015-rollup'],
+            externalHelpers: true
         }),
         sourcemaps()
     ],

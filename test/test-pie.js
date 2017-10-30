@@ -1,3 +1,5 @@
+import './utils.js';
+
 import {view} from 'd3-view';
 
 import {visualComponents, PieChart, Visual} from '../index';

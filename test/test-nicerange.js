@@ -1,3 +1,5 @@
+import './utils.js';
+
 import {niceRange} from '../index';
 
 
