@@ -19,6 +19,7 @@ import '../plugins/tooltip';
 import '../plugins/mouse';
 import '../plugins/expand';
 import '../plugins/transition';
+import '../plugins/brush';
 import dashboard from './dashboard';
 import visual from './visual';
 

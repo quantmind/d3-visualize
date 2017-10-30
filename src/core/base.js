@@ -1,7 +1,7 @@
 import assign from 'object-assign';
 import {pop, isString, isObject} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
-import {select} from 'd3-selection';
+import {select, event} from 'd3-selection';
 import {viewBase, viewModel} from 'd3-view';
 import 'd3-transition';
 
@@ -70,6 +70,10 @@ export const visualPrototype = assign({}, {
 
     select (el) {
         return select(el);
+    },
+
+    event () {
+        return event;
     },
 
     // destroy the visual

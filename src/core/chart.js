@@ -141,7 +141,7 @@ export const chartPrototype = {
                 }
             }, err => {
                 delete self.drawing;
-                warn(`Could not draw ${self.toString()}: ${err}`);
+                warn(`Could not draw ${self.toString()}: ${err}`, err);
                 this.displayError(err);
             });
         }

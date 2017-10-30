@@ -12,13 +12,15 @@ import Visual from '../core/visual';
 //  An element containing a visualization
 export default assign({}, vizComponent, {
 
-    build (schema) {
+    build (schema, inner, attrs) {
         var sel = this.createElement('div'),
             type = schema.type || 'visual',
             model = this.model,
             visualDrawOnMount = pop(schema, 'visualDrawOnMount'),
             options = {},
             layers;
+
+        if (attrs.class) sel.attr('class', attrs.class);
 
         if (type === 'visual') {
             layers = pop(schema, 'layers');
