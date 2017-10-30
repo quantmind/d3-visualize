@@ -3,6 +3,7 @@ import {viewExpression} from 'd3-view';
 
 import createChart from '../core/chart';
 import pyramid from '../transforms/pyramid';
+import funnel from '../transforms/funnel';
 import polygon from '../utils/polygon';
 import {proportional} from './pie';
 
@@ -15,6 +16,7 @@ export default createChart('pyramidchart', proportional, {
         pad: 0.005,
         lineWidth: 1,
         inverted: false,
+        funnel: false,
         legendType: 'color',
         invereted: false,
         legendLabel: "label + ' - ' + format('.1%', fraction)"
@@ -25,7 +27,7 @@ export default createChart('pyramidchart', proportional, {
             field = model.field,
             color = this.getModel('color'),
             box = this.boundingBox(),
-            polygons = pyramid()
+            polygons = (model.funnel ? funnel () : pyramid())
                 .pad(model.pad)
                 .value(d => d[field]),
             scaleX = this.getScale('linear').rangeRound([0, box.innerWidth]),

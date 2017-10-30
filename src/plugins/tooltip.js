@@ -11,7 +11,7 @@ import {mouseStrategies} from './mouse';
 
 visuals.options.tooltip = {
     location: "top",
-    offset: [0, 0],
+    offset: [10, 10],
     html: ""
 };
 
@@ -107,10 +107,10 @@ function tooltip () {
 
         let i = locations.length;
         while (i--) snode.classed(locations[i], false);
-        coords = locationCallbacks.get(dir).call(this, target);
+        coords = locationCallbacks.get(dir).call(this, target, poffset);
         snode.classed(dir, true)
-            .style('top', (coords.top + poffset[1]) + scrollTop + 'px')
-            .style('left', (coords.left + poffset[0]) + scrollLeft + 'px');
+            .style('top', coords.top + scrollTop + 'px')
+            .style('left', coords.left + scrollLeft + 'px');
 
         return tooltip;
     };
@@ -143,28 +143,28 @@ function tooltip () {
 
 
 
-    function top (target) {
+    function top (target, offset) {
         var bbox = getScreenBBox(target);
         return {
-            top:  bbox.n.y - node.offsetHeight,
-            left: bbox.n.x - node.offsetWidth / 2
+            left: bbox.n.x - node.offsetWidth / 2,
+            top:  bbox.n.y - node.offsetHeight - offset[1]
         };
     }
 
 
     function bottom (bb, box, options) {
         return {
-            x: box.total.left + (box.innerWidth - bb.width)/2,
-            y: box.height - bb.height - options.offsetY
+            top: box.total.left + (box.innerWidth - bb.width)/2,
+            left: box.height - bb.height - options.offsetY
         };
     }
 
 
-    function right (target) {
+    function right (target, offset) {
         var bbox = getScreenBBox(target);
         return {
+            left: bbox.e.x + offset[0],
             top:  bbox.e.y - node.offsetHeight / 2,
-            left: bbox.e.x
         };
     }
 
