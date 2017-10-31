@@ -1,6 +1,6 @@
 import assign from 'object-assign';
 import {isFunction, isArray, isString, pop} from 'd3-let';
-import {require} from 'd3-view';
+import {require, viewProviders} from 'd3-view';
 import * as d3_scale from 'd3-scale';
 
 import createVisual, {visuals} from './base';
@@ -9,16 +9,31 @@ import camelFunction from '../utils/camelfunction';
 import extendObject from '../utils/extend-object';
 import warn from '../utils/warn';
 
+
 //
 //  crateChart
 //
 //  A chart is a drawing of series data in two dimensional
 export default function (type) {
+    if (viewProviders.visualPlugins) {
+        extendVisualPrototype(viewProviders.visualPlugins);
+        viewProviders.visualPlugins = null;
+    }
     var protos = [{}, vizPrototype, chartPrototype];
     for (var i=1; i<arguments.length; ++i) protos.push(arguments[i]);
     return createVisual(type, assign.apply(undefined, protos));
 }
 
+
+function extendVisualPrototype (plugins) {
+    let options, proto;
+    Object.keys(plugins).forEach(name => {
+        options = plugins[name].options;
+        proto = plugins[name].prototype;
+        if (options) visuals.options[name] = options;
+        if (proto) assign(vizPrototype, proto);
+    });
+}
 
 //  Viz Prototype
 //  =================
