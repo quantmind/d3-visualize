@@ -24,13 +24,13 @@ export default {
         }
     },
 
-    getData () {
+    getData (context) {
         var store = this.store,
             sources = this.source,
             self = this;
 
         return Promise.all(sources.map(source => {
-             return store.getData(source);
+             return store.getData(source, context);
         })).then(frames => {
             if (frames.length === 1) return frames[0];
             else if (self.config.merge) return self.mergeFrames(frames);

@@ -13,9 +13,9 @@ export default {
             return config;
     },
 
-    getData () {
+    getData (context) {
         var self = this,
-            model = this.store.model,
+            model = this.store.model.$child(context),
             result = this.expression.eval(model);
         if (isPromise(result)) return result.then(data => self.asFrame(data));
         else return self.asFrame(result);

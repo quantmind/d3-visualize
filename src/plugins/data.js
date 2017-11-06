@@ -27,7 +27,7 @@ vizPrototype.getData = function () {
         warn(`Visual ${this.visualType} without data name, cannot get data`);
         return resolvedPromise();
     }
-    return this.dataStore.getData(name);
+    return this.dataStore.getData(name, {$visual: this});
 };
 
 //

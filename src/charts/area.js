@@ -23,7 +23,7 @@ export default createChart('areachart', lineDrawing, {
         lineDarken: 0.2,
         //
         stack: true,
-        stackOrder: 'descending',   // stack order
+        stackOrder: 'none',   // stack order
         //
         axisX: true,
         axisY: true
@@ -58,6 +58,11 @@ export default createChart('areachart', lineDrawing, {
 
         this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
         this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));
+
+        areas.exit()
+            .transition()
+            .style('opacity', 0)
+            .remove();
 
         var areagroup = areas
             .enter()

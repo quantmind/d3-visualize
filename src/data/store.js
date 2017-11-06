@@ -1,6 +1,6 @@
 import {map} from 'd3-collection';
-import {isArray, isString, isPromise, assign} from 'd3-let';
-import {viewExpression, resolvedPromise} from 'd3-view';
+import {isArray, isString, isPromise, isFunction, assign} from 'd3-let';
+import {viewExpression, resolvedPromise, viewModel} from 'd3-view';
 
 import array from './array';
 import remote from './remote';
@@ -38,7 +38,7 @@ export default function DataStore(model) {
     // transforms function
     this.transforms = assign({}, transformStore);
     this.dataCount = 0;
-    this.model = model;
+    this.model = (model && isFunction(model.$child)) ? model : viewModel(model);
 }
 
 
@@ -86,11 +86,11 @@ DataStore.prototype = {
     },
 
     // get data from a source
-    getData (source) {
+    getData (source, context) {
         var ds = this.sources.get(source);
         if (!ds) throw new Error(`Data source ${source} not available`);
         if (ds.cachedFrame) return resolvedPromise(ds.cachedFrame);
-        var data = ds.getData();
+        var data = ds.getData(context);
         if (!isPromise(data)) data = resolvedPromise(data);
         return data.then(frame => {
             if (ds.config.cache) ds.cachedFrame = frame;

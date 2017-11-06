@@ -19,7 +19,7 @@ describe('dataStore', () => {
 
     test('test expression provider', async () => {
         var store = new DataStore({
-            randomPath: randomPath
+            $randomPath: randomPath
         });
         expect(store.model).toBeTruthy();
         expect(store.size()).toBe(0);
@@ -27,7 +27,7 @@ describe('dataStore', () => {
         // add provider to store
         store.addSources({
             type: 'expression',
-            expression: 'randomPath(300)'
+            expression: '$randomPath(300)'
         });
         var source = store.source('default');
         expect(source.name).toBe('default');

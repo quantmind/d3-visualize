@@ -18,7 +18,7 @@ export default function () {
             data, labels, s;
 
         if (groupby) {
-            labels = frame.dimension(groupby).group().top(Infinity).map(g => g['key']);
+            labels = frame.dimension(groupby).group().top(Infinity).map(g => g['key']).sort();
             if (labels.length <= 1) labels = null;
         }
 

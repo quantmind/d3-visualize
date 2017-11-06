@@ -164,9 +164,9 @@ const barChartPrototype = {
             x = this.model.x,
             y = this.model.y,
             viz = this.viz,
-            radius = this.model.radius,
-            bars = chart.selectAll('.group');
-        let width, height, xrect, yrect, yi, rects;
+            radius = this.model.radius;
+        let bars = chart.selectAll('.group'),
+            width, height, xrect, yrect, yi, rects;
 
         if (groups) {
             this.sy.domain([0, max(data, d => d.total)]).nice();
@@ -189,8 +189,10 @@ const barChartPrototype = {
             yi = 0;
         }
         data = viz.getStack().keys(groups)(data);
-        rects = bars.data(data)
-                    .enter()
+        bars = bars.data(data);
+        bars.exit().transition().style('opacity', 0).remove();
+
+        rects = bars.enter()
                         .append('g')
                         .classed('group', true)
                         .attr('fill', d => sz(d.key))
@@ -200,6 +202,7 @@ const barChartPrototype = {
                         .attr('stroke-opacity', viz.modelProperty('strokeOpacity', color))
                         .selectAll('rect')
                         .data(stackedData);
+
         rects.enter()
             .append('rect')
                 .attr('x', xrect)
@@ -216,6 +219,8 @@ const barChartPrototype = {
                 .attr('y', yrect)
                 .attr('height', height)
                 .attr('width', width);
+
+        rects.exit().transition().style('opacity', 0).remove();
 
         // add labels
         if (this.model.label) {

@@ -14,6 +14,7 @@ export const vizComponent = {
         'schema',	    // Schema is a collection of fields to display in the table
         'datasource',	// Data source
         'plugins',      // list of string/objects
+        'options'
 	],
 
     render (props, attrs, el) {
@@ -23,6 +24,7 @@ export const vizComponent = {
         // build
         return this.getSchema(props.schema, schema => {
             if (!isObject(schema)) schema = {};
+            schema = assign({}, props.options, schema);
             return self.build(schema, inner, attrs);
         });
     },

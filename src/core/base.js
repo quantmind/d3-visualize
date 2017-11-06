@@ -176,6 +176,7 @@ export default function (type, proto) {
     }
 
     Visual.prototype = assign({}, visualPrototype, proto);
+    Visual.prototype.constructor = Visual;
     visuals.types[type] = Visual;
     return Visual;
 }
