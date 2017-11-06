@@ -1,4 +1,4 @@
-import assign from 'object-assign';
+import {assign} from 'd3-let';
 import {range} from 'd3-array';
 import {randomNormal} from 'd3-random';
 

@@ -1,4 +1,4 @@
-import assign from 'object-assign';
+import {assign} from 'd3-let';
 import {select} from 'd3-selection';
 
 import {visuals} from './base';

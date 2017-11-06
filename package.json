@@ -1,5 +1,5 @@
 {
-    "version": "0.3.1",
+    "version": "0.3.2",
     "name": "d3-visualize",
     "description": "d3-view components for data visualization",
     "author": {
@@ -32,16 +32,14 @@
         "d3-color": "1.0",
         "d3-dsv": "1.0",
         "d3-format": "1.2",
-        "d3-let": "0.3",
         "d3-random": "1.1",
-        "d3-require": "0.4",
         "d3-scale": "1.0",
         "d3-selection": "1.1",
         "d3-shape": "1.2",
         "d3-svg-legend": "2.24",
         "d3-time-format": "2.1",
         "d3-transition": "1.1",
-        "d3-view": "0.8.1"
+        "d3-view": "0.9"
     },
     "devDependencies": {
         "babel-core": "6.26",
@@ -67,7 +65,7 @@
         "karma-junit-reporter": "1.2",
         "karma-phantomjs-launcher": "1.0",
         "karma-safari-launcher": "1.0",
-        "node-sass": "4.5",
+        "node-sass": "4.6",
         "package-preamble": "0.1",
         "phantomjs-prebuilt": "2.1",
         "publish": "0.6",

@@ -1,5 +1,4 @@
-import assign from 'object-assign';
-import {isString, isObject} from 'd3-let';
+import {isString, isObject, assign} from 'd3-let';
 
 import VisualContainer from '../core/container';
 import warn from '../utils/warn';

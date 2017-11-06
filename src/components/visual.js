@@ -1,5 +1,4 @@
-import assign from 'object-assign';
-import {pop} from 'd3-let';
+import {pop, assign} from 'd3-let';
 
 import {vizComponent} from './dashboard';
 import Visual from '../core/visual';

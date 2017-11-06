@@ -1,5 +1,4 @@
-import assign from 'object-assign';
-import {pop, isString, isObject} from 'd3-let';
+import {pop, isString, isObject, assign} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
 import {select, event} from 'd3-selection';
 import {viewBase, viewModel} from 'd3-view';

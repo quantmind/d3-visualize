@@ -1,7 +1,5 @@
-import assign from 'object-assign';
-
 import {map} from 'd3-collection';
-import {isArray, isString, isPromise} from 'd3-let';
+import {isArray, isString, isPromise, assign} from 'd3-let';
 import {viewExpression, resolvedPromise} from 'd3-view';
 
 import array from './array';

@@ -2,7 +2,7 @@
 //  bootstrap styling for tabular component
 //  ==========================================
 //
-import assign from 'object-assign';
+import {assign} from 'd3-let';
 
 
 const defaults = {

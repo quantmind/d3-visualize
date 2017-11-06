@@ -1,6 +1,4 @@
-import assign from 'object-assign';
-
-import {isArray, pop} from 'd3-let';
+import {isArray, pop, assign} from 'd3-let';
 import {set} from 'd3-collection';
 
 import createVisual, {visuals} from '../core/base';

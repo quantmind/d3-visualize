@@ -1,10 +1,8 @@
-import assign from 'object-assign';
-
 import {map} from 'd3-collection';
 import {format} from 'd3-format';
 import {timeFormat} from 'd3-time-format';
 import {axisTop, axisBottom, axisLeft, axisRight} from 'd3-axis';
-import {isDate} from 'd3-let';
+import {isDate, assign} from 'd3-let';
 
 import {visuals} from '../core/base';
 import {vizPrototype} from '../core/chart';
@@ -55,6 +53,7 @@ vizPrototype.xAxis1 = function (location, scale, box, value) {
     formatAxis(ga.transition(this.transition('x-axis')).call(axis), model, scale);
     if (model.title)
         this.axisTitle(ga, location, scale, box, model);
+    return ga;
 };
 
 
@@ -66,6 +65,7 @@ vizPrototype.yAxis1 = function (location, scale, box, value) {
     formatAxis(ga.transition(this.transition('x-axis')).call(axis), model, scale);
     if (model.title)
         this.axisTitle(ga, location, scale, box, model);
+    return ga;
 };
 
 

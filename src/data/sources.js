@@ -1,7 +1,6 @@
-import assign from 'object-assign';
 import {map} from 'd3-collection';
 import {dispatch} from 'd3-dispatch';
-import {pop, isArray} from 'd3-let';
+import {pop, isArray, assign} from 'd3-let';
 
 import DataFrame from './dataframe';
 import transformStore, {applyTransforms} from '../transforms/index';
@@ -15,7 +14,8 @@ const dataEvents = dispatch('init', 'data');
 //  ======================
 const dataSourcePrototype = {
 
-    // get the config object-assign// This method is used by the prototype
+    // get the config
+    // This method is used by the prototype
     // to check if the config object is a valid one
     getConfig () {},
 

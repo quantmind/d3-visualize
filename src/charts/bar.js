@@ -1,4 +1,4 @@
-import assign from 'object-assign';
+import {assign} from 'd3-let';
 import {max} from 'd3-array';
 
 import createChart from '../core/chart';

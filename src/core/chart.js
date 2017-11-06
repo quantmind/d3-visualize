@@ -1,5 +1,4 @@
-import assign from 'object-assign';
-import {isFunction, isArray, isString, pop} from 'd3-let';
+import {isFunction, isArray, isString, pop, assign} from 'd3-let';
 import {require, viewProviders} from 'd3-view';
 import * as d3_scale from 'd3-scale';
 

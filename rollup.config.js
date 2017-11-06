@@ -32,8 +32,7 @@ export default {
             "d3-timer": "d3",
             "d3-time-format": "d3",
             "d3-transition": "d3",
-            "d3-view": "d3",
-            "object-assign": "assign"
+            "d3-view": "d3"
         }
     },
     plugins: [
@@ -66,7 +65,6 @@ export default {
         "d3-timer",
         "d3-time-format",
         "d3-transition",
-        "d3-view",
-        "object-assign"
+        "d3-view"
     ]
 };
