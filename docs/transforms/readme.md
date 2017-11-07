@@ -10,16 +10,17 @@ specify post-encoding transforms.
 
 ## Add Tranforms
 
-To add a transform to the collection of available transforms:
+To add a new transform to the collection of available transforms:
 ```javascript
 import {visualTransforms} from 'd3-visualize';
 
-visualTransforms.set('mytransform', config => {
-
-    return mytransform;
-
-    frunction mytransform (frame) {
+visualTransforms.add('mytransform', {
+    schema: {
+    },
+    transform (frame, config) {
         ...
     }
 });
 ```
+
+The optional ``schema`` object is used to validate transform config parameters. If not provided no validation is performed.

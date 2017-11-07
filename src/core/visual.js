@@ -105,7 +105,7 @@ export default createVisual('visual', {
             visuals.events.call('after-draw', undefined, self);
         }, err => {
             delete self.drawing;
-            warn(`Could not draw ${self.toString()}: ${err}`);
+            warn(`Could not draw ${self.toString()}: ${err}`, err);
         });
     },
 

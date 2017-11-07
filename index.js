@@ -13,6 +13,7 @@ export {default as dataSources} from './src/data/sources';
 export {visuals} from './src/core/base';
 export {default as createChart} from './src/core/chart';
 export {default as createPaper, Svg, Div} from './src/core/paper';
+export {default as visualTransform} from './src/transforms/base';
 export {default as visualTransforms} from './src/transforms/index';
 //
 //  Components
@@ -39,4 +40,5 @@ export {default as Treemap} from './src/charts/treemap';
 export {default as TextChart} from './src/charts/text';
 export {default as Heatmap} from './src/charts/heatmap';
 export {default as GeoChart} from './src/charts/geo';
+export {default as GeoChart2} from './src/charts/geo2';
 export {default as createCompositeChart} from './src/charts/composite';

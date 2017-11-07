@@ -42,7 +42,7 @@ export const vizComponent = {
 
         if (isString(input)) {
             return this.json(input).then(build).catch(err => {
-                warn(`Could not reach ${input}: ${err}`);
+                warn(`Could not reach ${input}: ${err}`, err);
             });
         }
         else return build(input);

@@ -1,7 +1,8 @@
 // Collection of transforms
 import {map} from 'd3-collection';
-import {isArray} from 'd3-let';
+import {isArray, isPromise, assign} from 'd3-let';
 
+import transform from './base';
 import filter from './filter';
 import aggregate from './aggregate';
 import crossfilter from './crossfilter';
@@ -13,7 +14,7 @@ import diff from './diff';
 
 //
 //  transforms Store
-export default map({
+export default assign(map({
     filter,
     aggregate,
     mapfields,
@@ -22,19 +23,28 @@ export default map({
     movingaverage,
     groupsmall,
     diff
+}), {
+    add (name, o) {
+        this.set(name, transform(o));
+    }
 });
 
 
-// Apply data transforms to a series
+//  Apply data transforms to a series
+//  Allow for asynchronous transforms
 export function applyTransforms (frame, transforms) {
-    let ts;
     if (!transforms) return frame;
-    transforms.forEach(transform => {
-        if (transform) {
-            ts = transform(frame);
-            if (isArray(ts)) frame = frame.new(ts);
-            else if (ts) frame = ts;
-        }
-    });
+    return applyt(frame, transforms.slice());
+}
+
+function applyt (frame, transforms, res) {
+    if (isArray(res)) frame = frame.new(res);
+    else if (res) frame = res;
+    if (transforms.length) {
+        var transform = transforms.splice(0, 1)[0],
+            ts = transform ? transform(frame) : null;
+        if (isPromise(ts)) return ts.then(res => applyt(frame, transforms, res));
+        else return applyt(frame, transforms, ts);
+    }
     return frame;
 }

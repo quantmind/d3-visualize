@@ -17,3 +17,4 @@ This is a [d3 plugin](https://bost.ocks.org/mike/d3-plugin/) for creating intera
     * [Getting Started](/docs/getting-started.md)
 * API
     * [Data](/docs/data.md)
+    * [Data transforms](/docs/transforms/readme.md)

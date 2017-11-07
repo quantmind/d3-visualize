@@ -1,5 +1,6 @@
 import {map} from 'd3-collection';
 import {isArray, isObject} from 'd3-let';
+import DataFrame from './dataframe';
 //
 //  A composite dataSource
 //  ===================
@@ -32,15 +33,16 @@ export default {
         return Promise.all(sources.map(source => {
              return store.getData(source, context);
         })).then(frames => {
-            if (frames.length === 1) return frames[0];
-            else if (self.config.merge) return self.mergeFrames(frames);
+            let fc;
+            if (frames.length === 1) fc = frames[0];
+            else if (self.config.merge) fc = self.mergeFrames(frames);
             else {
-                var fc = new FrameCollection();
+                fc = new FrameCollection(store);
                 frames.forEach((frame, index) => {
                     fc.frames.set(sources[index], frame);
                 });
-                return fc;
             }
+            return self.asFrame(fc);
         });
     },
 
@@ -51,9 +53,14 @@ export default {
 };
 
 
-function FrameCollection () {
+function FrameCollection (store) {
     this.frames = map();
     Object.defineProperties(this, {
+        store: {
+            get () {
+                return store;
+            }
+        },
         type: {
             get () {
                 return 'frameCollection';
@@ -63,6 +70,10 @@ function FrameCollection () {
 }
 
 FrameCollection.prototype = {
+
+    new (data) {
+        return new DataFrame(data, null, this.store);
+    },
 
     dataFrame () {
         var frames = this.frames.values();

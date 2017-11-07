@@ -30,7 +30,9 @@ If the input data is simply an array of primitive values, ``visualize`` maps eac
 ]
 ```
 
-## Data Properties
+## Data Source
+
+### Data Source properties
 
 | Property  | Type  | Description  |
 |---|---|---|
