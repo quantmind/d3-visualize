@@ -1,4 +1,5 @@
-import {extent} from 'd3-array';
+import {extent, max} from 'd3-array';
+import {assign} from 'd3-let';
 
 import createChart from '../core/chart';
 import camelFunction from '../utils/camelfunction';
@@ -11,9 +12,9 @@ import warn from '../utils/warn';
 //  =============
 //
 //  A chart displaying a geographical map
-export default createChart('geochart', {
+export default createChart('geochart2', {
     // load these libraries - add 'leaflet'?
-    requires: ['d3-geo', 'topojson', 'd3-geo-projection'],
+    requires: ['d3-scale', 'd3-geo', 'topojson', 'd3-geo-projection', 'd3-svg-legend'],
 
     options: {
         // Geometry data to display in this chart - must be in the topojson source
@@ -25,6 +26,7 @@ export default createChart('geochart', {
         dataKey: 'id',
         dataLabelKey : 'label',
         dataValueKey: 'value',
+        neighbors: false,
         // how many color buckets to visualise
         buckets: 10,
         choroplethScale: 'quantile',
@@ -35,7 +37,7 @@ export default createChart('geochart', {
         // how much to zoom out, 1 = no zoom out, 0.95 to 0.8 are sensible values
         boundScaleFactor: 0.9,
         //
-        projection: null,
+        projection: 'kavrayskiy7',
         graticule: false,
         leaflet: false,
         scale: 200,
@@ -45,8 +47,8 @@ export default createChart('geochart', {
     },
 
     doDraw (frame, geo) {
-        var info = this.getGeoData(frame);
-        if (!info) return warn ('Topojson data not available - cannot draw topology');
+        var info = dataInfo(frame);
+        if (!info.topology) return warn ('Topojson data not available - cannot draw topology');
         if (!this._geoPath) this.createGeoPath(geo, info);
         this.update(geo, info);
     },
@@ -58,12 +60,9 @@ export default createChart('geochart', {
             group = this.group(),
             geogroup = this.group('geo'),
             path = this._geoPath,
-            geometryObject = info.topology.objects[model.geometry],
-            geometryData = geometryObject ? geo.feature(info.topology, geometryObject).features : null,
-            paths = geometryData ? geogroup.selectAll('.geometry').data(geometryData) : null,
-            fill = 'none';
+            data = geodata(geo, info, model);
 
-        if (!paths) {
+        if (!data) {
             var objects = Object.keys(info.topology.objects).map(key => `"${key}"`).join(', ');
             return warn(`Could not find *geometry* "${model.geometry}" in [${objects}] - cannot draw geochart`);
         }
@@ -75,8 +74,10 @@ export default createChart('geochart', {
             .transition(this.transition('group1'))
             .attr("transform", this.translate(box.margin.left, box.margin.top));
 
+        var paths = geogroup.selectAll('.geometry').data(data),
+            fill = this.choropleth(data, box);
+
         this.center(geo, info);
-        if (info.data) fill = this.choropleth(info.data, box);
 
         paths
             .enter()
@@ -84,16 +85,13 @@ export default createChart('geochart', {
                 .attr("class", "geometry")
                 .attr("d", path)
                 .style('fill', 'none')
-                .style("stroke", color.stroke)
-                .style("stroke-opacity", 0)
-                .style("fill-opacity", 0)
+                .style("stroke", this.modelProperty('stroke', color))
                 .on("mouseover", this.mouseOver())
                 .on("mouseout", this.mouseOut())
             .merge(paths)
                 .transition(this.transition('geometry'))
                 .attr("d", path)
-                .style("stroke", color.stroke)
-                .style("stroke-opacity", color.strokeOpacity)
+                .style("stroke", this.modelProperty('stroke', color))
                 .style("fill", fill)
                 .style("fill-opacity", color.fillOpacity);
 
@@ -104,7 +102,7 @@ export default createChart('geochart', {
 
     createGeoPath (geo, info) {
         var model = this.getModel(),
-            projection = camelFunction(geo, 'geo', info.projection).scale(model.scale),
+            projection = camelFunction(geo, 'geo', model.projection).scale(model.scale),
             path = geo.geoPath().projection(projection),
             self = this,
             lefletMap;
@@ -130,25 +128,6 @@ export default createChart('geochart', {
         function projectPoint(x, y) {
             var point = lefletMap.latLngToLayerPoint(new geo.LatLng(y, x));
             this.stream.point(point.x, point.y);
-        }
-    },
-
-    getGeoData (frame) {
-        var info = {};
-        if (frame.type === 'frameCollection')
-            frame.frames.each(frame => {
-                if (frame.type === 'Topology') info.topology = frame;
-                else if (frame.type === 'dataframe') info.data = frame;
-            });
-        else if (frame.type === 'Topology')
-            info.topology = frame;
-        if (info.topology) {
-            var model = this.getModel();
-            if (model.projection) info.projection = model.proection;
-            else {
-                info.projection = 'kavrayskiy7';
-            }
-            return info;
         }
     },
 
@@ -181,17 +160,23 @@ export default createChart('geochart', {
     },
 
     // choropleth map based on data
-    choropleth (frame, box) {
+    choropleth (data, box) {
         var model = this.getModel(),
-            buckets = Math.min(model.buckets, frame.data.length),
-            dataKey = model.dataKey,
             dataLabelKey = model.dataLabelKey,
-            dataValueKey = model.dataValueKey,
-            geoKey = model.geoKey,
-            valueRange = niceRange(extent(frame.data, accessor(dataValueKey)), buckets),
-            colors = this.getScale(model.choroplethScale).range(this.colors(buckets).reverse()).domain(valueRange),
-            values = frame.data.reduce((o, d) => {o[d[dataKey]] = d; return o;}, {});
-        let key, value;
+            dataValueKey = model.dataValueKey;
+        let dataValue, valueRange, colors, buckets;
+
+        if (model.neighbors) {
+            dataValue = accessor('rank');
+            valueRange = extent(data, dataValue);
+            buckets = valueRange[1] + 1;
+        } else {
+            dataValue = (d) => d.data[dataValueKey];
+            buckets = Math.min(model.buckets, data.length);
+            valueRange = niceRange(extent(data, dataValue), buckets);
+        }
+
+        colors = this.getScale(model.choroplethScale).range(this.colors(buckets).reverse()).domain(valueRange);
 
         this.legend({
             type: 'color',
@@ -199,15 +184,65 @@ export default createChart('geochart', {
         }, box);
 
         return d => {
-            key = d.properties[geoKey] || d[geoKey];
-            value = values[key];
-            d.choropleth = {
-                label: value[dataLabelKey] || key,
-                value: value[dataValueKey],
-                color: colors(value[dataValueKey])
-            };
-            return d.choropleth.color;
+            d.label = d.data[dataLabelKey] || d.id;
+            d.value = dataValue(d);
+            d.color = colors(d.value);
+            return d.color;
         };
     }
 
 });
+
+
+export function dataInfo (frame) {
+    var info = {};
+    if (frame.type === 'frameCollection')
+        frame.frames.each(df => {
+            if (df.type === 'Topology') info.topology = df;
+            else if (df.type === 'dataframe') info.data = df.data;
+        });
+    else if (frame.type === 'Topology')
+        info.topology = frame;
+    return info;
+}
+
+
+//
+//  Create a geo data frame
+//  ===========================
+//
+//  * geo - d3-geo & topojson object
+//  * info - object with topology and data frame (optional)
+export function geodata (geo, info, config) {
+    var geoKey = config.geoKey,
+        dataKey = config.dataKey;
+    let data = {}, features, key, props;
+
+    if (!info.topology) return warn('No topology object available');
+    var geometry = info.topology.objects[config.geometry];
+    if (!geometry) return warn(`Topology object ${config.geometry} is not available`);
+
+
+    var neighbors = config.neighbors ? geo.neighbors(geometry.geometries) : null;
+
+    features = geo.feature(info.topology, geometry).features;
+    if (info.data) data = info.data.reduce((o, d) => {o[d[dataKey]] = d; return o;}, {});
+
+    features = features.map(d => {
+        props = d.properties;
+        key = d[geoKey] || props[geoKey];
+        return {
+            id: key,
+            type: d.type,
+            geometry: d.geometry,
+            data: assign({}, props, data[key])
+        };
+    });
+
+    if (neighbors) features.forEach((d, i) => {
+        d.neighbors = neighbors[i];
+        d.rank = max(d.neighbors, j => features[j].rank) + 1 | 0;
+    });
+
+    return features;
+}

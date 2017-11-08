@@ -1,14 +1,13 @@
-import {area, line} from 'd3-shape';
 import {color} from 'd3-color';
 
 import createChart from '../core/chart';
 import grouper from '../transforms/groups';
-import {lineDrawing} from './line';
 
 //
 //  Area Chart
 //  =============
-export default createChart('areachart', lineDrawing, {
+export default createChart('areachart', {
+    requires: ['d3-scale', 'd3-shape', 'd3-axis', 'd3-svg-legend'],
 
     options: {
         lineWidth: 1,
@@ -118,12 +117,12 @@ export default createChart('areachart', lineDrawing, {
         }
 
         function arealine (d) {
-            var area_ = area()
+            var area_ = self.$.area()
                             .curve(curve)
                             .x(xx)
                             .y1(y1)
                             .y0(y0),
-                line_ = line()
+                line_ = self.$.line()
                             .curve(curve)
                             .x(xx)
                             .y(y1),

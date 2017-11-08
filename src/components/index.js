@@ -5,6 +5,7 @@
 //  d3-view plugin for visualization components
 //
 //  visual plugins first
+import '../plugins/scale';
 import '../plugins/menu';
 import '../plugins/data';
 import '../plugins/font';

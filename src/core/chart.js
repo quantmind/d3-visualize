@@ -1,11 +1,8 @@
-import {isFunction, isArray, isString, pop, assign} from 'd3-let';
+import {isFunction, pop, assign} from 'd3-let';
 import {require, viewProviders} from 'd3-view';
-import * as d3_scale from 'd3-scale';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
-import camelFunction from '../utils/camelfunction';
-import extendObject from '../utils/extend-object';
 import warn from '../utils/warn';
 
 
@@ -37,6 +34,7 @@ function extendVisualPrototype (plugins) {
 //  Viz Prototype
 //  =================
 export const vizPrototype = {
+    $: null,
 
     initialise (element) {
         // No visual parent, create the visual
@@ -108,9 +106,8 @@ export const vizPrototype = {
         } else return `translate(${x}, ${y})`;
     },
 
-    getScale (cfg) {
-        if (isString(cfg)) cfg = {type: cfg};
-        return extendObject(camelFunction(d3_scale, 'scale', cfg.type), cfg);
+    getD3 (prefix, name) {
+        return this.$[`${prefix}${name[0].toUpperCase()}${name.substring(1)}`];
     },
 
     displayError () {}
@@ -147,10 +144,9 @@ export const chartPrototype = {
                 delete self.drawing;
                 var frame = args[1];
                 if (frame) {
-                    args = isArray(args[0]) ? args[0] : [args[0]];
-                    args.unshift(frame);
-                    this._drawArgs = args;
-                    doDraw.apply(self, args);
+                    this.$ = args[0];
+                    this.frame = frame;
+                    doDraw.apply(self);
                     visuals.events.call('after-draw', undefined, self);
                 }
             }, err => {

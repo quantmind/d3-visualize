@@ -1,6 +1,6 @@
 import {pop, isString, isObject, assign} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
-import {select, event} from 'd3-selection';
+import {event} from 'd3-selection';
 import {viewBase, viewModel} from 'd3-view';
 import 'd3-transition';
 
@@ -41,7 +41,7 @@ export const visuals = {
 //
 //  Base prototype object for visuals
 //
-export const visualPrototype = assign({}, {
+export const visualPrototype = {
 
     // initialise the visual with options
     initialise () {
@@ -65,10 +65,6 @@ export const visualPrototype = assign({}, {
         } else
             this.drawing = this.draw(fetchData);
         return this.drawing;
-    },
-
-    select (el) {
-        return select(el);
     },
 
     event () {
@@ -138,7 +134,7 @@ export const visualPrototype = assign({}, {
         if (isObject(schema))
             return clone(schema);
     }
-}, viewBase);
+};
 
 //
 //  Create a new Visual Constructor
@@ -175,7 +171,7 @@ export default function (type, proto) {
         visuals.events.call('after-init', undefined, this);
     }
 
-    Visual.prototype = assign({}, visualPrototype, proto);
+    Visual.prototype = assign({}, viewBase, visualPrototype, proto);
     Visual.prototype.constructor = Visual;
     visuals.types[type] = Visual;
     return Visual;

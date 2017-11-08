@@ -1,17 +1,14 @@
-import {brushX, brushY, brush} from 'd3-brush';
-
-
 import {vizPrototype} from '../core/chart';
 
 
 vizPrototype.brushX = function () {
-    return brushX();
+    return this.$.brushX();
 };
 
 vizPrototype.brushY = function () {
-    return brushY();
+    return this.$.brushY();
 };
 
 vizPrototype.brush = function () {
-    return brush();
+    return this.$.brush();
 };

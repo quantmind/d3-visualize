@@ -4,7 +4,6 @@ import {max} from 'd3-array';
 import createChart from '../core/chart';
 import colorContrast from '../utils/contrast';
 import textWrap from '../utils/text-wrapping';
-import {lineDrawing} from './line';
 
 
 const baselines = {
@@ -36,7 +35,8 @@ const heightShifts = {
 //  It can be used to display label data as well as
 //  timeserie data. It can display absulte values as
 //  proportional data via vertical staking and normalization
-export default createChart('barchart', lineDrawing, {
+export default createChart('barchart', {
+    requires: ['d3-scale', 'd3-axis', 'd3-svg-legend'],
 
     options: {
         orientation: 'vertical',

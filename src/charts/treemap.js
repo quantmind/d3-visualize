@@ -10,7 +10,7 @@ import colorContrast from '../utils/contrast';
 //  =============
 //
 export default createChart('treemap', {
-    requires: ['d3-hierarchy'],
+    requires: ['d3-scale', 'd3-hierarchy'],
 
     options: {
         label: 'label',

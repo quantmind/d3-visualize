@@ -1,8 +1,6 @@
 //
 export {version as visualizeVersion} from './package.json';
 //
-export {default as randomPath} from './src/utils/randompath';
-//
 // Data layer
 export {default as DataStore} from './src/data/store';
 export {default as dataSources} from './src/data/sources';
@@ -40,5 +38,4 @@ export {default as Treemap} from './src/charts/treemap';
 export {default as TextChart} from './src/charts/text';
 export {default as Heatmap} from './src/charts/heatmap';
 export {default as GeoChart} from './src/charts/geo';
-export {default as GeoChart2} from './src/charts/geo2';
 export {default as createCompositeChart} from './src/charts/composite';

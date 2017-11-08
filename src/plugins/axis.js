@@ -1,19 +1,16 @@
-import {map} from 'd3-collection';
+//
+//  Axis Plugin
+//  ================
+//
+//  * A visual must require "d3-axis"
+//
 import {format} from 'd3-format';
 import {timeFormat} from 'd3-time-format';
-import {axisTop, axisBottom, axisLeft, axisRight} from 'd3-axis';
 import {isDate, assign} from 'd3-let';
 
 import {visuals} from '../core/base';
 import {vizPrototype} from '../core/chart';
 
-
-const axisOrientation = map({
-    top: axisTop,
-    bottom: axisBottom,
-    left: axisLeft,
-    right: axisRight
-});
 
 const axisDefaults = {
     ticks: 5,
@@ -45,9 +42,14 @@ visuals.options.yAxis = assign({
 }, axisDefaults);
 
 
+vizPrototype.getAxis = function (orientation, scale) {
+    return this.getD3('axis', orientation)(scale);
+};
+
+
 vizPrototype.xAxis1 = function (location, scale, box, value) {
     var model = this.getModel('xAxis'),
-        axis = getAxis(location, scale, model, value),
+        axis = this._axis(location, scale, model, value),
         ga = this.group('x-axis');
     this.applyTransform(ga, this.translateAxis(location, box));
     formatAxis(ga.transition(this.transition('x-axis')).call(axis), model, scale);
@@ -59,18 +61,13 @@ vizPrototype.xAxis1 = function (location, scale, box, value) {
 
 vizPrototype.yAxis1 = function (location, scale, box, value) {
     var model = this.getModel('yAxis'),
-        axis = getAxis(location, scale, model, value),
+        axis = this._axis(location, scale, model, value),
         ga = this.group('y-axis');
     this.applyTransform(ga, this.translateAxis(location, box));
     formatAxis(ga.transition(this.transition('x-axis')).call(axis), model, scale);
     if (model.title)
         this.axisTitle(ga, location, scale, box, model);
     return ga;
-};
-
-
-vizPrototype.axis = function (orientation, scale) {
-    return axisOrientation.get(orientation)(scale);
 };
 
 
@@ -116,13 +113,13 @@ vizPrototype.translateAxis = function (location, box) {
         return this.translate(box.margin.left+box.innerWidth, box.margin.top);
 };
 
-function getAxis (location, scale, model, value) {
-    var axis = axisOrientation.get(location)(scale).tickSize(model.tickSize);
+vizPrototype._axis = function (location, scale, model, value) {
+    var axis = this.getAxis(location, scale).tickSize(model.tickSize);
     if (model.tickSizeOuter !== null) axis.tickSizeOuter(model.tickSizeOuter);
     if (isDate(value)) axis.tickFormat(timeFormat(model.timeFormat));
     else if (model.format !== null) axis.tickFormat(format(model.format));
     return axis.ticks(model.ticks);
-}
+};
 
 
 function formatAxis (ga, model, scale) {

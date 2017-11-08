@@ -6,7 +6,6 @@ import niceRange from '../utils/nicerange';
 import createChart from '../core/chart';
 import colorContrast from '../utils/contrast';
 import textWrap from '../utils/text-wrapping';
-import {lineDrawing} from './line';
 //
 //  Heatmap
 //  =============
@@ -17,7 +16,8 @@ import {lineDrawing} from './line';
 //  * heatmap - classical heatmap
 //  * punchcard - the z dimension is converted into different sizes of the shape elements
 //  * contour - similar to heatmap but continous rather than descrete
-export default createChart('heatmap', lineDrawing, {
+export default createChart('heatmap', {
+    requires: ['d3-scale', 'd3-axis', 'd3-svg-legend'],
 
     options: {
         shape: 'square',

@@ -1,5 +1,3 @@
-import {pie, arc} from 'd3-shape';
-import {scaleOrdinal} from 'd3-scale';
 import {map} from 'd3-collection';
 import {viewExpression} from 'd3-view';
 import {format} from 'd3-format';
@@ -37,6 +35,7 @@ export const proportional = {
 //  =============
 //
 export default createChart('piechart', proportional, {
+    requires: ['d3-scale', 'd3-shape', 'd3-svg-legend'],
 
     options: {
         // The data values from this field will be encoded as angular spans.
@@ -70,12 +69,12 @@ export default createChart('piechart', proportional, {
             outerRadius = Math.min(box.innerWidth, box.innerHeight)/2,
             innerRadius = sizeValue(model.innerRadius, outerRadius),
             total = this.total(field),
-            angles = pie()
+            angles = this.$.pie()
                 .padAngle(rad*model.padAngle)
                 .startAngle(rad*model.startAngle)
                 .endAngle(rad*model.endAngle)
                 .value(total),
-            arcs = arc()
+            arcs = this.$.arc()
                 .innerRadius(innerRadius)
                 .outerRadius(outerRadius)
                 .cornerRadius(model.cornerRadius),
@@ -114,7 +113,7 @@ export default createChart('piechart', proportional, {
                 var font = this.getModel('font'),
                     size = this.dim(model.centerFontSize, box.innerWidth),
                     center = chart.selectAll('.info').data([text]);
-                    
+
                 center
                     .enter()
                         .append('text')
@@ -146,7 +145,7 @@ export default createChart('piechart', proportional, {
                 });
             });
         this.legend({
-            scale: scaleOrdinal().domain(labels).range(fill.colors)
+            scale: this.getScale('ordinal').domain(labels).range(fill.colors)
         }, box);
     }
 });

@@ -1,4 +1,3 @@
-import {symbol} from 'd3-shape';
 import {viewExpression} from 'd3-view';
 
 import createChart from '../core/chart';
@@ -9,6 +8,7 @@ import {proportional} from './pie';
 
 
 export default createChart('pyramidchart', proportional, {
+    requires: ['d3-scale', 'd3-shape', 'd3-svg-legend'],
 
     options: {
         field: 'data',
@@ -33,7 +33,7 @@ export default createChart('pyramidchart', proportional, {
             scaleX = this.getScale('linear').rangeRound([0, box.innerWidth]),
             scaleY = this.getScale('linear').rangeRound(model.inverted ? [box.innerHeight, 0] : [0, box.innerHeight]),
             data = frame.new(polygons(this.proportionalData(frame, field))).dimension('fraction').bottom(Infinity),
-            marks = symbol().type(d => polygon(d.points.map(xy => [scaleX(xy[0]), scaleY(xy[1])]))).size(1),
+            marks = this.$.symbol().type(d => polygon(d.points.map(xy => [scaleX(xy[0]), scaleY(xy[1])]))).size(1),
             fill = this.fill(data),
             group = this.group(),
             chart = this.group('chart'),

@@ -4,7 +4,6 @@ import {scaleLinear} from 'd3-scale';
 import createChart from '../core/chart';
 import accessor from '../utils/accessor';
 import constant from '../utils/constant';
-import {lineDrawing} from './line';
 
 //
 //  Box Chart
@@ -16,7 +15,8 @@ import {lineDrawing} from './line';
 //  This summary approach allows the viewer to easily recognize
 //  differences between distributions.
 //
-export default createChart('boxchart', lineDrawing, {
+export default createChart('boxchart', {
+    requires: ['d3-scale', 'd3-axis', 'd3-svg-legend'],
 
     options: {
         orientation: 'vertical',

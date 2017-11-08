@@ -1,99 +1,7 @@
-import {
-    line,
-    curveBasisClosed,
-    curveBasisOpen,
-    curveBasis,
-    curveBundle,
-    curveCardinalClosed,
-    curveCardinalOpen,
-    curveCardinal,
-    curveCatmullRomClosed,
-    curveCatmullRomOpen,
-    curveCatmullRom,
-    curveLinearClosed,
-    curveLinear,
-    curveMonotoneX,
-    curveMonotoneY,
-    curveNatural
-} from 'd3-shape';
-
 import {isFunction} from 'd3-let';
-import {extent} from 'd3-array';
 
 import createChart from '../core/chart';
-import warn from '../utils/warn';
-import camelFunction from '../utils/camelfunction';
 import grouper from '../transforms/groups';
-
-
-export const curves = {
-    curveBasisClosed,
-    curveBasisOpen,
-    curveBasis,
-    curveBundle,
-    curveCardinalClosed,
-    curveCardinalOpen,
-    curveCardinal,
-    curveCatmullRomClosed,
-    curveCatmullRomOpen,
-    curveCatmullRom,
-    curveLinearClosed,
-    curveLinear,
-    curveMonotoneX,
-    curveMonotoneY,
-    curveNatural
-};
-
-export const lineDrawing = {
-
-    curve (name) {
-        var obj = camelFunction(curves, 'curve', name, true);
-        if (!obj) {
-            warn(`Could not locate curve type "${name}"`);
-            obj = curveNatural;
-        }
-        return obj;
-    },
-
-    range (data, x, y, agg) {
-        var range = {
-            x: extent(data, x),
-            y: extent(data, y)
-        };
-        if (agg) {
-            Array.prototype.push.apply(agg.x, range.x);
-            Array.prototype.push.apply(agg.y, range.y);
-        }
-    },
-
-    newRange () {
-        return {
-            x: [],
-            y: []
-        };
-    },
-
-    x (box, ranges) {
-        var model = this.getModel(),
-            scale = this.getScale(model.scaleX)
-                .domain(extent(ranges))
-                .range([0, box.innerWidth]);
-        return function (d) {
-            return scale(d[model.x]);
-        };
-    },
-
-    y (box, ranges, value) {
-        var model = this.getModel(),
-            scale = this.getScale(model.scaleY)
-                .domain(extent(ranges))
-                .range([box.innerHeight, 0]);
-        if (arguments.length === 2) value = d => d[model.y];
-        return function (d) {
-            return scale(value(d));
-        };
-    }
-};
 
 //
 //  Line Chart
@@ -103,7 +11,8 @@ export const lineDrawing = {
 //  It can be used to display label data as well as
 //  timeserie data. It can display absulte values as
 //  proportional data via vertical staking and normalization
-export default createChart('linechart', lineDrawing, {
+export default createChart('linechart', {
+    requires: ['d3-scale', 'd3-shape', 'd3-axis', 'd3-svg-legend'],
 
     options: {
         lineWidth: 1,
@@ -141,7 +50,7 @@ export default createChart('linechart', lineDrawing, {
             colors = this.stroke(info.data).colors,
             sxshift = 0,
             //merge = paper.transition('update'),
-            line_ = line()
+            line_ = this.$.line()
                 .x(xl)
                 .y(yl)
                 .curve(this.curve(model.curve));
