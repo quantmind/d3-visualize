@@ -1,6 +1,8 @@
 import {test} from './utils';
 
-import {DataStore, randomPath} from '../index';
+import {randomPath} from 'd3-quant';
+
+import {DataStore} from '../index';
 
 
 describe('dataStore', () => {
