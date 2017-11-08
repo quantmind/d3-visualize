@@ -1,5 +1,5 @@
 {
-    "version": "0.3.5",
+    "version": "0.3.6",
     "name": "d3-visualize",
     "description": "d3-view components for data visualization",
     "author": {
@@ -26,20 +26,15 @@
     "jsnext:main": "index",
     "dependencies": {
         "crossfilter": "1.3",
-        "d3-array": "1.2",
         "d3-axis": "1.0",
         "d3-brush": "1.0",
-        "d3-color": "1.0",
         "d3-dsv": "1.0",
-        "d3-format": "1.2",
         "d3-random": "1.1",
         "d3-scale": "1.0",
-        "d3-selection": "1.1",
         "d3-shape": "1.2",
         "d3-svg-legend": "2.24",
-        "d3-time-format": "2.1",
-        "d3-transition": "1.1",
-        "d3-view": "0.9"
+        "d3-view": "0.9",
+        "d3-zoom": "1.7"
     },
     "devDependencies": {
         "babel-core": "6.26",
@@ -70,7 +65,7 @@
         "phantomjs-prebuilt": "2.1",
         "publish": "0.6",
         "requirejs": "2.3",
-        "rollup": "0.50",
+        "rollup": "0.51",
         "rollup-plugin-babel": "3.0",
         "rollup-plugin-json": "2.3",
         "rollup-plugin-node-resolve": "3.0",
@@ -89,6 +84,7 @@
         "build": "rollup -c --banner \"$(preamble)\" && uglifyjs --preamble \"$(preamble)\" build/d3-visualize.js -c -m -o build/d3-visualize.min.js && npm run-script css",
         "unit": "karma start test/karma/karma.unit.js",
         "debug": "karma start test/karma/karma.debug.js",
+        "firefox": "karma start test/karma/karma.debug.firefox.js",
         "css": "node-sass scss/d3-visualize.scss build/d3-visualize.css --include-path node_modules --output-style compressed",
         "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-visualize/releases/:id/assets?name=d3-visualize.zip",
         "prepare": "npm run-script build",
