@@ -2,12 +2,7 @@ import {map} from 'd3-collection';
 import {range} from 'd3-array';
 import {color} from 'd3-color';
 import {isObject, isFunction, isArray} from 'd3-let';
-import {
-    scaleSequential,
-    interpolateViridis, interpolateInferno, interpolateMagma,
-    interpolatePlasma, interpolateWarm, interpolateCool,
-    interpolateRainbow, interpolateCubehelixDefault
-} from 'd3-scale';
+
 import globalOptions from '../core/options';
 import {vizPrototype} from '../core/chart';
 
@@ -26,15 +21,18 @@ globalOptions.color = {
     fillOpacity: 1,
 };
 
-colorScales.set('viridis', () =>  scaleSequential(interpolateViridis));
-colorScales.set('inferno', () =>  scaleSequential(interpolateInferno));
-colorScales.set('magma', () =>  scaleSequential(interpolateMagma));
-colorScales.set('plasma', () =>  scaleSequential(interpolatePlasma));
-colorScales.set('warm', () =>  scaleSequential(interpolateWarm));
-colorScales.set('cool', () =>  scaleSequential(interpolateCool));
-colorScales.set('rainbow', () =>  scaleSequential(interpolateRainbow));
-colorScales.set('cubehelix', () =>  scaleSequential(interpolateCubehelixDefault));
+colorScales.set('viridis', (d3) =>  d3.scaleSequential(d3.interpolateViridis));
+colorScales.set('inferno', (d3) =>  d3.scaleSequential(d3.interpolateInferno));
+colorScales.set('magma', (d3) =>  d3.scaleSequential(d3.interpolateMagma));
+colorScales.set('plasma', (d3) =>  d3.scaleSequential(d3.interpolatePlasma));
+colorScales.set('warm', (d3) =>  d3.scaleSequential(d3.interpolateWarm));
+colorScales.set('cool', (d3) =>  d3.scaleSequential(d3.interpolateCool));
+colorScales.set('rainbow', (d3) =>  d3.scaleSequential(d3.interpolateRainbow));
+colorScales.set('cubehelix', (d3) =>  d3.scaleSequential(d3.interpolateCubehelixDefault));
 
+vizPrototype.getColorScale = function (name) {
+    return colorScales.get(name)(this.$);
+};
 //
 //  Color scale method
 //  ==========================
@@ -44,7 +42,7 @@ vizPrototype.colors = function (n, opacity) {
 
     if (isArray(model.scale)) scale = this.getScale('ordinal').range(model.scale);
     else {
-        scaleDef = colorScales.get(model.scale);
+        scaleDef = this.getColorScale(model.scale);
         if (!scaleDef) throw new Error(`Unknown scale ${model.scale}`);
         if (!isObject(scaleDef)) scaleDef = {scale: scaleDef};
         if (scaleDef.minPoints === undefined) scaleDef.minPoints = model.scaleMinPoints;

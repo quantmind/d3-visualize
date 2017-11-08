@@ -29,7 +29,6 @@ export {default as slugify} from './src/utils/slugify';
 //  Last import, important!
 export {default as Visual} from './src/core/visual';
 export {default as BarChart} from './src/charts/bar';
-export {default as BoxChart} from './src/charts/box';
 export {default as LineChart} from './src/charts/line';
 export {default as AreaChart} from './src/charts/area';
 export {default as PieChart} from './src/charts/pie';
