@@ -42,7 +42,7 @@ module.exports = function (config) {
     });
 
     if(process.env.TRAVIS || process.env.CIRCLECI) {
-        options.browsers = ['ChromeNoSandbox'];
+        options.browsers = ['PhantomJS', 'ChromeNoSandbox', 'Firefox'];
     }
 
     config.set(options);

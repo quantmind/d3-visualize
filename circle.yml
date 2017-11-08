@@ -1,11 +1,13 @@
 machine:
 
   node:
-    version: 8.5.0
+    version: 8.9.1
 
 
 dependencies:
   override:
+    - sudo apt-get update && sudo apt-get install libpango1.0-0 && sudo apt-get install firefox
+    - sudo ln -sf /usr/lib/firefox/firefox /usr/bin/firefox
     - yarn install
 
 
