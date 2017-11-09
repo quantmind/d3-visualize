@@ -4,7 +4,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import commonjs from 'rollup-plugin-commonjs';
 import node from 'rollup-plugin-node-resolve';
 
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 const external = Object.keys(pkg.dependencies).filter(name => name.substring(0, 3) === 'd3-');
 
 
