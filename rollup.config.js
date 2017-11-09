@@ -1,6 +1,11 @@
 import json from 'rollup-plugin-json';
 import babel from 'rollup-plugin-babel';
 import sourcemaps from 'rollup-plugin-sourcemaps';
+import commonjs from 'rollup-plugin-commonjs';
+import node from 'rollup-plugin-node-resolve';
+
+const pkg = require('./package.json');
+const external = Object.keys(pkg.dependencies).filter(name => name.substring(0, 3) === 'd3-');
 
 
 export default {
@@ -11,22 +16,7 @@ export default {
         name: 'd3',
         sourcemap: true,
         extend: true,
-        globals: {
-            "crossfilter": "crossfilter",
-            "d3-array": "d3",
-            "d3-collection": "d3",
-            "d3-color": "d3",
-            "d3-dispatch": "d3",
-            "d3-dsv": "d3",
-            "d3-format": "d3",
-            "d3-let": "d3",
-            "d3-random": "d3",
-            "d3-selection": "d3",
-            "d3-timer": "d3",
-            "d3-time-format": "d3",
-            "d3-transition": "d3",
-            "d3-view": "d3"
-        }
+        globals: external.reduce((g, name) => {g[name] = 'd3'; return g;}, {})
     },
     plugins: [
         json(),
@@ -36,22 +26,9 @@ export default {
             presets: ['es2015-rollup'],
             externalHelpers: true
         }),
-        sourcemaps()
+        sourcemaps(),
+        commonjs({include: ['node_modules/**']}),
+        node()
     ],
-    external: [
-        "crossfilter",
-        "d3-array",
-        "d3-collection",
-        "d3-color",
-        "d3-dispatch",
-        "d3-dsv",
-        "d3-format",
-        "d3-let",
-        "d3-random",
-        "d3-selection",
-        "d3-timer",
-        "d3-time-format",
-        "d3-transition",
-        "d3-view"
-    ]
+    external: external
 };

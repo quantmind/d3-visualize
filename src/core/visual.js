@@ -1,6 +1,6 @@
 import {pop, inBrowser} from 'd3-let';
-import {select} from 'd3-selection';
 import {viewDebug} from 'd3-view';
+import {select} from 'd3-selection';
 
 import createVisual, {visuals} from './base';
 import warn from '../utils/warn';
@@ -52,7 +52,7 @@ export default createVisual('visual', {
             },
             sel: {
                 get () {
-                    return select(element);
+                    return this.select(element);
                 }
             },
             size: {

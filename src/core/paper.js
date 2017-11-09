@@ -1,5 +1,5 @@
 import {assign} from 'd3-let';
-import {select} from 'd3-selection';
+import {viewBase} from 'd3-view';
 
 import {visuals} from './base';
 
@@ -16,7 +16,7 @@ export default function createPaper (type, proto) {
             },
             sel: {
                 get () {
-                    return select(element);
+                    return this.select(element);
                 }
             },
             paperType: {
@@ -27,7 +27,7 @@ export default function createPaper (type, proto) {
         });
     }
 
-    Paper.prototype = assign({}, paperPrototype, proto);
+    Paper.prototype = assign({}, viewBase, paperPrototype, proto);
 
     visuals.papers[type] = Paper;
     return Paper;

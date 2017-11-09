@@ -1,11 +1,16 @@
 import {extent, max} from 'd3-array';
 import {assign} from 'd3-let';
 
-import createChart from '../core/chart';
-import camelFunction from '../utils/camelfunction';
+import createChart, {vizPrototype} from '../core/chart';
 import accessor from '../utils/accessor';
 import niceRange from '../utils/nicerange';
 import warn from '../utils/warn';
+
+
+vizPrototype.getGeoProjection = function (name) {
+    return this.getD3('geo', name)();
+};
+
 
 //
 //  GeoChart
@@ -46,21 +51,21 @@ export default createChart('geochart2', {
         mouseover: ['darken', 'tooltip']
     },
 
-    doDraw (frame, geo) {
-        var info = dataInfo(frame);
+    doDraw () {
+        var info = dataInfo(this.frame);
         if (!info.topology) return warn ('Topojson data not available - cannot draw topology');
-        if (!this._geoPath) this.createGeoPath(geo, info);
-        this.update(geo, info);
+        if (!this._geoPath) this.createGeoPath(info);
+        this.update(info);
     },
 
-    update (geo, info) {
+    update (info) {
         var model = this.getModel(),
             color = this.getModel('color'),
             box = this.boundingBox(),
             group = this.group(),
             geogroup = this.group('geo'),
             path = this._geoPath,
-            data = geodata(geo, info, model);
+            data = geodata(this.$, info, model);
 
         if (!data) {
             var objects = Object.keys(info.topology.objects).map(key => `"${key}"`).join(', ');
@@ -77,7 +82,7 @@ export default createChart('geochart2', {
         var paths = geogroup.selectAll('.geometry').data(data),
             fill = this.choropleth(data, box);
 
-        this.center(geo, info);
+        this.center(info);
 
         paths
             .enter()
@@ -100,38 +105,40 @@ export default createChart('geochart2', {
             .remove();
     },
 
-    createGeoPath (geo, info) {
+    createGeoPath (info) {
         var model = this.getModel(),
-            projection = camelFunction(geo, 'geo', model.projection).scale(model.scale),
-            path = geo.geoPath().projection(projection),
+            projection = this.getGeoProjection(model.projection).scale(model.scale),
+            $ = this.$,
+            path = $.geoPath().projection(projection),
             self = this,
             lefletMap;
 
         this._geoPath = path;
-        this.center(geo, info);
+        this.center(info);
 
         if (model.leaflet) {
             var leafletId = `leaflet-${model.uid}`,
                 paper = this.paper();
+
             this.visualParent.paper
                     .append('div')
                     .attr('id', leafletId);
-            lefletMap = new geo.Map(leafletId, {center: [37.8, -96.9], zoom: 4})
-                            .addLayer(new geo.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")),
+            lefletMap = new $.Map(leafletId, {center: [37.8, -96.9], zoom: 4})
+                            .addLayer(new $.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")),
             lefletMap.getPanes().overlayPane.appendChild(paper.element);
-            projection = geo.transform({point: projectPoint});
-            lefletMap.on("viewreset", () => self.update(geo, info));
+            projection = $.transform({point: projectPoint});
+            lefletMap.on("viewreset", () => self.update(info));
         }
 
         return path;
 
         function projectPoint(x, y) {
-            var point = lefletMap.latLngToLayerPoint(new geo.LatLng(y, x));
+            var point = lefletMap.latLngToLayerPoint(new $.LatLng(y, x));
             this.stream.point(point.x, point.y);
         }
     },
 
-    center (geo, info) {
+    center (info) {
         var model = this.getModel();
         if (!model.boundGeometry) return;
 
@@ -139,7 +146,7 @@ export default createChart('geochart2', {
             projection = path.projection(),
             box = this.boundingBox(),
             boundObject = info.topology.objects[model.boundGeometry],
-            boundGeometry = boundObject ? geo.feature(info.topology, boundObject).features : null;
+            boundGeometry = boundObject ? this.$.feature(info.topology, boundObject).features : null;
 
         if (!boundGeometry) return warn(`Could not find *boundGeometry* "${model.boundGeometry}" for centering - skip centering geochart`);
 

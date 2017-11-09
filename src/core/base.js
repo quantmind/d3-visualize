@@ -1,6 +1,5 @@
 import {pop, isString, isObject, assign} from 'd3-let';
 import {dispatch} from 'd3-dispatch';
-import {event} from 'd3-selection';
 import {viewBase, viewModel} from 'd3-view';
 import 'd3-transition';
 
@@ -65,10 +64,6 @@ export const visualPrototype = {
         } else
             this.drawing = this.draw(fetchData);
         return this.drawing;
-    },
-
-    event () {
-        return event;
     },
 
     // destroy the visual

@@ -46,7 +46,7 @@ vizPrototype.colors = function (n, opacity) {
         if (!scaleDef) throw new Error(`Unknown scale ${model.scale}`);
         if (!isObject(scaleDef)) scaleDef = {scale: scaleDef};
         if (scaleDef.minPoints === undefined) scaleDef.minPoints = model.scaleMinPoints;
-        scale = scaleDef.scale();
+        scale = scaleDef.scale;
         reversed = scaleDef.reversed;
     }
 
