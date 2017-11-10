@@ -13,6 +13,19 @@ import DataFrame from './dataframe';
 //  If array-valued, specifies a collection of data source names that
 //  should be merged (unioned) together.
 export default {
+    schema: {
+        type: "object",
+        description: 'Composite data source for combining data together',
+        properties: {
+            source: {
+                type: "array",
+                description: "Array of data sources keys",
+                item: {
+                    type: "string"
+                }
+            }
+        }
+    },
 
     initialise (config) {
         this.source = config.source;

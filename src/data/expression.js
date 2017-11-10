@@ -3,6 +3,16 @@ import {viewExpression} from 'd3-view';
 
 
 export default {
+    schema: {
+        type: "object",
+        description: 'Expression to evaluate by the data store',
+        properties: {
+            expression: {
+                type: "string",
+                description: "expression to evaluate, must return a data frame or a Promise"
+            }
+        }
+    },
 
     initialise (config) {
         this.expression = viewExpression(config.expression);

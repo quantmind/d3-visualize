@@ -13,7 +13,7 @@ const dataEvents = dispatch('init', 'data');
 //  DataSource prototype
 //  ======================
 const dataSourcePrototype = {
-
+    schema: {properties: {}},
     // get the config
     // This method is used by the prototype
     // to check if the config object is a valid one
@@ -63,6 +63,7 @@ export default assign(map(), {
         }
 
         DataSource.prototype = assign({}, dataSourcePrototype, source);
+        DataSource.prototype.constructor = DataSource;
 
         this.set(type, DataSource);
         return DataSource;

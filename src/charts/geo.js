@@ -17,38 +17,77 @@ vizPrototype.getGeoProjection = function (name) {
 //  =============
 //
 //  A chart displaying a geographical map
-export default createChart('geochart2', {
+export default createChart('geochart', {
     // load these libraries - add 'leaflet'?
     requires: ['d3-scale', 'd3-geo', 'topojson', 'd3-geo-projection', 'd3-svg-legend'],
 
-    options: {
+    schema: {
         // Geometry data to display in this chart - must be in the topojson source
-        geometry: 'countries',
+        geometry: {
+            type: 'string',
+            description: 'The geometry to visualize from the topojson geometry objects',
+            default: 'countries'
+        },
         //
         // for choropleth maps
         // geoKey and dataKey are used to match geometry with data
-        geoKey: 'id',
-        dataKey: 'id',
-        dataLabelKey : 'label',
-        dataValueKey: 'value',
-        neighbors: false,
+        geoKey: {
+            type: 'string',
+            default: 'id'
+        },
+        dataKey: {
+            type: 'string',
+            default: 'id'
+        },
+        dataLabelKey : {
+            type: 'string',
+            default: 'label'
+        },
+        dataValueKey: {
+            type: 'string',
+            default: 'value'
+        },
+        neighbors: {
+            type: 'boolean',
+            default: false
+        },
         // how many color buckets to visualise
-        buckets: 10,
-        choroplethScale: 'quantile',
+        buckets: {
+            type: 'number',
+            default: 10
+        },
+        choroplethScale: {
+            type: 'string',
+            default: 'quantile'
+        },
         //
         // specify one of the topojson geometry object for calculating
         // the projected bounding box
-        boundGeometry: null,
+        boundGeometry: {
+            type: 'string'
+        },
         // how much to zoom out, 1 = no zoom out, 0.95 to 0.8 are sensible values
-        boundScaleFactor: 0.9,
+        boundScaleFactor: {
+            type: 'number',
+            default: 0.9
+        },
         //
-        projection: 'kavrayskiy7',
-        graticule: false,
-        leaflet: false,
-        scale: 200,
-        //
-        // mouseover strategy
-        mouseover: ['darken', 'tooltip']
+        projection: {
+            type: 'string',
+            default: 'kavrayskiy7'
+        },
+        graticule: {
+            type: 'boolean',
+            default: false
+        },
+        leaflet: {
+            type: 'boolean',
+            default: false
+        },
+        scale: {
+            type: 'number',
+            default: 200
+        }
     },
 
     doDraw () {

@@ -1,6 +1,6 @@
 import {map} from 'd3-collection';
 import {isArray, isString, isPromise, isFunction, assign} from 'd3-let';
-import {viewExpression, resolvedPromise, viewModel} from 'd3-view';
+import {viewExpression, viewModel} from 'd3-view';
 
 import array from './array';
 import remote from './remote';
@@ -89,9 +89,9 @@ DataStore.prototype = {
     getData (source, context) {
         var ds = this.sources.get(source);
         if (!ds) throw new Error(`Data source ${source} not available`);
-        if (ds.cachedFrame) return resolvedPromise(ds.cachedFrame);
+        if (ds.cachedFrame) return Promise.resolve(ds.cachedFrame);
         var data = ds.getData(context);
-        if (!isPromise(data)) data = resolvedPromise(data);
+        if (!isPromise(data)) data = Promise.resolve(data);
         return data.then(frame => {
             if (ds.config.cache) ds.cachedFrame = frame;
             return frame;

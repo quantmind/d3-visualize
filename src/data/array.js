@@ -1,5 +1,4 @@
 import {isArray, isObject} from 'd3-let';
-import {resolvedPromise} from 'd3-view';
 
 //
 //  Array DataSource
@@ -7,6 +6,16 @@ import {resolvedPromise} from 'd3-view';
 //
 //  Data is given in an array, pkain & simple
 export default {
+    schema: {
+        type: "object",
+        description: 'array of data',
+        properties: {
+            data: {
+                type: "array",
+                description: "array of data"
+            }
+        }
+    },
 
     initialise (config) {
         this._data = config.data;
@@ -18,6 +27,6 @@ export default {
     },
 
     getData () {
-        return resolvedPromise(this.asFrame(this._data));
+        return this.asFrame(this._data);
     }
 };

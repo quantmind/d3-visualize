@@ -1,5 +1,5 @@
 import {isFunction, pop, assign} from 'd3-let';
-import {require, viewProviders} from 'd3-view';
+import {viewProviders} from 'd3-view';
 
 import createVisual, {visuals} from './base';
 import Visual from './visual';
@@ -9,7 +9,7 @@ import warn from '../utils/warn';
 //
 //  crateChart
 //
-//  A chart is a drawing of series data in two dimensional
+//  A chart is a drawing of a data frame in two dimension
 export default function (type) {
     if (viewProviders.visualPlugins) {
         extendVisualPrototype(viewProviders.visualPlugins);
@@ -137,7 +137,7 @@ export const chartPrototype = {
             visuals.events.call('after-draw', undefined, self);
         } else {
             return Promise.all([
-                this.requires ? require.apply(undefined, this.requires) : [],
+                this.requires ? viewProviders.require.apply(undefined, this.requires) : [],
                 // this.getMetaData(),
                 this.getData()
             ]).then(args => {

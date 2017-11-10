@@ -2,7 +2,7 @@ import {isFunction} from 'd3-let';
 
 import createChart from '../core/chart';
 import grouper from '../transforms/groups';
-
+import defs from './defs';
 //
 //  Line Chart
 //  =============
@@ -14,21 +14,21 @@ import grouper from '../transforms/groups';
 export default createChart('linechart', {
     requires: ['d3-scale', 'd3-shape', 'd3-axis', 'd3-svg-legend'],
 
-    options: {
-        lineWidth: 1,
-        curve: 'natural',
-        x: 'x',
-        y: 'y',
-        groupby: null,  // group data by a field for grouped line charts
-        scaleX: 'linear',
-        scaleY: 'linear',
-        //
-        axisX: true,
-        axisY: true
+    schema: {
+        lineWidth: defs.lineWidth,
+        curve: defs.curve,
+        x: defs.x,
+        y: defs.y,
+        scaleX: defs.scaleX,
+        scaleY: defs.scaleY,
+        groupby: defs.groupby,
+        axisX: defs.axisX,
+        axisY: defs.axisY
     },
 
-    doDraw (frame) {
+    doDraw () {
         var model = this.getModel(),
+            frame = this.frame,
             x = model.x,
             y = model.y,
             box = this.boundingBox(),

@@ -1,10 +1,10 @@
 //
 //  dataStore integration with visuals
-import {isString, pop} from 'd3-let';
-import {resolvedPromise} from 'd3-view';
+import {isString, pop, assign} from 'd3-let';
 
 import {visuals} from '../core/base';
 import DataStore from '../data/store';
+import dataSources from '../data/sources';
 import {vizPrototype} from '../core/chart';
 import warn from '../utils/warn';
 import cachedFormat from '../utils/format';
@@ -17,6 +17,21 @@ visuals.options.dataContext = {
     $formatTime: cachedFormatTime
 };
 
+assign(visuals.schema.definitions, {
+    data: {
+        type: "array",
+        items: {
+            '$ref': '#/definitions/dataSource'
+        }
+    },
+    dataSource: {
+        oneOf: dataSources.values().map(Ds => {
+            const schema = Ds.prototype.schema;
+            schema.properties.transforms = {'$ref': '#/definitions/transforms'};
+            return schema;
+        })
+    }
+});
 //  getData method
 //  =====================
 //
@@ -25,7 +40,7 @@ vizPrototype.getData = function () {
     var name = this.model.data;
     if (!name) {
         warn(`Visual ${this.visualType} without data name, cannot get data`);
-        return resolvedPromise();
+        return;
     }
     return this.dataStore.getData(name, {$visual: this});
 };

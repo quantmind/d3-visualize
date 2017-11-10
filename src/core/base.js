@@ -25,6 +25,25 @@ export const visuals = {
     types: {},
     papers: {},
     options: globalOptions,
+    schema: {
+        title: "Visualize Specification Language",
+        type: "object",
+        definitions: {
+            size: {
+                oneOf: [
+                    {
+                        type: "number",
+                        description: "size in pixels",
+                        minimum: 0
+                    },
+                    {
+                        type: "string",
+                        description: "Size as a percentage"
+                    }
+                ]
+            }
+        }
+    },
     events: dispatch(
         'before-init',
         'after-init',
@@ -33,6 +52,24 @@ export const visuals = {
         'after-draw'
     )
 };
+
+function defaultsFromProperties (properties) {
+    var options = {};
+    let value, prop, key;
+    for (key in properties) {
+        prop = properties[key];
+        if (prop['$ref']) prop = schemaDef(prop['$ref']);
+        value = properties[key].default;
+        options[key] = value === undefined ? null : value;
+    }
+    return options;
+}
+
+
+function schemaDef (d) {
+    var dd = d.split('/');
+    return visuals.schema.definitions[dd[dd.length-1]] || {};
+}
 
 //
 //  Visual Interface
@@ -134,9 +171,18 @@ export const visualPrototype = {
 //
 //  Create a new Visual Constructor
 export default function (type, proto) {
-    const opts = pop(proto, 'options');
-    if (opts)
-        globalOptions[type] = opts;
+    const schema = pop(proto, 'schema');
+    if (schema) {
+        visuals.options[type] = defaultsFromProperties(schema);
+        visuals.schema.definitions[type] = {
+            type: "object",
+            properties: assign({
+                data: {
+                    "$ref": "#/definitions/data"
+                }
+            }, schema)
+        };
+    }
 
     function Visual(element, options, parent, model) {
         Object.defineProperties(this, {

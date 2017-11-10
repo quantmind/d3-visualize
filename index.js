@@ -1,6 +1,8 @@
 //
 export {version as visualizeVersion} from './package.json';
 //
+export {require} from './src/require';
+//
 // Data layer
 export {default as DataStore} from './src/data/store';
 export {default as dataSources} from './src/data/sources';

@@ -13,6 +13,16 @@ const CSV = set(['text/plain', 'text/csv', 'application/vnd.ms-excel']);
 //
 //  handle Json and csv data
 export default {
+    schema: {
+        type: "object",
+        description: 'Remote data resource',
+        properties: {
+            url: {
+                type: "string",
+                description: "url for fetching data"
+            }
+        }
+    },
 
     getConfig (config) {
         if (isUrl(config)) return {url: config};

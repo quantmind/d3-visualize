@@ -2,6 +2,7 @@ import {color} from 'd3-color';
 
 import createChart from '../core/chart';
 import grouper from '../transforms/groups';
+import defs from './defs';
 
 //
 //  Area Chart
@@ -9,23 +10,19 @@ import grouper from '../transforms/groups';
 export default createChart('areachart', {
     requires: ['d3-scale', 'd3-shape', 'd3-axis', 'd3-svg-legend'],
 
-    options: {
-        lineWidth: 1,
-        curve: 'natural',
-        x: 'x',
-        y: 'y',
-        groupby: null,  // group data by a field for staked or grouped area chart
-        scaleX: 'linear',
-        scaleY: 'linear',
-        // area with vertical gradient to zero opacity
-        gradient: true,
-        lineDarken: 0.2,
-        //
-        stack: true,
-        stackOrder: 'none',   // stack order
-        //
-        axisX: true,
-        axisY: true
+    schema: {
+        lineWidth: defs.lineWidth,
+        curve: defs.curve,
+        x: defs.x,
+        y: defs.y,
+        scaleX: defs.scaleX,
+        scaleY: defs.scaleY,
+        groupby: defs.groupby,
+        axisX: defs.axisX,
+        axisY: defs.axisY,
+        stack: defs.stack,
+        gradient: defs.gradient,
+        lineDarken: defs.lineDarken
     },
 
     doDraw (frame) {

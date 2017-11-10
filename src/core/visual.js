@@ -22,14 +22,23 @@ import {getSize} from '../utils/size';
 //
 export default createVisual('visual', {
 
-    options: {
-        render: 'svg',
+    schema: {
+        render: {
+            type: 'string',
+            enum: ['canvas', 'svg'],
+            default: 'svg'
+        },
         // width set by the parent element
-        width: null,
+        width: {
+            description: 'Width of the visual',
+            '$refs': '#/definitions/size'
+        },
         // height set as percentage of width
-        height: '70%',
-        // heightElement - selector for an element from wich to obtain height
-        heightElement: null
+        height: {
+            description: 'Height of the visual',
+            '$refs': '#/definitions/size',
+            default: "70%"
+        }
     },
 
     initialise (element) {

@@ -5,6 +5,7 @@ import {format} from 'd3-format';
 import createChart from '../core/chart';
 import {sizeValue} from '../utils/size';
 import textWrap from '../utils/text-wrapping';
+import defs from './defs';
 
 
 const pi = Math.PI;
@@ -37,28 +38,58 @@ export const proportional = {
 export default createChart('piechart', proportional, {
     requires: ['d3-scale', 'd3-shape', 'd3-svg-legend'],
 
-    options: {
+    schema: {
         // The data values from this field will be encoded as angular spans.
         // If omitted, all pie slices will have equal spans
-        field: 'data',
-        label: 'label',
-        startAngle: 0,
-        endAngle: 360,
-        sort: false,
-        innerRadius: 0,
-        padAngle: 0,
-        cornerRadius: 0,
-        lineWidth: 1,
+        field: {
+            type: 'string',
+            default: 'data'
+        },
+        label: {
+            type: 'string',
+            default: 'label'
+        },
+        startAngle: {
+            description: "Overall start angle of the pie in degree",
+            default: 0,
+            type: "number"
+        },
+        endAngle: {
+            description: "Overall end angle of the pie in degree",
+            default: 360,
+            type: "number"
+        },
+        sort: {
+            type: 'string',
+            description: 'sort data before visualizing',
+            enum: ['none', 'ascending', 'descending'],
+            default: 'none'
+        },
+        innerRadius: {
+            description: "Inner radius for donuts",
+            default: 0,
+            oneOf: [
+                {type: "number", minimum: 0},
+                {type: "string"}
+            ]
+        },
+        padAngle: {
+            description: "Angular separation between each adjacent arcs in degree",
+            default: 0,
+            type: "number",
+            minimum: 0
+        },
+        cornerRadius: defs.cornerRadius,
+        lineWidth: defs.lineWidth,
         //
-        fractionFormat: '.1%',
-        legendType: 'color',
-        legendLabel: "label + ' - ' + format(fraction)",
-        //
-        // display information in the center of the pie chart
-        // Should be used with innerRadius greater than 0
-        center: null,
-        centerOpacity: 1,
-        centerFontSize: '7%'
+        center: {
+            type: "string",
+            description: "Expression which display information in the center of the pie chart. Should be used with innerRadius greater than 0"
+        },
+        centerFont: {
+            description: "Center text font size and family",
+            '$ref': "#/definitions/font"
+        }
     },
 
     doDraw (frame) {

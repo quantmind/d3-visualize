@@ -9,7 +9,9 @@
 
 # Charts
 
+## Available Charts
 
+The charts available are in the ``visuals`` object
 ## Crate a chart
 
 It is possible to expand the library by creating custom charts via the ``createChart`` function.
