@@ -1,5 +1,5 @@
 {
-    "version": "0.4.0",
+    "version": "0.4.1",
     "name": "d3-visualize",
     "description": "d3-view components for data visualization",
     "author": {
@@ -95,6 +95,7 @@
         "require": "view-require -o build/d3-require.js",
         "dev": "rollup -c dev/rollup.config.js -w",
         "cover": "karma start test/karma/karma.cover.js",
+        "cleanup": "rm -rf build",
         "build": "npm run-script rollup && uglifyjs --preamble \"$(preamble)\" build/d3-visualize.js -c -m -o build/d3-visualize.min.js && npm run-script css && npm run-script schema",
         "unit": "karma start test/karma/karma.unit.js",
         "schema": "node dev/schema.js",
@@ -102,7 +103,7 @@
         "firefox": "karma start test/karma/karma.debug.firefox.js",
         "css": "node-sass scss/d3-visualize.scss build/d3-visualize.css --include-path node_modules --output-style compressed",
         "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-visualize/releases/:id/assets?name=d3-visualize.zip",
-        "prepare": "npm run-script build",
+        "prepare": "npm run-script cleanup && npm run-script build",
         "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git tag -am \"Release $VERSION.\" v${VERSION} && git push --tags && mkdir -p ../giottojs.org/latest && mkdir -p ../giottojs.org/d3-visualize/${VERSION} && cp build/* ../giottojs.org/d3-visualize/${VERSION}/ && cp build/* ../giottojs.org/latest/ && cd ../giottojs.org && git add d3-visualize/${VERSION} latest && git commit -a -m \"d3-visualize ${VERSION}\" && git push",
         "release": "publish"
     }
