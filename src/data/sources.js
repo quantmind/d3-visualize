@@ -39,12 +39,13 @@ const dataSourcePrototype = {
     //
     // given a data object returns a Cross filter object
     asFrame (data) {
+        if (data && !isArray(data) && data.constructor !== DataFrame) data = [data];
         if (isArray(data)) {
             data = data.map(entry => {
                 if (entry.constructor !== Object) entry = {data: entry};
                 return entry;
             });
-            data = new DataFrame(data, null, this.store);
+            data = new DataFrame(data, this.store);
         }
         return applyTransforms(data, this.transforms);
     }

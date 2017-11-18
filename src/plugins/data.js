@@ -7,15 +7,7 @@ import DataStore from '../data/store';
 import dataSources from '../data/sources';
 import {vizPrototype} from '../core/chart';
 import warn from '../utils/warn';
-import cachedFormat from '../utils/format';
-import cachedFormatTime from '../utils/format-time';
 
-//
-// Visual Data Context
-visuals.options.dataContext = {
-    $format: cachedFormat,
-    $formatTime: cachedFormatTime
-};
 
 assign(visuals.schema.definitions, {
     data: {

@@ -59,7 +59,7 @@ function defaultsFromProperties (properties) {
     for (key in properties) {
         prop = properties[key];
         if (prop['$ref']) prop = schemaDef(prop['$ref']);
-        value = properties[key].default;
+        value = prop.default;
         options[key] = value === undefined ? null : value;
     }
     return options;

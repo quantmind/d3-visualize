@@ -53,7 +53,7 @@ export default createChart('linechart', {
             line_ = this.$.line()
                 .x(xl)
                 .y(yl)
-                .curve(this.curve(model.curve));
+                .curve(this.getCurve(model.curve));
 
         this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
         this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));
@@ -85,9 +85,15 @@ export default createChart('linechart', {
             .remove();
 
         if (model.axisX)
-            this.xAxis1(model.axisX === true ? "bottom" : model.axisX, sy, box);
+            this.xAxis1(model.axisX === true ? "bottom" : model.axisX, sx, box);
         if (model.axisY)
             this.yAxis1(model.axisY === true ? "left" : model.axisY, sy, box);
+
+        if (info.data.length > 1)
+            this.legend({
+                type: 'color',
+                scale: this.getScale('ordinal').range(colors).domain(info.data.map(d => d.key))
+            }, box);
 
         function stroke (d, i) {
             return colors[i];

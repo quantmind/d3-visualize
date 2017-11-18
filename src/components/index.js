@@ -8,6 +8,7 @@
 import '../plugins/scale';
 import '../plugins/menu';
 import '../plugins/data';
+import '../plugins/format';
 import '../plugins/font';
 import '../plugins/responsive';
 import '../plugins/title';

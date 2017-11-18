@@ -4,6 +4,7 @@ import {max} from 'd3-array';
 import createChart from '../core/chart';
 import colorContrast from '../utils/contrast';
 import textWrap from '../utils/text-wrapping';
+import defs from './defs';
 
 
 const baselines = {
@@ -38,33 +39,60 @@ const heightShifts = {
 export default createChart('barchart', {
     requires: ['d3-scale', 'd3-axis', 'd3-svg-legend'],
 
-    options: {
-        orientation: 'vertical',
-        // stack multiple y series?
-        sortby: null, // specify "x" or "y"
-        stack: true,
-        stackOrder: 'descending',   // stack order
-        waffle: false,      // ability to draw a waffle chart (only when stack is true)
-        normalize: false,
-        scaleX: {
-            type: 'band',
-            padding: 0.2
+    schema: {
+        x: defs.x,
+        y: defs.y,
+        orientation: {
+            type: "string",
+            enum: ['vertical', 'orizontal'],
+            default: 'vertical'
         },
-        scaleY: 'linear',
-        x: 'x',
-        y: 'y',
+        groupby: defs.groupby,
+        stack: defs.stack,
+        waffle: {
+            "type": "boolean",
+            description: "ability to draw a waffle chart"
+        },
+        normalize: {
+            "type": "boolean"
+        },
+        lineWidth: defs.lineWidth,
+        cornerRadius: defs.cornerRadius,
+        axisX: defs.axisX,
+        axisY: defs.axisY,
+        scaleY: defs.scaleY,
+        //
+        sortby: {
+            type: "string",
+            enum: ['x', 'y']
+        },
+        label: {
+            type: "string",
+            description: "expression for label text"
+        },
+        scaleX: {
+            type: 'object',
+            default: {
+                type: 'band',
+                padding: 0.2
+            },
+            properties: {
+                type: {
+                    type: 'string'
+                },
+                padding: {
+                    type: 'number'
+                }
+            }
+        }
+    },
+
+    options: {
         //
         // allow to place labels in bars
-        label: null,    // expression for label text
         labelLocation: "center",
         labelOffset: 10,
         labelWidth: 0.7,
-        //
-        radius: 0,
-        groupby: null,  // group data by a field for staked or grouped bar chart
-        //
-        axisY: true,
-        axisX: true,
         //
         // legend & tooltip
         valueformat: '.1f',
@@ -72,8 +100,9 @@ export default createChart('barchart', {
         legendLabel: 'label'
     },
 
-    doDraw (frame) {
+    doDraw () {
         var model = this.getModel(),
+            frame = this.frame,
             data = frame.data,
             box = this.boundingBox(),
             group = this.group(),
@@ -151,9 +180,10 @@ const barChartPrototype = {
     },
 
     legend (groups) {
-        if (this.model.legendType && groups) {
-            this.viz.legend({scale: this.sz}, this.box);
-        }
+        if (groups) this.viz.legend({
+            type: 'color',
+            scale: this.sz
+        }, this.box);
     },
 
     stacked (chart, data, groups) {
@@ -164,7 +194,7 @@ const barChartPrototype = {
             x = this.model.x,
             y = this.model.y,
             viz = this.viz,
-            radius = this.model.radius;
+            radius = this.model.cornerRadius;
         let bars = chart.selectAll('.group'),
             width, height, xrect, yrect, yi, rects;
 
@@ -304,7 +334,7 @@ const barChartPrototype = {
             sz = this.sz,
             x = this.model.x,
             viz = this.viz,
-            radius = this.model.radius,
+            radius = this.model.cornerRadius,
             padding = sx.paddingInner(),
             x1 = viz.getScale('band')
                     .domain(groups)
@@ -354,6 +384,7 @@ const barChartPrototype = {
                 .attr('ry', radius)
                 .attr('height', height)
                 .attr('width', width)
+                .attr('stroke-width', this.model.lineWidth)
                 .attr('stroke', color.stroke)
                 .attr('stroke-opacity', 0)
                 .attr('fill', d => sz(d.key))

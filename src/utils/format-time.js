@@ -9,5 +9,5 @@ export default function (specifier, value) {
         fmt = timeFormat(specifier);
         formats.set(specifier, fmt);
     }
-    return fmt(value);
+    return arguments.length == 2 ? fmt(value) : fmt;
 }

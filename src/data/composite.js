@@ -1,5 +1,7 @@
 import {map} from 'd3-collection';
-import {isArray, isObject} from 'd3-let';
+import {isArray, isObject, isPromise, assign} from 'd3-let';
+import {viewExpression} from 'd3-view';
+
 import DataFrame from './dataframe';
 //
 //  A composite dataSource
@@ -23,12 +25,17 @@ export default {
                 item: {
                     type: "string"
                 }
+            },
+            expression: {
+                type: "string",
+                description: "expression to evaluate, must return a data frame or a Promise"
             }
         }
     },
 
     initialise (config) {
         this.source = config.source;
+        this.expression = config.expression ? viewExpression(config.expression) : null;
     },
 
     getConfig (config) {
@@ -41,6 +48,7 @@ export default {
     getData (context) {
         var store = this.store,
             sources = this.source,
+            expression = this.expression,
             self = this;
 
         return Promise.all(sources.map(source => {
@@ -55,7 +63,12 @@ export default {
                     fc.frames.set(sources[index], frame);
                 });
             }
-            return self.asFrame(fc);
+            if (expression) {
+                var model = store.model.$child(assign({}, context, {frame: fc}));
+                fc = expression.eval(model);
+            }
+            if (isPromise(fc)) return fc.then(data => self.asFrame(data));
+            else return self.asFrame(fc);
         });
     },
 
@@ -85,7 +98,7 @@ function FrameCollection (store) {
 FrameCollection.prototype = {
 
     new (data) {
-        return new DataFrame(data, null, this.store);
+        return new DataFrame(data, this.store);
     },
 
     dataFrame () {

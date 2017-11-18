@@ -10,6 +10,7 @@ module.exports = {
 
     files: [
         './node_modules/babel-polyfill/dist/polyfill.js',
+        './build/d3-require.js',
         './test/test-*.js'
     ],
 

@@ -4,6 +4,7 @@ export {version as visualizeVersion} from './package.json';
 export {require} from './src/require';
 //
 // Data layer
+export {default as DataFrame} from './src/data/dataframe';
 export {default as DataStore} from './src/data/store';
 export {default as dataSources} from './src/data/sources';
 //export {default as dataLocale} from './src/data/locale';

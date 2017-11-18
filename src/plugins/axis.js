@@ -4,7 +4,6 @@
 //
 //  * A visual must require "d3-axis"
 //
-import {format} from 'd3-format';
 import {timeFormat} from 'd3-time-format';
 import {isDate, assign} from 'd3-let';
 
@@ -117,7 +116,7 @@ vizPrototype._axis = function (location, scale, model, value) {
     var axis = this.getAxis(location, scale).tickSize(model.tickSize);
     if (model.tickSizeOuter !== null) axis.tickSizeOuter(model.tickSizeOuter);
     if (isDate(value)) axis.tickFormat(timeFormat(model.timeFormat));
-    else if (model.format !== null) axis.tickFormat(format(model.format));
+    else if (model.format !== null) axis.tickFormat(this.format(model.format));
     return axis.ticks(model.ticks);
 };
 

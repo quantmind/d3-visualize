@@ -16,7 +16,7 @@ export const require = requireFrom(name => {
     var nameUrl = libs.get(name) || name;
     if (nameUrl.local) return nameUrl.url;
     if (urlIsAbsolute(nameUrl)) return nameUrl;
-    return `https://unpkg.com/${name}`;
+    return `https://unpkg.com/${nameUrl}`;
 });
 
 

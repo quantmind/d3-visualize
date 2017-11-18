@@ -25,8 +25,9 @@ export default createChart('areachart', {
         lineDarken: defs.lineDarken
     },
 
-    doDraw (frame) {
+    doDraw () {
         var self = this,
+            frame = this.frame,
             model = this.getModel(),
             x = model.x,
             y = model.y,
@@ -50,7 +51,7 @@ export default createChart('areachart', {
             areas = chart.selectAll('.areagroup').data(info.data),
             colors = this.colors(info.data.length),
             fill = model.gradient ? colors.map((c, i) => self.linearGradient(c, box, 'vertical', `fill${self.model.uid}-${i}`)) : colors,
-            curve = this.curve(model.curve);
+            curve = this.getCurve(model.curve);
 
         this.applyTransform(group, this.translate(box.padding.left, box.padding.top));
         this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));

@@ -1,16 +1,14 @@
 import {isArray} from 'd3-let';
-import {map} from 'd3-collection';
 import crossfilter from 'crossfilter';
 
 import accessor from '../utils/accessor';
 
 
-export default function DataFrame (data, serie, store) {
-    if (isArray(data)) data = {
+export default function DataFrame (data, store) {
+    if (isArray(data) || !arguments.length) data = {
         store: store,
-        data: data,
-        dimensions: {},
-        series: map()
+        data: data || [],
+        dimensions: {}
     };
     Object.defineProperties(this, {
         _inner: {
@@ -33,27 +31,22 @@ export default function DataFrame (data, serie, store) {
                 return data.dimensions;
             }
         },
-        series: {
-            get () {
-                return data.series;
-            }
-        },
         type: {
             get () {
                 return 'dataframe';
             }
         }
     });
-    this.serie = serie;
 }
 
 
 DataFrame.prototype = {
+    constructor: DataFrame,
 
     dataFrame () {
         return this;
     },
-    
+
     size () {
         return this.data.length;
     },
