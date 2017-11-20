@@ -4,14 +4,19 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [Data Properties](#data-properties)
+- [Data Source](#data-source)
+  - [Data Source properties](#data-source-properties)
 - [Data Store](#data-store)
   - [store.size ()](#storesize-)
+- [Data events](#data-events)
 - [Data Sources](#data-sources)
   - [Composite DataSource](#composite-datasource)
   - [Array DataSource](#array-datasource)
   - [Remote DataSource](#remote-datasource)
   - [Expression DataSource](#expression-datasource)
+- [Visual Binding](#visual-binding)
+  - [visual.dataStore](#visualdatastore)
+  - [visual.getContext(context)](#visualgetcontextcontext)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -49,7 +54,14 @@ The ``DataStore`` is used as a container of [DataSources][].
 
 Number of [DataSources][] in the data store
 
+## Data events
 
+The datastore and datasources trigger the following events:
+
+* ``init`` a new data source has been initialised and added to the dataStore
+* ``remove`` a data source has been removed from the dataStore
+* ``data`` new data is available for a given data source
+ 
 ## Data Sources
 
 ### Composite DataSource

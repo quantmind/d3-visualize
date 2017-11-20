@@ -1,5 +1,5 @@
 {
-    "version": "0.4.1",
+    "version": "0.4.2",
     "name": "d3-visualize",
     "description": "d3-view components for data visualization",
     "author": {
@@ -101,6 +101,7 @@
         "schema": "node dev/schema.js",
         "debug": "karma start test/karma/karma.debug.js",
         "firefox": "karma start test/karma/karma.debug.firefox.js",
+        "docs": "doctoc docs/",
         "css": "node-sass scss/d3-visualize.scss build/d3-visualize.css --include-path node_modules --output-style compressed",
         "asset": "cd build && POST https://<upload_url>/repos/quantmind/d3-visualize/releases/:id/assets?name=d3-visualize.zip",
         "prepare": "npm run-script cleanup && npm run-script build",

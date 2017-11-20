@@ -17,6 +17,7 @@ test:
     - yarn cover
   post:
     - bash <(curl -s https://codecov.io/bash)
+    - yarn build
 
 
 deployment:

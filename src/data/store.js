@@ -8,6 +8,7 @@ import composite from './composite';
 import expression from './expression';
 import dataSources from './sources';
 import transformStore from '../transforms/index';
+import dataEvents from './events';
 
 
 dataSources.add('array', array);
@@ -71,9 +72,10 @@ DataStore.prototype = {
     source (name, source) {
         if (arguments.length === 1) return this.sources.get(name);
         if (source === null) {
-            var p = this.sources.get(name);
+            var ds = this.sources.get(name);
             this.sources.remove(name);
-            return p;
+            dataEvents.call('remove', this, ds);
+            return ds;
         }
         this.sources.set(name, source);
         return this;
@@ -94,6 +96,8 @@ DataStore.prototype = {
         if (!isPromise(data)) data = Promise.resolve(data);
         return data.then(frame => {
             if (ds.config.cache) ds.cachedFrame = frame;
+            ds.lastFrame = frame;
+            dataEvents.call('data', ds.store, ds, frame);
             return frame;
         });
     },
@@ -102,6 +106,19 @@ DataStore.prototype = {
         let ctx = this.model.$child(context);
         ctx.dataStore = this;
         return viewExpression(expr).safeEval(ctx);
+    },
+
+    // Add a callback to the data event for a specific data source
+    // if the data source has already a data frame, trigger the callback
+    onData (name, callback) {
+        var store = this,
+            dsname = name.split('.')[0];
+        var ds = this.sources.get(dsname);
+        if (ds && ds.lastFrame) callback(ds.lastFrame);
+        dataEvents.on('data.' + name, (ds, frame) => {
+            if (ds.store === store && ds.name === dsname)
+                callback(frame);
+        });
     },
 
     dataName (name) {

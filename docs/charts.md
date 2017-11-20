@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Charts](#charts)
+  - [Available Charts](#available-charts)
   - [Crate a chart](#crate-a-chart)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

@@ -55,7 +55,15 @@ export const vizPrototype = {
     //
     // paper object for this visualisation
     paper () {
-        return this.visualParent.paper();
+        if (this.paperType) {
+            if (!this._paper) {
+                var PaperType = visuals.papers[this.paperType];
+                if (!PaperType) throw new Error(`Unknown paper ${this.paperType}`);
+                this._paper = new PaperType(this);
+            }
+            return this._paper;
+        } else
+            return this.visualParent.paper();
     },
 
     activate (callback) {

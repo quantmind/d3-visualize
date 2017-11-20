@@ -118,7 +118,7 @@ export default createChart('barchart', {
         this.applyTransform(chart, this.translate(box.margin.left, box.margin.top));
 
         if (groupby) {
-            groups = frame.dimension(groupby).group().top(Infinity).map(g => g['key']);
+            groups = frame.dimension(groupby).group().top(Infinity).map(g => g['key']).sort();
             if (groups.length <= 1) groups = null;
         }
 

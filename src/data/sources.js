@@ -1,12 +1,11 @@
 import {map} from 'd3-collection';
-import {dispatch} from 'd3-dispatch';
 import {pop, isArray, assign} from 'd3-let';
 
 import DataFrame from './dataframe';
 import transformStore, {applyTransforms} from '../transforms/index';
 import warn from '../utils/warn';
 
-const dataEvents = dispatch('init', 'data');
+import dataEvents from './events';
 
 
 //
