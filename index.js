@@ -41,4 +41,5 @@ export {default as Treemap} from './src/charts/treemap';
 export {default as TextChart} from './src/charts/text';
 export {default as Heatmap} from './src/charts/heatmap';
 export {default as GeoChart} from './src/charts/geo';
+export {default as Tabular} from './src/charts/tabular';
 export {default as createCompositeChart} from './src/charts/composite';

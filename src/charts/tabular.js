@@ -3,15 +3,19 @@ import {dispatch} from 'd3-dispatch';
 
 import createChart from '../core/chart';
 import {Div} from '../core/paper';
-import formatters from './utils/formatters';
 
 const tableEvents = dispatch('rows-before', 'rows-after', 'columns');
 
-
 export default createChart('tabular', {
-    requires: ['https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.17.6/clusterize.min.js'],
+    requires: ['clusterize.js'],
     paperType: 'div',
     events: tableEvents,
+
+    formatters: {
+        string (v) {
+            return ''+v;
+        }
+    },
 
     schema: {
         columns: {
@@ -77,6 +81,7 @@ export default createChart('tabular', {
         this.updateRows(rows);
     },
 
+    // Create the columns for this tabular visual
     getColumns () {
         var model = this.getModel('tabular'),
             self = this;
@@ -87,7 +92,7 @@ export default createChart('tabular', {
             if (column.html) column.formatter = self.evalFormatter(column.html);
             else {
                 if (!column.type) column.type = 'string';
-                column.formatter = formatters[column.type] ? column.type : 'string';
+                column.formatter = this.formatters[column.type] ? column.type : 'string';
             }
             return column;
         });
@@ -97,7 +102,7 @@ export default createChart('tabular', {
         const self = this;
         let value;
         return columns.reduce((row, column) => {
-            value = formatters[column.formatter](data[column.name], data, self);
+            value = this.formatters[column.formatter](data[column.name], data, self);
             row += `<td>${value}</td>`;
             return row;
         }, '<tr>') + '</tr>';
