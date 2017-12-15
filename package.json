@@ -88,9 +88,8 @@
     },
     "scripts": {
         "lint": "eslint index.js test src dev",
-        "test": "eslint index.js dev test src && npm run-script require && npm run-script unit",
+        "test": "eslint index.js dev test src && npm run-script unit",
         "rollup": "rollup -c dev/rollup.config.js --banner \"$(preamble)\"",
-        "require": "view-require -o build/d3-require.js",
         "dev": "rollup -c dev/rollup.config.js -w",
         "cover": "karma start test/karma/karma.cover.js",
         "cleanup": "rm -rf build",
