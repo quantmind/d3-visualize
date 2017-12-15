@@ -30,6 +30,7 @@ describe('BarChart -', () => {
         });
         success = await chart.draw();
         expect(success).toBe(true);
+        chart.visualParent.sel.remove();
     });
 
 

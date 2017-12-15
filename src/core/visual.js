@@ -188,17 +188,21 @@ if (inBrowser) {
 //
 //  Clears visualisation going out of scope
 function visualManager (records) {
+    let nodes, node;
+
     records.forEach(record => {
-        var nodes = record.removedNodes;
-        if (!nodes || !nodes.length) return;  // phantomJs hack
-        nodes.forEach(node => {
+        nodes = record.removedNodes;
+        if (!nodes || !nodes.length) return;
+
+        for (let i=0; i<nodes.length; ++i) {
+            node = nodes[i];
             if (node.querySelectorAll) {
                 if (!node.__visual__)
                     select(node).selectAll('.d3-visual').each(destroy);
                 else
                     destroy.call(node);
             }
-        });
+        }
     });
 }
 
