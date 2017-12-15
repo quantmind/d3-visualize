@@ -12,11 +12,11 @@ vizPrototype.getCurve = function (name) {
 
 
 vizPrototype.getStack = function () {
-    var model = this.getModel();
+    var model = this.getModel(),
+        s = this.$.stack();
     if (model.stack) {
-        var s = this.$.stack();
         if (model.stackOrder) s.order(this.getD3('stack', model.stackOrder));
         if (model.stackOffset) s.offset(this.getD3('stack', model.stackOffset));
-        return s;
     }
+    return s;
 };

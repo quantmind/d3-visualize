@@ -201,6 +201,11 @@ export default function (type, proto) {
                     if (this.visualParent) return this.visualParent.visualRoot;
                     return this;
                 }
+            },
+            'name': {
+                get () {
+                    return this.toString();
+                }
             }
         });
         this.visualParent = parent;

@@ -156,11 +156,15 @@ export const chartPrototype = {
                     this.frame = frame;
                     doDraw.apply(self);
                     visuals.events.call('after-draw', undefined, self);
+                    return true;
                 }
+                return false;
             }, err => {
                 delete self.drawing;
-                warn(`Could not draw ${self.toString()}: ${err}`, err);
+                self.logWarn(`Could not draw ${self.toString()}: ${err}`);
+                self.logError(err);
                 this.displayError(err);
+                return false;
             });
         }
     }

@@ -7,7 +7,9 @@
 - [Data Source](#data-source)
   - [Data Source properties](#data-source-properties)
 - [Data Store](#data-store)
+  - [store.sources](#storesources)
   - [store.size ()](#storesize-)
+  - [store.addSources (sources)](#storeaddsources-sources)
 - [Data events](#data-events)
 - [Data Sources](#data-sources)
   - [Composite DataSource](#composite-datasource)
@@ -50,9 +52,36 @@ If the input data is simply an array of primitive values, ``visualize`` maps eac
 
 The ``DataStore`` is used as a container of [DataSources][].
 
+### store.sources
+
+**Read only** property
+
+A map of data source names to [DataSources][].
+
 ### store.size ()
 
-Number of [DataSources][] in the data store
+Number of [DataSources][] in the data store, equivalent to ``store.sources.size()``.
+
+### store.addSources (sources)
+
+Add a new data sources, if ``sources`` is an object rather than an array, it adds only one data source.
+The ``sources`` contains objects which identify the data source type. For example (adding only one data source):
+```javascript
+store.addSources({
+    data: [1, 2, 3, 4, 5]
+});
+```
+adds an [array datasource](#array-datasource) to the datastore. We didn't pass a name for the data source, therefore the data store created one for us which in this case is ``default``. To retrive the data:
+```javascript
+ds = store.source('default');
+```
+To create a source with a name:
+```javascript
+store.addSources({
+    name: 'test',
+    data: [1, 2, 3, 4, 5]
+});
+```
 
 ## Data events
 
@@ -61,7 +90,7 @@ The datastore and datasources trigger the following events:
 * ``init`` a new data source has been initialised and added to the dataStore
 * ``remove`` a data source has been removed from the dataStore
 * ``data`` new data is available for a given data source
- 
+
 ## Data Sources
 
 ### Composite DataSource

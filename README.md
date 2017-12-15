@@ -16,5 +16,6 @@ A [d3 plugin](https://bost.ocks.org/mike/d3-plugin/) for creating interactive vi
     * [Getting Started](/docs/getting-started.md)
     * [Schema](/docs/schema.md)
 * API
+    * [Chart](/docs/chart.md)
     * [Data](/docs/data.md)
     * [Data transforms](/docs/transforms/readme.md)

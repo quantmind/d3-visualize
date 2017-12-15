@@ -6,7 +6,6 @@ import {visuals} from '../core/base';
 import DataStore from '../data/store';
 import dataSources from '../data/sources';
 import {vizPrototype} from '../core/chart';
-import warn from '../utils/warn';
 
 
 assign(visuals.schema.definitions, {
@@ -31,10 +30,15 @@ assign(visuals.schema.definitions, {
 vizPrototype.getData = function () {
     var name = this.model.data;
     if (!name) {
-        warn(`Visual ${this.visualType} without data name, cannot get data`);
+        this.logWarn(`no data name - cannot get data`);
         return;
     }
-    return this.dataStore.getData(name, {$visual: this});
+    try {
+        return this.dataStore.getData(name, {$visual: this});
+    } catch (err) {
+        this.logError(err);
+        return;
+    }
 };
 
 //
@@ -87,5 +91,5 @@ function setupLayer (layer) {
     if (data)
         layer.model.$set('data', data.name);
     else
-        warn(`Could not create data source ${data.name}`);
+        layer.logWarn(`could not create data source ${data.name}`);
 }

@@ -7,6 +7,7 @@ module.exports = {
     basePath: '../../',
     singleRun: true,
     frameworks: ['jasmine', 'browserify'],
+    reporters: ['progress'],
 
     files: [
         './node_modules/babel-polyfill/dist/polyfill.js',

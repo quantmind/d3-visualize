@@ -6,8 +6,7 @@ module.exports = function (config) {
 
     var options = assign(base, {
         singleRun: false,
-        browsers: ['Chrome'],
-        reporters: ['progress']
+        browsers: ['Chrome']
     });
 
     config.set(options);

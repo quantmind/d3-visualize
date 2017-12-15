@@ -1,5 +1,4 @@
 import {pop, inBrowser} from 'd3-let';
-import {viewDebug} from 'd3-view';
 import {select} from 'd3-selection';
 
 import createVisual, {visuals} from './base';
@@ -142,7 +141,7 @@ export default createVisual('visual', {
         var currentSize = this.size;
 
         if (fit || (currentSize[0] !== size.width || currentSize[1] !== size.height)) {
-            if (!fit) viewDebug(`Resizing "${this.toString()}"`);
+            if (!fit) this.logDebug('resizing');
             this.width = size.width;
             this.height = size.height;
             // this.paper.style('width', this.width + 'px').style('height', this.height + 'px');
@@ -208,7 +207,7 @@ function destroy () {
     var viz = this.__visual__;
     if (viz) {
         viz.destroy();
-        viewDebug(`Removed "${viz.toString()}" from DOM, ${visuals.live.length} live visuals left`);
+        viz.logDebug(`removed from DOM, ${visuals.live.length} live visuals left`);
     }
     else warn('d3-visual without __visual__ object');
 }

@@ -90,7 +90,7 @@ DataStore.prototype = {
     // get data from a source
     getData (source, context) {
         var ds = this.sources.get(source);
-        if (!ds) throw new Error(`Data source ${source} not available`);
+        if (!ds) throw new Error(`data source "${source}" not available in datastore`);
         if (ds.cachedFrame) return Promise.resolve(ds.cachedFrame);
         var data = ds.getData(context);
         if (!isPromise(data)) data = Promise.resolve(data);

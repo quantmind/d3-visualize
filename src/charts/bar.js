@@ -37,7 +37,7 @@ const heightShifts = {
 //  timeserie data. It can display absulte values as
 //  proportional data via vertical staking and normalization
 export default createChart('barchart', {
-    requires: ['d3-scale', 'd3-axis', 'd3-svg-legend'],
+    requires: ['d3-shape', 'd3-scale', 'd3-axis', 'd3-svg-legend'],
 
     schema: {
         x: defs.x,
