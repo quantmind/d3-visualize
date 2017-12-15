@@ -86,6 +86,8 @@ export default createChart('tabular', {
         var model = this.getModel('tabular'),
             self = this;
 
+        if (!model.columns) model.columns = this.frame.columns;
+
         return model.columns.map(column => {
             if (isString(column)) column = {name: column};
             if (!column.label) column.label = column.name;

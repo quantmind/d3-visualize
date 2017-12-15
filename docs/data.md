@@ -10,15 +10,16 @@
   - [store.sources](#storesources)
   - [store.size ()](#storesize-)
   - [store.addSources (sources)](#storeaddsources-sources)
+  - [store.getData (source, [context])](#storegetdata-source-context)
 - [Data events](#data-events)
 - [Data Sources](#data-sources)
   - [Composite DataSource](#composite-datasource)
   - [Array DataSource](#array-datasource)
   - [Remote DataSource](#remote-datasource)
   - [Expression DataSource](#expression-datasource)
-- [Visual Binding](#visual-binding)
-  - [visual.dataStore](#visualdatastore)
-  - [visual.getContext(context)](#visualgetcontextcontext)
+- [DataFrame](#dataframe)
+  - [df.type](#dftype)
+  - [df.columns](#dfcolumns)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -41,11 +42,17 @@ If the input data is simply an array of primitive values, ``visualize`` maps eac
 
 ### Data Source properties
 
+A data source is created by specifing a config object. Depending on the properties of the config object
+a different data source is created. Check the full list of [available data sources](#data-sources)
+for further information.
+
 | Property  | Type  | Description  |
 |---|---|---|
 | name | String  | A unique name for the data set. If not provided it will be assigned by the library  |
 | source | String/String[] | The name of one or more data sets to use as the source for this data set ([CompositeDataSource][])|
-| url | String | A URL from which to load the data set  ([RemoteDataSource][])|
+| url | String | A URL from which to load the data set  ([RemoteDataSource][] only)|
+| cache | Boolean | if ``true`` the data source caches data (default ``false``) |
+| data | Array | The dataset as array of objects or values ([Array datasource](#array-datasource) only) |
 
 
 ## Data Store
@@ -83,6 +90,13 @@ store.addSources({
 });
 ```
 
+### store.getData (source, [context])
+
+Fetch data from a data ``source`` and returns a ``Promise`` which resolve in a [DataFrame][].
+If the ``source`` is not available it throws an error. If the source support caching and a data frame
+is available it returns it without fetching new data.
+
+
 ## Data events
 
 The datastore and datasources trigger the following events:
@@ -101,20 +115,23 @@ The datastore and datasources trigger the following events:
 
 ### Expression DataSource
 
-## Visual Binding
+## DataFrame
 
-The DataStore is used by the visual API to retrieve data. The Binding
-with the visual API is implemented via the [data](/src/plugins/data.js)
-plugin.
+The DataFrame is the object returned by a [store.getData](#storegetdata-source-context).
 
-### visual.dataStore
+### df.columns
 
-Property returning the datastore instance associated with the visual.
+The columns in the data frame
+```javascript
+df = new DataFrame([{a: 3, b: 4}, {a:4, c: 6}]);
+df.columns  //  ['a', 'b', 'c']
+```
+### df.type
 
-### visual.getContext(context)
+always ``dataframe``.
 
-Returns a new model context as a child of the ``dataStore`` context.
 
 [DataSources]: #datasources
+[DataFrame]: #dataframe
 [CompositeDataSource]: #composite-datasource
 [RemoteDataSource]: #remote-datasource

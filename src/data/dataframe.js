@@ -1,6 +1,7 @@
 import {isArray} from 'd3-let';
 import crossfilter from 'crossfilter';
 
+import getColumns from './impl/get-columns';
 import accessor from '../utils/accessor';
 
 
@@ -34,6 +35,12 @@ export default function DataFrame (data, store) {
         type: {
             get () {
                 return 'dataframe';
+            }
+        },
+        columns: {
+            get () {
+                if (!data.columns) data.columns = getColumns(data.data);
+                return data.columns;
             }
         }
     });

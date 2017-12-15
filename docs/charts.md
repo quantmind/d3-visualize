@@ -9,6 +9,7 @@
 - [API](#api)
   - [chart.dataStore](#chartdatastore)
   - [chart.draw ([fecthData])](#chartdraw-fecthdata)
+  - [chart.getContext([context])](#chartgetcontextcontext)
   - [chart.getData ()](#chartgetdata-)
   - [chart.getStack ()](#chartgetstack-)
 
@@ -40,6 +41,13 @@ The [data store][] associated with the chart. It is injected during chart initia
 
 Draw the chart and return a ``Promise`` which resolve in ``true`` or ``false`` indicating if the chart was
 successfully drawn in the DOM.
+
+
+### chart.getContext([context])
+
+Plugin: **data**
+
+Returns a new model context as a child of the ``dataStore`` context.
 
 
 ### chart.getData ()
