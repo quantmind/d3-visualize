@@ -3,18 +3,6 @@ var base = require('./karma.base.js');
 
 
 module.exports = function (config) {
-    var transforms = base.browserify.transform;
-
-    transforms.push(
-        [
-            'browserify-istanbul',
-            {
-                instrumenterConfig: {
-                    embedSource: true
-                }
-            }
-        ]
-    );
 
     var options = assign(base, {
 
@@ -28,16 +16,28 @@ module.exports = function (config) {
         },
 
         coverageReporter: {
+            dir : 'build/coverage/',
             reporters: [
-                { type: 'lcov', dir: 'coverage/', subdir: '.' },
-                { type: 'text-summary', dir: 'coverage/', subdir: '.' },
-                { type : 'html', dir : 'coverage/' }
+                {
+                    type: 'lcov',
+                    subdir: '.'
+                },
+                {
+                    type : 'html',
+                    subdir: '.'
+                },
+                {
+                    type : 'text',
+                    subdir: '.'
+                }
             ]
         },
 
         browserify: {
             debug: true,
-            transform: transforms
+            transform: [
+                ['babelify', {plugins: 'istanbul'}]
+            ]
         }
     });
 

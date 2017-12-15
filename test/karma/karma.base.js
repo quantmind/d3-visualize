@@ -6,11 +6,10 @@ module.exports = {
 
     basePath: '../../',
     singleRun: true,
-    frameworks: ['jasmine', 'browserify', 'es5-shim'],
+    frameworks: ['jasmine', 'browserify'],
 
     files: [
         './node_modules/babel-polyfill/dist/polyfill.js',
-        './build/d3-require.js',
         './test/test-*.js'
     ],
 
@@ -20,15 +19,7 @@ module.exports = {
 
     browserify: {
         debug: true,
-        transform: [
-            [
-                'babelify',
-                {
-                    presets: ["env"],
-                    plugins: ["transform-async-to-generator"]
-                }
-            ]
-        ]
+        transform: ['babelify']
     },
 
     customLaunchers: {

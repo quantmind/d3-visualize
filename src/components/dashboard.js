@@ -41,7 +41,7 @@ export const vizComponent = {
         }
 
         if (isString(input)) {
-            return this.json(input).then(build).catch(err => {
+            return this.json(input).then(response => build(response.data)).catch(err => {
                 warn(`Could not reach ${input}: ${err}`, err);
             });
         }

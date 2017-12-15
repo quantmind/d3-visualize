@@ -1,8 +1,6 @@
 //
 export {version as visualizeVersion} from './package.json';
 //
-export {require} from './src/require';
-//
 // Data layer
 export {default as DataFrame} from './src/data/dataframe';
 export {default as DataStore} from './src/data/store';
@@ -25,7 +23,6 @@ export {default as visualComponents} from './src/components/index';
 export {colorScales} from './src/plugins/color';
 export {default as pyramid} from './src/transforms/pyramid';
 export {default as niceRange} from './src/utils/nicerange';
-export {default as slugify} from './src/utils/slugify';
 //
 //  Charts
 //  =========
