@@ -4,12 +4,13 @@ const Ajv = require('ajv');
 const logger = require('console');
 
 const outFile = 'build/schema.json';
-const draft = 'draft-04';
+const draft = 'draft-07';
 
 const schema = JSON.parse(JSON.stringify(d3.visuals.schema));
 const ajv = new Ajv;
+
 schema.$schema = `http://json-schema.org/${draft}/schema#`;
-ajv.addMetaSchema(require(`ajv/lib/refs/json-schema-${draft}.json`));
+// ajv.addMetaSchema(require(`ajv/lib/refs/json-schema-${draft}.json`));
 //
 // validate schema
 ajv.compile(schema);
