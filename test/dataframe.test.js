@@ -3,7 +3,7 @@ import {DataFrame} from '../index';
 
 describe('DataFrame -', () => {
 
-    it ('constructor', () => {
+    test('constructor', () => {
         var df = new DataFrame;
         expect(df.constructor).toBe(DataFrame);
         expect(df.size()).toBe(0);

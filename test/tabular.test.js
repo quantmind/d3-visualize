@@ -1,10 +1,10 @@
-import {test, domElement} from './utils';
+import {domElement} from './utils';
 import {visuals, Tabular} from '../index';
 
 
 describe('Tabular -', () => {
 
-    it ('defaults', () => {
+    test('defaults', () => {
         var tabular = visuals.options.tabular;
         expect(tabular).toBeTruthy();
         expect(tabular.tableClass).toBe('table');

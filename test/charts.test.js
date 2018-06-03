@@ -1,4 +1,3 @@
-import {test} from './utils.js';
 import {visuals} from '../index';
 
 describe('visuals -', () => {

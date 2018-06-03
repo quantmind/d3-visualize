@@ -9,7 +9,7 @@ import {PyramidChart, pyramid} from '../index';
 describe('pyramid', () => {
     var vm = view();
 
-    it ('pyramid defaults', () => {
+    test('pyramid defaults', () => {
         var t = pyramid();
         expect(t.height()).toBe(1);
         expect(t.base()).toBe(1);
@@ -21,7 +21,7 @@ describe('pyramid', () => {
         expect(t.pad(0.1).pad()()).toBe(0.1);
     });
 
-    it ('pyramid data', () => {
+    test('pyramid data', () => {
         var t = pyramid().value(d => d.data);
         var data = t([
             {
@@ -81,7 +81,7 @@ describe('pyramid', () => {
         //var f = polygonArea(data[4].points);
     });
 
-    it ('pyramid data with pad', () => {
+    test('pyramid data with pad', () => {
         var t = pyramid().pad(0.01);
         var data = t([3, 56, 23, 15, 40]);
         expect(data[0].points.length).toBe(3);
@@ -93,7 +93,7 @@ describe('pyramid', () => {
         expect(data[1].points[1][1]).toBeGreaterThan(data[0].points[1][1]);
     });
 
-    it ('Pyramid Chart Object', () => {
+    test('Pyramid Chart Object', () => {
         var el = vm.createElement('div').node(),
             p = new PyramidChart(el);
         expect(p.visualType).toBe('pyramidchart');

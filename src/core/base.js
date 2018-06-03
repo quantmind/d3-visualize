@@ -66,10 +66,10 @@ function defaultsFromProperties (properties) {
 }
 
 
-function schemaDef (d) {
+const schemaDef = d => {
     var dd = d.split('/');
     return visuals.schema.definitions[dd[dd.length-1]] || {};
-}
+};
 
 //
 //  Visual Interface

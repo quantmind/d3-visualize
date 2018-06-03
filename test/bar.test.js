@@ -1,10 +1,10 @@
-import {test, domElement} from './utils';
+import {domElement} from './utils';
 import {visuals, BarChart} from '../index';
 
 
 describe('BarChart -', () => {
 
-    it ('defaults', () => {
+    test('defaults', () => {
         var bar = visuals.options.barchart;
         expect(bar).toBeTruthy();
         expect(bar.orientation).toBe('vertical');

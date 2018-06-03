@@ -8,7 +8,7 @@ import {createChart} from '../index';
 
 describe('plugin', () => {
 
-    it ('visualPlugins', () => {
+    test('visualPlugins', () => {
         viewProviders.visualPlugins = {
             ggggg: {
                 options: {

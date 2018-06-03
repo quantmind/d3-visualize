@@ -1,5 +1,3 @@
-import {test} from './utils';
-
 import {randomPath} from 'd3-quant';
 
 import {DataStore} from '../index';
@@ -7,7 +5,7 @@ import {DataStore} from '../index';
 
 describe('dataStore', () => {
 
-    it('test registration', () => {
+    test('test registration', () => {
         var store = new DataStore();
         expect(store.size()).toBe(0);
         expect(store.source('foo')).toBe(undefined);

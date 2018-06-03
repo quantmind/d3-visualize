@@ -8,7 +8,7 @@ import {visualComponents, PieChart} from '../index';
 
 describe('piechart', () => {
 
-    it ('Bounding box', () => {
+    test('Bounding box', () => {
         var vm = view().use(visualComponents),
             el = vm.createElement('div').node();
         var pie = new PieChart(el),

@@ -1,5 +1,3 @@
-import {test} from './utils.js';
-
 import {view} from 'd3-view';
 import {visualComponents} from '../index';
 
