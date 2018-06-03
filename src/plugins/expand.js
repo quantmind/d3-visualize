@@ -1,6 +1,6 @@
 //
 //
-//  Expand viusals layers and visuals
+//  Expand visuals layers and visuals
 //  =======================================
 //
 import {visuals} from '../core/base';

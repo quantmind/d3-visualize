@@ -8,7 +8,7 @@ import {visualComponents, PieChart, Visual} from '../index';
 describe('piechart', () => {
     var vm = view();
 
-    it ('Pie Chart Default', () => {
+    test('Pie Chart Default', () => {
         var vm = view().use(visualComponents),
             el = vm.createElement('div').node();
         var pie = new PieChart(el);
@@ -21,7 +21,7 @@ describe('piechart', () => {
         expect(model.render).toBe('svg');
     });
 
-    it ('Pie Chart Overrride', () => {
+    test('Pie Chart Overrride', () => {
         var el = vm.createElement('div').node();
         var pie = new PieChart(el, {
             piechart: {
@@ -33,7 +33,7 @@ describe('piechart', () => {
         expect(model.cornerRadius).toBe(0);
     });
 
-    it ('Pie Chart in Visual', () => {
+    test('Pie Chart in Visual', () => {
         var el = vm.createElement('div').node();
         var viz = new Visual(el, {
             piechart: {

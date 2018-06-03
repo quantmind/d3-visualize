@@ -1,0 +1,19 @@
+{
+    "rootDir": "../",
+    "roots": ["<rootDir>/src/", "<rootDir>/test/"],
+    "collectCoverage": true,
+    "coverageDirectory": "<rootDir>/build",
+    "coverageReporters": ["json", "html", "lcov", "text", "text-summary"],
+    "collectCoverageFrom": ["src/**"],
+    "coveragePathIgnorePatterns": [
+    ],
+    "snapshotSerializers": [],
+    "coverageThreshold": {
+      "global": {
+        "branches": 9,
+        "functions": 10,
+        "lines": 10,
+        "statements": 10
+      }
+    }
+  }

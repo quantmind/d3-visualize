@@ -1,5 +1,4 @@
 import json from 'rollup-plugin-json';
-import babel from 'rollup-plugin-babel';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import commonjs from 'rollup-plugin-commonjs';
 import node from 'rollup-plugin-node-resolve';
@@ -20,12 +19,6 @@ export default {
     },
     plugins: [
         json(),
-        babel({
-            babelrc: false,
-            plugins: ['external-helpers'],
-            presets: ['es2015-rollup'],
-            externalHelpers: true
-        }),
         sourcemaps(),
         commonjs({include: ['node_modules/**']}),
         node()

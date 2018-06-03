@@ -175,7 +175,7 @@ export default createVisual('visual', {
 });
 
 
-if (inBrowser) {
+if (inBrowser && window.MutationObserver) {
     // DOM observer
     // Check for changes in the DOM that leads to visual actions
     const observer = new MutationObserver(visualManager);
